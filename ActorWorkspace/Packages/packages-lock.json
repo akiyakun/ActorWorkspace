@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.akiyakun.actor-workspace": {
+      "version": "file:com.akiyakun.actor-workspace",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.esotericsoftware.spine.spine-csharp": {
       "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-csharp/src#4.2",
       "depth": 0,
