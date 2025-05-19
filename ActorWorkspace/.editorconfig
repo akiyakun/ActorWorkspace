@@ -1,0 +1,63 @@
+# v1.2.5
+# .gitattributes ファイルと合わせること
+root = true
+
+
+[*]
+charset = utf-8
+end_of_line = lf
+
+
+[*.bat]
+charset = shift-jis
+end_of_line = crlf
+trim_trailing_whitespace = true
+
+
+[*.cs]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+# indent_style = tab
+trim_trailing_whitespace = true
+
+# 名前を簡素化できます
+dotnet_diagnostic.IDE0001.severity = none
+メンバー アクセスを簡略化する
+dotnet_diagnostic.IDE0002.severity = none
+# 不要なキャストを削除する
+dotnet_diagnostic.IDE0004.severity = none
+# オブジェクト初期化子を使用する
+dotnet_diagnostic.IDE0017.severity = none
+# 不要なかっこを削除する
+dotnet_diagnostic.IDE0047.severity = none
+# 型参照のためのフレームワーク型名の代わりに言語キーワードを使用する
+dotnet_diagnostic.IDE0049.severity = none
+# 名前空間がフォルダー構造と一致しない
+dotnet_diagnostic.IDE0130.severity = none
+# '読み取り専用' にできる構造体
+dotnet_diagnostic.IDE0250.severity = none
+# メンバーを "読み取り専用" にすることができます
+dotnet_diagnostic.IDE0251.severity = none
+# new 式を簡略化する
+dotnet_diagnostic.IDE0090.severity = none
+# 名前付けルール違反
+dotnet_diagnostic.IDE1006.severity = none
+
+
+[*.json]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+trim_trailing_whitespace = true
+
+
+[*.py]
+charset = utf-8
+end_of_line = lf
+# indent_size = 2
+# indent_style = space
+trim_trailing_whitespace = true
+
