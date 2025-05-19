@@ -1,0 +1,98 @@
+{
+  "version": "1.1.0",
+  "environment": {
+    "build_settings_path": "Assets/Editor/CICDBuildSettings.asset",
+    "agent": "BuildServer"
+  },
+  "notify": {
+    "enable": true,
+    "channel": "chat_channel",
+    "artifacts_url": "/buildserver/artifacts"
+  },
+  "agents": [
+    {
+      "name": "BuildServer",
+      "unity_path": "/Applications/Unity/Hub/Editor/2019.2.8f1/Unity.app/Contents/MacOS/Unity",
+      "xcode_path": "/Applications/Xcode 11.1.app/Contents/Developer",
+      "external_output_artifacts": "/Volumes/dev/buildserver/artifacts"
+    },
+    {
+      "name": "BuildServer2",
+      "unity_path": "C:/Program Files/Unity/Hub/Editor/2019.2.8f1/Editor/Unity.exe",
+      "external_output_artifacts": "//BuildServer2/artifacts"
+    }
+  ],
+  "tests": {
+    "enable": true,
+    "agent": "BuildServer"
+  },
+  "artifacts": {
+    "enable": true,
+    "agent": "BuildServer"
+  },
+  "jobs": [
+    {
+      "platform": "Android",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "BuildServer2",
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "Android - Build"
+    },
+    {
+      "platform": "iOS",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "MacServer",
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "iOS - Build"
+    },
+    {
+      "platform": "Windows",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "BuildServer2",
+      "cleanup_build": false,
+      "application_filename": "Game",
+      "job_name": "Windows - Build"
+    },
+    {
+      "platform": "macOS",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "MacServer",
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "macOS - Build"
+    },
+    {
+      "platform": "WebGL",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "BuildServer",
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "WebGL - Build"
+    },
+    {
+      "platform": "Switch",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "BuildServer2",
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "Switch - Build"
+    },
+    {
+      "platform": "PS4",
+      "enable": true,
+      "debug_skip": false,
+      "agent": "BuildServer2",
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "PS4 - Build"
+    }
+  ]
+}

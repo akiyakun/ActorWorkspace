@@ -1,0 +1,97 @@
+{
+  "version": "0.1.1",
+  "environment": {
+    "company_name": "sumomo",
+    "product_name": "Sumomo",
+    "app_id": "com.sumomo.sample",
+    "app_version": "0.0.0",
+    "default_locale": "ja"
+  },
+  "editor_support": {
+    "enable_auto_folder_keep": true,
+    "keep_filename": ".autokeep",
+    "overwrite_base_dotfiles": true,
+    "overwrite_response_file": true,
+    "screenshot_directory": "build"
+  },
+  "asset_bundle": {
+    "enable_auto_addressing": true,
+    "asset_bundle_data_directory": "Assets/AssetBundleData"
+  },
+  "master_data": {
+    "asset_data_directory": "Assets/AssetBundleData/MasterData@bundle",
+    "importer_exporter_class_name": "namespace.MasterDataImporterExporter",
+    "raw_data_directory": "tools/master_data/temp",
+    "temp_directory": "tools/master_data/temp"
+  },
+  "localize": {
+    "localize_data_directory": "Assets/Localization"
+  },
+  "standalone_settings": {},
+  "android_settings": {},
+  "ios_settings": {
+    "accelerometer_frequency": 0
+  },
+  "game_view_sizes": [
+    {
+      "group": "Standalone",
+      "width": "640",
+      "height": "480",
+      "name": "VGA"
+    },
+    {
+      "group": "Standalone",
+      "width": "960",
+      "height": "540",
+      "name": "Half HD"
+    },
+    {
+      "group": "Standalone",
+      "width": "1280",
+      "height": "720",
+      "name": "HD"
+    },
+    {
+      "group": "Standalone",
+      "width": "1920",
+      "height": "1080",
+      "name": "Full HD (Landscape)"
+    },
+    {
+      "group": "Android",
+      "width": "1080",
+      "height": "1920",
+      "name": "Full HD (Portrait)"
+    },
+    {
+      "group": "Android",
+      "width": "1080",
+      "height": "2157",
+      "name": "PocoPhone F1"
+    },
+    {
+      "group": "iOS",
+      "width": "640",
+      "height": "1136",
+      "name": "iPhone 6~"
+    },
+    {
+      "group": "iOS",
+      "width": "1125",
+      "height": "2436",
+      "name": "iPhone X"
+    },
+    {
+      "group": "SmartPhone",
+      "width": "1080",
+      "height": "1920",
+      "name": "Full HD (Portrait)"
+    },
+    {
+      "group": "SmartPhone",
+      "width": "640",
+      "height": "1136",
+      "name": "iPhone 6~"
+    }
+  ]
+}
