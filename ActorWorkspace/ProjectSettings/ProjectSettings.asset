@@ -577,7 +577,8 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Standalone: __USE_UI_V1__;ENABLE_SPINE_UNITY;__INAPPDEBUG__
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
