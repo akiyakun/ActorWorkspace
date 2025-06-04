@@ -17,12 +17,8 @@ namespace Project.InAppDebug.Editor
 
         public ActorAssetDatabase()
         {
-            // actorAssetInfoList.Add(new ActorAssetInfoEx { Name = "Actor1" });
-            // actorAssetInfoList.Add(new ActorAssetInfoEx { Name = "Actor2" });
-            // actorAssetInfoList.Add(new ActorAssetInfoEx { Name = "Actor3" });
-
             var targetFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(
-                "Assets/SpineData");
+                "Assets/AssetData/SpineData");
             IReadOnlyList<SkeletonDataAsset> result =
                 EUtility.FindAssets<SkeletonDataAsset>(targetFolder);
             for (int i = 0; i < result.Count; i++)
@@ -32,19 +28,10 @@ namespace Project.InAppDebug.Editor
                 var info = new ActorAssetInfoEx();
                 info.Name = skeletonDataAsset.name;
                 info.Path = AssetDatabase.GetAssetPath(skeletonDataAsset);
-                Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
+                // Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
                 actorAssetInfoList.Add(info);
             }
 
-
-            // {
-            //     var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(
-            //         "Assets/SpineData/Player/Player_SkeletonData.asset");
-            //     var newSkeleton = new GameObject("Player");
-            //     var sanim = newSkeleton.AddComponent<SkeletonAnimation>();
-            //     sanim.skeletonDataAsset = skeletonDataAsset;
-            //     sanim.Initialize(true);
-            // }
         }
 
         public List<ActorAssetInfo> GetAll()
