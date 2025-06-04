@@ -17,13 +17,14 @@ Thumbs.db
 *.code-workspace
 
 # Package
-/onihime/Packages/cyou.sumomo.afl
-/onihime/Packages/com.akiyakun.unitycicd
+/ActorWorkspace/Packages/cyou.sumomo.afl
+/ActorWorkspace/Packages/com.akiyakun.unitycicd
 # ローカルフォルダに入れ子で.gitignoreを作成してください
 # /[Pp]ackages/
 # !/[Pp]ackages/manifest.json
 # !/[Pp]ackages/packages-lock.json
 ###################################################################################################
 
+/ActorWorkspace/Assets/AssetData/
 /TestData/
 
