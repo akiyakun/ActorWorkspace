@@ -12,6 +12,7 @@ public static class SpineHelper
     public static GameObject CreateSkeletonGameObjectFromAsset(string path)
     {
         var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
+        Debug.Assert(skeletonDataAsset != null, $"SkeletonDataAsset not found at path: {path}");
         var newSkeleton = new GameObject(skeletonDataAsset.name);
         var skeletonAnimation = newSkeleton.AddComponent<SkeletonAnimation>();
         skeletonAnimation.skeletonDataAsset = skeletonDataAsset;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using Spine;
 using Spine.Unity;
@@ -13,9 +14,11 @@ namespace Project.InAppDebug
 {
     public class PrototypeViewer : MonoBehaviour
     {
+        public GameObject animationListPanel;
         public GameObject openAssetDialog;
 
-        public UIListView uiListView;
+        public Button loopControl;
+        bool loop = true;
 
         public SkeletonAnimation skeletonAnimation;
 
@@ -31,30 +34,16 @@ namespace Project.InAppDebug
         async void Start()
         {
             {
+                var group = animationListPanel.Find("UIListView").GetComponent<UIEntityGroup>();
+                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+            }
+
+            {
                 var group = openAssetDialog.Find("UIListView").GetComponent<UIEntityGroup>();
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
             }
 
-            var g = uiListView.GetComponent<UIEntityGroup>();
-            await g.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
-            // Debug.Log("UIEntityGroup initialized");
-
-            // uiListView.AddItem();
-            // uiListView.AddItem();
-
-            SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
-            foreach (Spine.Animation animation in skeletonData.Animations)
-            {
-                // Debug.Log("Animation name: " + animation.Name);
-                var obj = uiListView.AddEntity();
-                obj.GetComponentInChildren<TMP_Text>().text = animation.Name;
-            }
-
-        }
-
-        public void LoadActorAsset(string path)
-        {
-            SpineHelper.CreateSkeletonGameObjectFromAsset(path);
+            LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
         }
 
         public void OpenAsset()
@@ -81,19 +70,25 @@ namespace Project.InAppDebug
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfoEx;
             Debug.Assert(assetInfo != null);
 
+            LoadAsset(assetInfo.Path);
+        }
+
+        void LoadAsset(string path)
+        {
             if (CurrentWorkingActorContext != null)
             {
                 CurrentWorkingActorContext.Release();
                 CurrentWorkingActorContext = null;
             }
 
-            var skeletonGameObject = SpineHelper.CreateSkeletonGameObjectFromAsset(assetInfo.Path);
+            var skeletonGameObject = SpineHelper.CreateSkeletonGameObjectFromAsset(path);
             CurrentWorkingActorContext = new();
             CurrentWorkingActorContext.GameObject = skeletonGameObject;
 
             openAssetDialog.SetActive(false);
 
             {
+                var uiListView = animationListPanel.Find("UIListView").GetComponent<UIListView>();
                 uiListView.Clear();
 
                 SkeletonData skeletonData = skeletonGameObject.GetComponent<SkeletonAnimation>().Skeleton.Data;
@@ -110,9 +105,26 @@ namespace Project.InAppDebug
         public void OnSelectedAnimatin(GameObject sender)
         {
             var animation = sender.GetComponent<UIEntity>().UserData as Spine.Animation;
-
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            skeletonAnimation.AnimationState.SetAnimation(0, animation: animation, loop: true);
+            skeletonAnimation.AnimationState.SetAnimation(0, animation: animation, loop: loop);
+        }
+
+        public void OnFlipLoop()
+        {
+            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(0);
+            if (trackEntry == null) return;
+
+            loop = !loop;
+            loopControl.GetComponentInChildren<TMP_Text>().text = loop ? "Loop: ON" : "Loop: OFF";
+
+            // 効果なし
+            // skeletonAnimation.loop = !skeletonAnimation.loop;
+
+            // アニメーションが止まってしまう
+            // trackEntry.Loop = !trackEntry.Loop;
+
+            skeletonAnimation.AnimationState.SetAnimation(0, animation: trackEntry.Animation, loop: loop);
         }
 
     }
