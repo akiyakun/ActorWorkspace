@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "displayName": "actor-workspace",
   "unity": "2022.3",
-  "description": "",
+  "dependencies": {
+    "cyou.sumomo.afl": "0.3.0"
+  },
   "hideInEditor": false
 }

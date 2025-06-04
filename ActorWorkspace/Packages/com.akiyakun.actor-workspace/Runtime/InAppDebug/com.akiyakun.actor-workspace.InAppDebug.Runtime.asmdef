@@ -1,11 +1,12 @@
 {
-    "name": "com.akiyakun.actor-workspace.Runtime",
-    "rootNamespace": "ActorWorkspace",
+    "name": "com.akiyakun.actor-workspace.InAppDebug.Runtime",
+    "rootNamespace": "ActorWorkspace.InAppDebug",
     "references": [
         "GUID:98557ddb935f44ae59f5af2cce2426f6",
         "GUID:dfff3b766ea0b44d4a4577604643770f",
         "GUID:06c7d95999addec4b9b7ca33883ee592",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:878380d8c26584ae3ab741d0e3a254b5"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -13,7 +14,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "__INAPPDEBUG__"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

@@ -1,6 +1,6 @@
 {
     "name": "com.akiyakun.actor-workspace.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "ActorWorkspace.Editor",
     "references": [
         "GUID:878380d8c26584ae3ab741d0e3a254b5"
     ],

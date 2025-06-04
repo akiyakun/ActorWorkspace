@@ -1,0 +1,21 @@
+{
+    "name": "com.akiyakun.actor-workspace.Spine.Runtime",
+    "rootNamespace": "ActorWorkspace.UnitySpine",
+    "references": [
+        "GUID:878380d8c26584ae3ab741d0e3a254b5",
+        "GUID:72d1fea872bd7a449bf3818f2b0a6708",
+        "GUID:68765d262e2128e4ab49c983f3411946",
+        "GUID:d081815e631c29f46ab6f2ac745854df"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ENABLE_SPINE_UNITY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
