@@ -1,6 +1,6 @@
 {
-    "name": "Project.Runtime",
-    "rootNamespace": "Project",
+    "name": "Project.InAppDebug.Editor",
+    "rootNamespace": "Project.InAppDebug.Editor",
     "references": [
         "GUID:878380d8c26584ae3ab741d0e3a254b5",
         "GUID:54f03bf6fa76f40a68751dc45db86234",
@@ -11,15 +11,20 @@
         "GUID:dfff3b766ea0b44d4a4577604643770f",
         "GUID:06c7d95999addec4b9b7ca33883ee592",
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:a8060f24ec6eb4675b5f11fec940ceca"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "__INAPPDEBUG__"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
