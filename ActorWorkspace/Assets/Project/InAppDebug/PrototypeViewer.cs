@@ -92,6 +92,27 @@ namespace Project.InAppDebug
             CurrentWorkingActorContext.GameObject = skeletonGameObject;
 
             openAssetDialog.SetActive(false);
+
+            {
+                uiListView.Clear();
+
+                SkeletonData skeletonData = skeletonGameObject.GetComponent<SkeletonAnimation>().Skeleton.Data;
+                foreach (Spine.Animation animation in skeletonData.Animations)
+                {
+                    // Debug.Log("Animation name: " + animation.Name);
+                    var obj = uiListView.AddEntity();
+                    obj.UserData = animation;
+                    obj.GetComponentInChildren<TMP_Text>().text = animation.Name;
+                }
+            }
+        }
+
+        public void OnSelectedAnimatin(GameObject sender)
+        {
+            var animation = sender.GetComponent<UIEntity>().UserData as Spine.Animation;
+
+            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            skeletonAnimation.AnimationState.SetAnimation(0, animation: animation, loop: true);
         }
 
     }
