@@ -15,6 +15,7 @@ namespace Project.InAppDebug
     public class PrototypeViewer : MonoBehaviour
     {
         public GameObject animationListPanel;
+        public AnimationControlFormLogic animationControlFormLogic;
         public GameObject openAssetDialog;
 
         public Button loopControl;
@@ -36,6 +37,10 @@ namespace Project.InAppDebug
             {
                 var group = animationListPanel.Find("UIListView").GetComponent<UIEntityGroup>();
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+            }
+
+            {
+                animationControlFormLogic.OnSpeedValueChanged += OnSpeedValueChanged;
             }
 
             {
@@ -125,6 +130,16 @@ namespace Project.InAppDebug
             // trackEntry.Loop = !trackEntry.Loop;
 
             skeletonAnimation.AnimationState.SetAnimation(0, animation: trackEntry.Animation, loop: loop);
+        }
+
+        public void OnSpeedValueChanged(float value)
+        {
+            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(0);
+            if (trackEntry == null) return;
+
+            Debug.Log("Speed changed: " + value);
+            trackEntry.TimeScale = value;
         }
 
     }
