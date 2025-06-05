@@ -15,10 +15,9 @@ namespace Project.InAppDebug
     public class PrototypeViewer : MonoBehaviour
     {
         public GameObject animationListPanel;
+        public SkinControlFormLogic skinControlFormLogic;
         public AnimationControlFormLogic animationControlFormLogic;
         public GameObject openAssetDialog;
-
-        public SkeletonAnimation skeletonAnimation;
 
         public IActorAssetDatabase ActorAssetDatabase { get; set; }
 
@@ -34,6 +33,13 @@ namespace Project.InAppDebug
             {
                 var group = animationListPanel.Find("UIListView").GetComponent<UIEntityGroup>();
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+            }
+
+            {
+                var group = skinControlFormLogic.gameObject.Find("Root/UIListView").GetComponent<UIEntityGroup>();
+                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+
+                skinControlFormLogic.OnSkinChanged += OnSkinChanged;
             }
 
             {
@@ -90,11 +96,13 @@ namespace Project.InAppDebug
 
             openAssetDialog.SetActive(false);
 
+            var skeletonAnimation = skeletonGameObject.GetComponent<SkeletonAnimation>();
+
             {
                 var uiListView = animationListPanel.Find("UIListView").GetComponent<UIListView>();
                 uiListView.Clear();
 
-                SkeletonData skeletonData = skeletonGameObject.GetComponent<SkeletonAnimation>().Skeleton.Data;
+                SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
                 foreach (Spine.Animation animation in skeletonData.Animations)
                 {
                     // Debug.Log("Animation name: " + animation.Name);
@@ -106,6 +114,7 @@ namespace Project.InAppDebug
 
             // UIをリセット
             animationControlFormLogic.Setup(loop: animationControlFormLogic.IsLoop);
+            skinControlFormLogic.Setup(skeletonAnimation);
         }
 
         public void OnSelectedAnimatin(GameObject sender)
@@ -113,6 +122,22 @@ namespace Project.InAppDebug
             var animation = sender.GetComponent<UIEntity>().UserData as Spine.Animation;
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             skeletonAnimation.AnimationState.SetAnimation(0, animation: animation, loop: animationControlFormLogic.IsLoop);
+        }
+
+        public void OnSkinChanged(int index)
+        {
+            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeleton = skeletonAnimation.Skeleton;
+
+            if (index < 0 || skeleton.Data.Skins.Count <= index)
+            {
+                Debug.Assert(false);
+                return;
+            }
+
+            var skin = skeleton.Data.Skins.Items[index];
+            skeleton.SetSkin(skin);
+            skeleton.SetSlotsToSetupPose();
         }
 
         public void OnSpeedValueChanged(float value)
