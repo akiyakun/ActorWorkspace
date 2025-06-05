@@ -18,9 +18,6 @@ namespace Project.InAppDebug
         public AnimationControlFormLogic animationControlFormLogic;
         public GameObject openAssetDialog;
 
-        public Button loopControl;
-        bool loop = true;
-
         public SkeletonAnimation skeletonAnimation;
 
         public IActorAssetDatabase ActorAssetDatabase { get; set; }
@@ -41,6 +38,7 @@ namespace Project.InAppDebug
 
             {
                 animationControlFormLogic.OnSpeedValueChanged += OnSpeedValueChanged;
+                animationControlFormLogic.OnLoopValueChanged += OnLoopValueChanged;
             }
 
             {
@@ -105,31 +103,16 @@ namespace Project.InAppDebug
                     obj.GetComponentInChildren<TMP_Text>().text = animation.Name;
                 }
             }
+
+            // UIをリセット
+            animationControlFormLogic.Setup(loop: animationControlFormLogic.IsLoop);
         }
 
         public void OnSelectedAnimatin(GameObject sender)
         {
             var animation = sender.GetComponent<UIEntity>().UserData as Spine.Animation;
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            skeletonAnimation.AnimationState.SetAnimation(0, animation: animation, loop: loop);
-        }
-
-        public void OnFlipLoop()
-        {
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(0);
-            if (trackEntry == null) return;
-
-            loop = !loop;
-            loopControl.GetComponentInChildren<TMP_Text>().text = loop ? "Loop: ON" : "Loop: OFF";
-
-            // 効果なし
-            // skeletonAnimation.loop = !skeletonAnimation.loop;
-
-            // アニメーションが止まってしまう
-            // trackEntry.Loop = !trackEntry.Loop;
-
-            skeletonAnimation.AnimationState.SetAnimation(0, animation: trackEntry.Animation, loop: loop);
+            skeletonAnimation.AnimationState.SetAnimation(0, animation: animation, loop: animationControlFormLogic.IsLoop);
         }
 
         public void OnSpeedValueChanged(float value)
@@ -138,8 +121,16 @@ namespace Project.InAppDebug
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(0);
             if (trackEntry == null) return;
 
-            Debug.Log("Speed changed: " + value);
             trackEntry.TimeScale = value;
+        }
+
+        public void OnLoopValueChanged(bool value)
+        {
+            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(0);
+            if (trackEntry == null) return;
+
+            skeletonAnimation.AnimationState.SetAnimation(0, animation: trackEntry.Animation, loop: value);
         }
 
     }

@@ -10,34 +10,56 @@ namespace Project.InAppDebug
         [SerializeField] GameObject speedControl;
         TMP_InputField speedInputField;
 
-        // [SerializeField]
+        [SerializeField] GameObject mixControl;
+        Toggle loopToggle;
+
         public event System.Action<float> OnSpeedValueChanged;
+        public event System.Action<bool> OnLoopValueChanged;
+
+        public bool IsLoop => loopToggle.isOn;
 
         void Awake()
         {
             speedInputField = speedControl.Find("InputField").GetComponent<TMP_InputField>();
-            speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnSliderValueChangedFromSpeedControl);
-            speedControl.Find("Reset").GetComponent<Button>().onClick.AddListener(OnResetFromSpeedControl);
+
+            loopToggle = mixControl.Find("Loop").GetComponent<Toggle>();
+
+
+            speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnSpeedSliderValueChanged);
+            speedControl.Find("Reset").GetComponent<Button>().onClick.AddListener(OnSpeedReset);
+
+            mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.AddListener(OnLoopToggleChanged);
         }
 
         void OnDestroy()
         {
-            speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.RemoveListener(OnSliderValueChangedFromSpeedControl);
-            speedControl.Find("Reset").GetComponent<Button>().onClick.RemoveListener(OnResetFromSpeedControl);
+            speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.RemoveListener(OnSpeedSliderValueChanged);
+            speedControl.Find("Reset").GetComponent<Button>().onClick.RemoveListener(OnSpeedReset);
+
+            mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.RemoveListener(OnLoopToggleChanged);
         }
 
-        #region SpeedControl
-        void OnSliderValueChangedFromSpeedControl(float value)
+        public void Setup(bool loop)
         {
-            Debug.Log($"Speed changed to: {value}");
+            OnSpeedReset();
+            OnLoopToggleChanged(loop);
+        }
+
+        void OnSpeedSliderValueChanged(float value)
+        {
             speedInputField.text = Mathf.RoundToInt(value * 100.0f).ToString();
             OnSpeedValueChanged?.Invoke(value);
         }
 
-        void OnResetFromSpeedControl()
+        void OnSpeedReset()
         {
-            OnSliderValueChangedFromSpeedControl(1.0f);
+            OnSpeedSliderValueChanged(1.0f);
         }
-        #endregion
+
+        void OnLoopToggleChanged(bool value)
+        {
+            loopToggle.isOn = value;
+            OnLoopValueChanged?.Invoke(value);
+        }
     }
 }
