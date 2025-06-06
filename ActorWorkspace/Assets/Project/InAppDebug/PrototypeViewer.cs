@@ -119,8 +119,8 @@ namespace Project.InAppDebug
             }
 
             // UIをリセット
-            animationControlFormLogic.Setup(loop: animationControlFormLogic.IsLoop);
-            skinControlFormLogic.Setup(skeletonAnimation);
+            animationControlFormLogic.ResetUI(loop: animationControlFormLogic.IsLoop);
+            skinControlFormLogic.ResetUI(skeletonAnimation);
         }
 
         public void OnSelectedAnimation(GameObject sender)

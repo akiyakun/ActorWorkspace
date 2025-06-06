@@ -26,7 +26,7 @@ namespace Project.InAppDebug
         }
 
         // fixme: 引数 skeletonAnimation
-        public void Setup(SkeletonAnimation skeletonAnimation)
+        public void ResetUI(SkeletonAnimation skeletonAnimation)
         {
             SkeletonData skeletonData =  skeletonAnimation.Skeleton.Data;
             ExposedList<Skin> skins = skeletonData.Skins;

@@ -66,10 +66,27 @@ namespace Project.InAppDebug
             }
         }
 
-        public void Setup(bool loop)
+        public void ResetUI(bool loop)
         {
             OnSpeedReset();
             OnLoopToggleChanged(loop);
+            ResetTrackControl();
+        }
+
+        // public void Refresh(bool loop)
+
+        public void ResetTrackControl()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                var defaultText = trackControl.Find($"Track{i}/Background/Checkmark/DefaultText").GetComponent<TMP_Text>();
+                var playingText = trackControl.Find($"Track{i}/Background/Checkmark/PlayingText").GetComponent<TMP_Text>();
+
+                defaultText.gameObject.SetActive(true);
+                playingText.gameObject.SetActive(false);
+            }
+
+            trackControl.Find($"Track{0}").GetComponent<Toggle>().isOn = true;
         }
 
         // 負の値は停止あつかい
