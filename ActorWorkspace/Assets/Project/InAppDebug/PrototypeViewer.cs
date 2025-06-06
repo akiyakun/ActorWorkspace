@@ -46,6 +46,7 @@ namespace Project.InAppDebug
 
             {
                 animationControlFormLogic.OnSpeedValueChanged += OnSpeedValueChanged;
+                animationControlFormLogic.OnMixValueChanged += OnMixValueChanged;
                 animationControlFormLogic.OnLoopValueChanged += OnLoopValueChanged;
                 animationControlFormLogic.OnActiveTrackChanged += OnActiveTrackChanged;
             }
@@ -55,7 +56,8 @@ namespace Project.InAppDebug
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
             }
 
-            LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
+            // LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
+            LoadAsset("Assets/AssetData/SpineData/Kioni/Kioni_SkeletonData.asset");
         }
 
         public void OpenAsset()
@@ -139,7 +141,26 @@ namespace Project.InAppDebug
             }
             else
             {
-                skeletonAnimation.AnimationState.SetAnimation(currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop);
+                // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
+                // Spine.Animation from = null;
+                // if (trackEntry != null)
+                // {
+                //     from = trackEntry.Animation;
+                // }
+
+                // if (from != null)
+                // {
+                //     AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+                //     stateData.DefaultMix
+                //     stateData.SetMix(from, animation, 2.3f);
+                // }
+
+                skeletonAnimation.AnimationState.SetAnimation(
+                    currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop);
+
+                // skeletonAnimation.AnimationState.AddAnimation(
+                //     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop, delay: 0.0f);
+
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, true);
             }
         }
@@ -167,6 +188,14 @@ namespace Project.InAppDebug
             if (trackEntry == null) return;
 
             trackEntry.TimeScale = value;
+        }
+
+        public void OnMixValueChanged(float value)
+        {
+            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // TrackごとにMixを設定するようなことはできない
+            AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+            stateData.DefaultMix = value;
         }
 
         public void OnLoopValueChanged(bool value)

@@ -11,11 +11,13 @@ namespace Project.InAppDebug
         TMP_InputField speedInputField;
 
         [SerializeField] GameObject mixControl;
+        TMP_InputField mixInputField;
         Toggle loopToggle;
 
         [SerializeField] GameObject trackControl;
 
         public event System.Action<float> OnSpeedValueChanged;
+        public event System.Action<float> OnMixValueChanged;
         public event System.Action<bool> OnLoopValueChanged;
         public event System.Action<int> OnActiveTrackChanged;
 
@@ -28,6 +30,7 @@ namespace Project.InAppDebug
         {
             speedInputField = speedControl.Find("InputField").GetComponent<TMP_InputField>();
 
+            mixInputField = mixControl.Find("InputField").GetComponent<TMP_InputField>();
             loopToggle = mixControl.Find("Loop").GetComponent<Toggle>();
 
             // イベント登録
@@ -35,6 +38,7 @@ namespace Project.InAppDebug
                 speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnSpeedSliderValueChanged);
                 speedControl.Find("Reset").GetComponent<Button>().onClick.AddListener(OnSpeedReset);
 
+                mixControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnMixSliderValueChanged);
                 mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.AddListener(OnLoopToggleChanged);
 
                 trackControl.Find("Track0").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack0ToggleChanged);
@@ -69,6 +73,7 @@ namespace Project.InAppDebug
         public void ResetUI(bool loop)
         {
             OnSpeedReset();
+            OnMixSliderValueChanged(0.25f);
             OnLoopToggleChanged(loop);
             ResetTrackControl();
         }
@@ -126,6 +131,13 @@ namespace Project.InAppDebug
         void OnSpeedReset()
         {
             OnSpeedSliderValueChanged(1.0f);
+        }
+
+        void OnMixSliderValueChanged(float value)
+        {
+            // Debug.Log($"OnMixSliderValueChanged");
+            mixInputField.text = value.ToString("F2");
+            OnMixValueChanged?.Invoke(value);
         }
 
         void OnLoopToggleChanged(bool value)
