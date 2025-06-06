@@ -15,6 +15,7 @@ namespace Project.InAppDebug
     public class PrototypeViewer : MonoBehaviour
     {
         public GameObject animationListPanel;
+        public AnimationListFormLogic animationListFormLogic;
         public SkinControlFormLogic skinControlFormLogic;
         public AnimationControlFormLogic animationControlFormLogic;
         public GameObject openAssetDialog;
@@ -35,6 +36,8 @@ namespace Project.InAppDebug
             {
                 var group = animationListPanel.Find("UIListView").GetComponent<UIEntityGroup>();
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+
+                animationListFormLogic.OnClickEntity += OnClickEntityFromAnimationList;
             }
 
             {
@@ -103,36 +106,23 @@ namespace Project.InAppDebug
 
             var skeletonAnimation = skeletonGameObject.GetComponent<SkeletonAnimation>();
 
-            {
-                var uiListView = animationListPanel.Find("UIListView").GetComponent<UIListView>();
-                uiListView.Clear();
-
-                SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
-                // foreach (Spine.Animation animation in skeletonData.Animations)
-                for (int i = 0; i < skeletonData.Animations.Count; i++)
-                {
-                    // Debug.Log("Animation name: " + animation.Name);
-                    var animation = skeletonData.Animations.Items[i];
-                    var entity = uiListView.AddEntity();
-                    entity.Id = i;
-                    entity.UserData = animation;
-                    entity.GetComponentInChildren<TMP_Text>().text = animation.Name + " id:" + i.ToString();
-                }
-            }
-
             // UIをリセット
+            animationListFormLogic.ResetUI(skeletonAnimation);
             animationControlFormLogic.ResetUI(loop: animationControlFormLogic.IsLoop);
             skinControlFormLogic.ResetUI(skeletonAnimation);
         }
 
-        public void OnSelectedAnimation(GameObject sender)
+        public void OnClickEntityFromAnimationList(UIEntity sender)
         {
-            var animation = sender.GetComponent<UIEntity>().UserData as Spine.Animation;
+            var animation = sender.UserData as Spine.Animation;
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
 
             TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (cu != null && cu.Animation == animation)
             {
+                // 再生チェックマークを更新
+                animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, false);
+
                 // 同じアニメーションが選択された場合は停止させる
                 skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, 0.0f);
                 // ClearTrack()だけだと一時停止みたいになってしまう
@@ -141,27 +131,33 @@ namespace Project.InAppDebug
             }
             else
             {
-                // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-                // Spine.Animation from = null;
-                // if (trackEntry != null)
+                // 再生チェックマークを更新
+                if (animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, true) == false)
+                {
+                    // 別のトラックが再生中なので再生ができない
+                    // 停止させる
+                    animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, false);
+                    skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, 0.0f);
+                    animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, false);
+                    return;
+                }
+
+                // if (cu != null && cu.Animation != null)
                 // {
-                //     from = trackEntry.Animation;
+                //     var stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+                //     stateData.SetMix(cu.Animation, animation, stateData.DefaultMix);
                 // }
 
-                // if (from != null)
-                // {
-                //     AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-                //     stateData.DefaultMix
-                //     stateData.SetMix(from, animation, 2.3f);
-                // }
-
-                skeletonAnimation.AnimationState.SetAnimation(
+                TrackEntry trackEntry = skeletonAnimation.AnimationState.SetAnimation(
                     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop);
+                // MixDurationを0にしないとDefaultMixが適応されない?
+                // trackEntry.MixDuration = 0.0f;
 
                 // skeletonAnimation.AnimationState.AddAnimation(
                 //     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop, delay: 0.0f);
 
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, true);
+
             }
         }
 
@@ -186,8 +182,8 @@ namespace Project.InAppDebug
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (trackEntry == null) return;
-
             trackEntry.TimeScale = value;
+            // Debug.Log($"OnSpeedValueChanged: trackEntry.TimeScale={trackEntry.TimeScale}, value={value}");
         }
 
         public void OnMixValueChanged(float value)
@@ -196,6 +192,7 @@ namespace Project.InAppDebug
             // TrackごとにMixを設定するようなことはできない
             AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
             stateData.DefaultMix = value;
+            // Debug.Log($"OnMixValueChanged: stateData.DefaultMix={stateData.DefaultMix}, value={value}");
         }
 
         public void OnLoopValueChanged(bool value)
