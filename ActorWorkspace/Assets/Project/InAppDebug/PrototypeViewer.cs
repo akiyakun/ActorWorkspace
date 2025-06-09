@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using Cysharp.Threading.Tasks;
 using Spine;
 using Spine.Unity;
@@ -18,6 +19,7 @@ namespace Project.InAppDebug
         public AnimationListFormLogic animationListFormLogic;
         public SkinControlFormLogic skinControlFormLogic;
         public AnimationControlFormLogic animationControlFormLogic;
+        public PlayListControlFormLogic playListControlFormLogic;
         public GameObject openAssetDialog;
 
         public IActorAssetDatabase ActorAssetDatabase { get; set; }
@@ -52,6 +54,11 @@ namespace Project.InAppDebug
                 animationControlFormLogic.OnMixValueChanged += OnMixValueChanged;
                 animationControlFormLogic.OnLoopValueChanged += OnLoopValueChanged;
                 animationControlFormLogic.OnActiveTrackChanged += OnActiveTrackChanged;
+            }
+
+            {
+                var group = playListControlFormLogic.gameObject.Find("Root/UIListView").GetComponent<UIEntityGroup>();
+                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
             }
 
             {
@@ -110,12 +117,21 @@ namespace Project.InAppDebug
             animationListFormLogic.ResetUI(skeletonAnimation);
             animationControlFormLogic.ResetUI(loop: animationControlFormLogic.IsLoop);
             skinControlFormLogic.ResetUI(skeletonAnimation);
+            playListControlFormLogic.ResetUI(skeletonAnimation);
         }
 
+        // アニメーションリストからアニメーションをクリックしたときの処理
         public void OnClickEntityFromAnimationList(UIEntity sender)
         {
             var animation = sender.UserData as Spine.Animation;
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+
+            // Ctrlが押されている場合は再生リストに追加する
+            if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
+            {
+                playListControlFormLogic.AddPlayList(animation);
+                return;
+            }
 
             TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (cu != null && cu.Animation == animation)
@@ -151,7 +167,7 @@ namespace Project.InAppDebug
                 TrackEntry trackEntry = skeletonAnimation.AnimationState.SetAnimation(
                     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop);
                 // MixDurationを0にしないとDefaultMixが適応されない?
-                // trackEntry.MixDuration = 0.0f;
+                // trackEntry.MixDuration = 3.0f;
 
                 // skeletonAnimation.AnimationState.AddAnimation(
                 //     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop, delay: 0.0f);
@@ -159,6 +175,7 @@ namespace Project.InAppDebug
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, true);
 
             }
+
         }
 
         public void OnSkinChanged(int index)

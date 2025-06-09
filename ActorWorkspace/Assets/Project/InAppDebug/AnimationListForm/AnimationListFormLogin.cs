@@ -111,7 +111,7 @@ namespace Project.InAppDebug
             string trackIndexText = trackIndex.ToString();
 
             // 同じトラック番号で既に再生中の場合はチェックを外す
-            var entityList = listView.ContentRoot.GetEntityList();
+            var entityList = listView.ContentRoot.GetActiveEntityList();
             for (int i = 0; i < entityList.Count; i++)
             {
                 var tmpText = entityList[i].transform.Find("PlayingMark/Text").GetComponent<TMP_Text>();
