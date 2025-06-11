@@ -25,6 +25,14 @@ namespace Project.InAppDebug
             skeletonAnimation.state.Complete += OnAnimationComplete;
         }
 
+        public void ClearPlayList()
+        {
+            listView.Clear();
+            lastAnimation = null;
+
+            skeletonAnimation.state.SetEmptyAnimation(trackIndex, 0.0f);
+        }
+
         public void AddPlayList(Spine.Animation animation)
         {
             var entity = listView.AddEntity();
@@ -73,6 +81,11 @@ namespace Project.InAppDebug
                 Debug.Log($"OnAnimationComplete: {entry.Animation.Name}");
                 ResetAnimations();
             }
+        }
+
+        public void OnClearPlayList()
+        {
+            ClearPlayList();
         }
 
     }
