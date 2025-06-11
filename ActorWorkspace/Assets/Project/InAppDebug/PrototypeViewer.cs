@@ -10,6 +10,7 @@ using afl.UI;
 using TMPro;
 
 using ActorWorkspace.InAppDebug;
+using UnityEditor;
 
 namespace Project.InAppDebug
 {
@@ -33,7 +34,8 @@ namespace Project.InAppDebug
             // openAssetDialog.SetActive(false);
         }
 
-        async void Start()
+        // async void Start()
+        public async UniTask InitAsync()
         {
             {
                 var group = animationListPanel.Find("UIListView").GetComponent<UIEntityGroup>();
@@ -91,7 +93,7 @@ namespace Project.InAppDebug
             var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
             if (listView.SelectedEntity == null) return;
 
-            var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfoEx;
+            var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
             Debug.Assert(assetInfo != null);
 
             LoadAsset(assetInfo.Path);
@@ -105,13 +107,14 @@ namespace Project.InAppDebug
                 CurrentWorkingActorContext = null;
             }
 
-            var skeletonGameObject = SpineHelper.CreateSkeletonGameObjectFromAsset(path);
+            SkeletonAnimation skeletonAnimation = null;
+
+            skeletonAnimation = ActorAssetDatabase.CreateActorAsset(path).GetComponent<SkeletonAnimation>();
+
             CurrentWorkingActorContext = new();
-            CurrentWorkingActorContext.GameObject = skeletonGameObject;
+            CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
 
             openAssetDialog.SetActive(false);
-
-            var skeletonAnimation = skeletonGameObject.GetComponent<SkeletonAnimation>();
 
             // UIをリセット
             animationListFormLogic.ResetUI(skeletonAnimation);

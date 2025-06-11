@@ -9,7 +9,7 @@ using UnityEditor;
 public static class SpineHelper
 {
 #if UNITY_EDITOR
-    public static GameObject CreateSkeletonGameObjectFromAsset(string path)
+    public static SkeletonAnimation CreateSkeletonAnimationFromAssetDatabae(string path)
     {
         var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
         Debug.Assert(skeletonDataAsset != null, $"SkeletonDataAsset not found at path: {path}");
@@ -21,7 +21,7 @@ public static class SpineHelper
         // skeletonAnimation.skeleton.SetSkin(skins.Items[skinIndex]);
         skeletonAnimation.Skeleton.SetSlotsToSetupPose();
 
-        return newSkeleton;
+        return skeletonAnimation;
     }
 #endif
 }

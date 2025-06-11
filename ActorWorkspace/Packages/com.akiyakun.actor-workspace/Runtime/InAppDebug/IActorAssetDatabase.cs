@@ -8,5 +8,7 @@ namespace ActorWorkspace.InAppDebug
     public interface IActorAssetDatabase
     {
         List<ActorAssetInfo> GetAll();
+
+        GameObject CreateActorAsset(string path);
     }
 }

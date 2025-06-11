@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
 using ActorWorkspace.InAppDebug;
@@ -5,17 +6,15 @@ using afl;
 using Spine.Unity;
 
 using UnityEditor;
-// using Project.InAppDebug.Editor;
 using afl.Editor;
-using Unity.VisualScripting;
 
 namespace Project.InAppDebug.Editor
 {
-    public class ActorAssetDatabase : IActorAssetDatabase
+    public class ActorAssetDatabaseInEditor : IActorAssetDatabase
     {
         List<ActorAssetInfo> actorAssetInfoList = new();
 
-        public ActorAssetDatabase()
+        public ActorAssetDatabaseInEditor()
         {
             var targetFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(
                 "Assets/AssetData/SpineData");
@@ -25,7 +24,7 @@ namespace Project.InAppDebug.Editor
             {
                 var skeletonDataAsset = result[i];
 
-                var info = new ActorAssetInfoEx();
+                var info = new ActorAssetInfo();
                 info.Name = skeletonDataAsset.name;
                 info.Path = AssetDatabase.GetAssetPath(skeletonDataAsset);
                 // Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
@@ -38,5 +37,11 @@ namespace Project.InAppDebug.Editor
         {
             return actorAssetInfoList;
         }
+
+        public GameObject CreateActorAsset(string path)
+        {
+            return SpineHelper.CreateSkeletonAnimationFromAssetDatabae(path).gameObject;
+        }
     }
 }
+#endif

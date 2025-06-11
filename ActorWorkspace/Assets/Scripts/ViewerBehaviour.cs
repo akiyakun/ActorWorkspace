@@ -6,6 +6,9 @@ using afl;
 using Spine;
 using Spine.Unity;
 
+using afl.MasterData;
+using ActorWorkspace.InAppDebug;
+
 public class ViewerBehaviour : MonoBehaviour, ISceneBehaviour
 {
     public PrototypeViewer prototypeViewer;
@@ -16,13 +19,20 @@ public class ViewerBehaviour : MonoBehaviour, ISceneBehaviour
     {
         await UniTask.Yield();
 
-        prototypeViewer.ActorAssetDatabase = new Project.InAppDebug.Editor.ActorAssetDatabase();
+#if UNITY_EDITOR
+        prototypeViewer.ActorAssetDatabase = new Project.InAppDebug.Editor.ActorAssetDatabaseInEditor();
+#else
+        // prototypeViewer.ActorAssetDatabase = new Project.InAppDebug.ActorAssetDatabaseInReference();
+        prototypeViewer.ActorAssetDatabase = GetComponent<ActorAssetDatabaseInReference>();
+#endif
 
         // TextureLoader textureLoader = new();
         // Atlas atlas = new Atlas("myAtlas.atlas", textureLoader);
         // AtlasAttachmentLoader attachmentLoader = new AtlasAttachmentLoader(atlas);
         // SkeletonJson json = new SkeletonJson(attachmentLoader);
         // SkeletonData skeletonData = json.readSkeletonData("mySkeleton.json");
+
+        await prototypeViewer.InitAsync();
 
         return true;
     }
