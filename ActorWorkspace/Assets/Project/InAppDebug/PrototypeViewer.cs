@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -28,6 +29,13 @@ namespace Project.InAppDebug
         public WorkingActorContext CurrentWorkingActorContext { get; set; }
 
         int currentTrackIndex = 0;
+
+        class TrackInfo
+        {
+            public float Speed = 1.0f;
+            public float Mix = 0.25f;
+        }
+        List<TrackInfo> trackInfoList = ListEx.Create<TrackInfo>(16);
 
         void Awake()
         {
@@ -136,6 +144,8 @@ namespace Project.InAppDebug
                 return;
             }
 
+            AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+
             TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (cu != null && cu.Animation == animation)
             {
@@ -143,7 +153,7 @@ namespace Project.InAppDebug
                 animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, false);
 
                 // 同じアニメーションが選択された場合は停止させる
-                skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, 0.0f);
+                skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
                 // ClearTrack()だけだと一時停止みたいになってしまう
                 // skeletonAnimation.AnimationState.ClearTrack(currentTrackIndex);
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, false);
@@ -156,7 +166,7 @@ namespace Project.InAppDebug
                     // 別のトラックが再生中なので再生ができない
                     // 停止させる
                     animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, false);
-                    skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, 0.0f);
+                    skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
                     animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, false);
                     return;
                 }
@@ -174,6 +184,8 @@ namespace Project.InAppDebug
 
                 // skeletonAnimation.AnimationState.AddAnimation(
                 //     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop, delay: 0.0f);
+
+                trackEntry.TimeScale = trackInfoList[currentTrackIndex].Speed;
 
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, true);
 
@@ -203,6 +215,7 @@ namespace Project.InAppDebug
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (trackEntry == null) return;
             trackEntry.TimeScale = value;
+            trackInfoList[currentTrackIndex].Speed = value;
             // Debug.Log($"OnSpeedValueChanged: trackEntry.TimeScale={trackEntry.TimeScale}, value={value}");
         }
 
@@ -212,6 +225,7 @@ namespace Project.InAppDebug
             // TrackごとにMixを設定するようなことはできない
             AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
             stateData.DefaultMix = value;
+            trackInfoList[currentTrackIndex].Mix = value;
             // Debug.Log($"OnMixValueChanged: stateData.DefaultMix={stateData.DefaultMix}, value={value}");
         }
 
@@ -229,6 +243,10 @@ namespace Project.InAppDebug
         {
             // Debug.Log($"OnActiveTrackChanged: index={index}");
             currentTrackIndex = index;
+
+            // UI変更
+            animationControlFormLogic.ChangeTrack(
+                trackInfoList[currentTrackIndex].Speed, trackInfoList[currentTrackIndex].Mix);
 
             var uiListView = animationListPanel.Find("UIListView").GetComponent<UIListView>();
 
@@ -250,6 +268,7 @@ namespace Project.InAppDebug
                     var entity = uiListView.ContentRoot.GetEntity(i);
                     Debug.Assert(entity != null, $"Entity not found for index {i} in UIListView");
                     entity.gameObject.GetComponentInChildren<Button>().Select();
+
                     return;
                 }
             }

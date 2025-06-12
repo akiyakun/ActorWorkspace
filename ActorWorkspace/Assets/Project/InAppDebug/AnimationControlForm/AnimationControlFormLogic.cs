@@ -121,6 +121,12 @@ namespace Project.InAppDebug
             }
         }
 
+        public void ChangeTrack(float speed, float mix)
+        {
+            speedControl.GetComponentInChildren<Slider>().value = speed;
+            mixControl.GetComponentInChildren<Slider>().value = mix;
+        }
+
 
         void OnSpeedSliderValueChanged(float value)
         {
