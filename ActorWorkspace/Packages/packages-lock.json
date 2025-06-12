@@ -89,7 +89,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ai.navigation": {
-      "version": "2.0.7",
+      "version": "2.0.8",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -306,7 +306,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.9.6",
+      "version": "1.9.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -324,7 +324,7 @@
         "com.cysharp.unitask": "2.1.0",
         "com.annulusgames.lit-motion": "1.0.0"
       },
-      "hash": "9fa834f168123723749d0fc2d03b7a9c08bf53cd"
+      "hash": "4affce90489c1c41cd5431cafe406a8e21f1a8fd"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
