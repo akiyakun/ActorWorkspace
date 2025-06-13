@@ -2,7 +2,7 @@
   "version": "0.1.1",
   "environment": {
     "company_name": "sumomo",
-    "product_name": "Sumomo",
+    "product_name": "ActorWorkspace",
     "app_id": "com.sumomo.sample",
     "app_version": "0.0.0",
     "default_locale": "ja"
