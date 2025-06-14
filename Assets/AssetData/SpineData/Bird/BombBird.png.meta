@@ -1,0 +1,2353 @@
+fileFormatVersion: 2
+guid: d44ba76d94cf24a1e842a655365ba40e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 358616108414760745
+    second: BombBird_0
+  - first:
+      213: -8939095156647571066
+    second: BombBird_1
+  - first:
+      213: 8576226103420631526
+    second: BombBird_2
+  - first:
+      213: -7526407375565968866
+    second: BombBird_3
+  - first:
+      213: 751701078881141845
+    second: BombBird_4
+  - first:
+      213: -1850288584426539775
+    second: BombBird_5
+  - first:
+      213: -7302600874981555608
+    second: BombBird_6
+  - first:
+      213: -6473051903962331591
+    second: BombBird_7
+  - first:
+      213: 3397465524442542374
+    second: BombBird_8
+  - first:
+      213: -6117731480168526068
+    second: BombBird_9
+  - first:
+      213: 2055331129365370816
+    second: BombBird_10
+  - first:
+      213: 4147174616687234909
+    second: BombBird_11
+  - first:
+      213: 3875990248822190149
+    second: BombBird_12
+  - first:
+      213: 4135596563230490654
+    second: BombBird_13
+  - first:
+      213: -6084192561799249044
+    second: BombBird_14
+  - first:
+      213: 7606772788496772283
+    second: BombBird_15
+  - first:
+      213: -292649245689482341
+    second: BombBird_16
+  - first:
+      213: 2851000221684438037
+    second: BombBird_17
+  - first:
+      213: -5534397124451458344
+    second: BombBird_18
+  - first:
+      213: 8015442575347065327
+    second: BombBird_19
+  - first:
+      213: 2591908446152277932
+    second: BombBird_20
+  - first:
+      213: 111572401425105090
+    second: BombBird_21
+  - first:
+      213: -2832240235438574825
+    second: BombBird_22
+  - first:
+      213: -7455720554673440820
+    second: BombBird_23
+  - first:
+      213: -7304480550679808523
+    second: BombBird_24
+  - first:
+      213: 6158878612387753866
+    second: BombBird_25
+  - first:
+      213: 2889121477323163554
+    second: BombBird_26
+  - first:
+      213: -2587829050100388806
+    second: BombBird_27
+  - first:
+      213: -8342785440618786607
+    second: BombBird_28
+  - first:
+      213: 1262718679448702991
+    second: BombBird_29
+  - first:
+      213: -7441578870957665509
+    second: BombBird_30
+  - first:
+      213: -3430521452458863481
+    second: BombBird_31
+  - first:
+      213: -4183537003111804218
+    second: BombBird_32
+  - first:
+      213: -1654072173648338939
+    second: BombBird_33
+  - first:
+      213: -6082726157258435718
+    second: BombBird_34
+  - first:
+      213: 7023559400351141034
+    second: BombBird_35
+  - first:
+      213: -6476053394361184293
+    second: BombBird_36
+  - first:
+      213: 8013267438257625148
+    second: BombBird_37
+  - first:
+      213: 6377833599878198651
+    second: BombBird_38
+  - first:
+      213: 1568982642866785571
+    second: BombBird_39
+  - first:
+      213: -4254118293262456133
+    second: BombBird_40
+  - first:
+      213: -2240340269539683706
+    second: BombBird_41
+  - first:
+      213: -6838284782524969740
+    second: BombBird_42
+  - first:
+      213: -4848170480915660286
+    second: BombBird_43
+  - first:
+      213: 655339355413123622
+    second: BombBird_44
+  - first:
+      213: -2015778170152131725
+    second: BombBird_45
+  - first:
+      213: -575673754450352704
+    second: BombBird_46
+  - first:
+      213: -5021396589703493848
+    second: BombBird_47
+  - first:
+      213: 5498451883886734990
+    second: BombBird_48
+  - first:
+      213: 3216433462395254159
+    second: BombBird_49
+  - first:
+      213: -5337223725132437064
+    second: BombBird_50
+  - first:
+      213: 5393659847686687278
+    second: BombBird_51
+  - first:
+      213: 4306092435450853696
+    second: BombBird_52
+  - first:
+      213: 7033986532738573224
+    second: BombBird_53
+  - first:
+      213: 2354652714007946782
+    second: BombBird_54
+  - first:
+      213: -3148163708803998626
+    second: BombBird_55
+  - first:
+      213: -4833519452730483856
+    second: BombBird_56
+  - first:
+      213: -1665376534254762238
+    second: BombBird_57
+  - first:
+      213: 8839851693134534636
+    second: BombBird_58
+  - first:
+      213: -5582827291676610038
+    second: BombBird_59
+  - first:
+      213: -5742379445988709117
+    second: BombBird_60
+  - first:
+      213: -7318864218209679361
+    second: BombBird_61
+  - first:
+      213: 8071756166874156286
+    second: BombBird_62
+  - first:
+      213: -4882055514300787471
+    second: BombBird_63
+  - first:
+      213: -2458370373329971436
+    second: BombBird_64
+  - first:
+      213: -5833619116691411785
+    second: BombBird_65
+  - first:
+      213: 4981072027993061039
+    second: BombBird_66
+  - first:
+      213: 956015770377628816
+    second: BombBird_67
+  - first:
+      213: 8534873456441248147
+    second: BombBird_68
+  - first:
+      213: -867332764159132826
+    second: BombBird_69
+  - first:
+      213: -256178587058396992
+    second: BombBird_70
+  - first:
+      213: 9215010606285378877
+    second: BombBird_71
+  - first:
+      213: 5518399763876322674
+    second: BombBird_72
+  - first:
+      213: -3370648195842621203
+    second: BombBird_73
+  - first:
+      213: -8559429247664162209
+    second: BombBird_74
+  - first:
+      213: -297029110999907647
+    second: BombBird_75
+  - first:
+      213: -946114998132097056
+    second: BombBird_76
+  - first:
+      213: -4673883878021512525
+    second: BombBird_77
+  - first:
+      213: 8450702785780821326
+    second: BombBird_78
+  - first:
+      213: 7144255918248878840
+    second: BombBird_79
+  - first:
+      213: 6818849625061259393
+    second: BombBird_80
+  - first:
+      213: 8546851697803738045
+    second: BombBird_81
+  - first:
+      213: -2786375269224576278
+    second: BombBird_82
+  - first:
+      213: -3177465506191970498
+    second: BombBird_83
+  - first:
+      213: -8253036095574921061
+    second: BombBird_84
+  - first:
+      213: -2704003251796975375
+    second: BombBird_85
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BombBird_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 520
+        width: 407
+        height: 480
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9277bc8537f0af400800000000000000
+      internalID: 358616108414760745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_1
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 840
+        width: 204
+        height: 192
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6815b9ef054f1f380800000000000000
+      internalID: -8939095156647571066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_2
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 840
+        width: 144
+        height: 183
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e9b1d7c330e40770800000000000000
+      internalID: 8576226103420631526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_3
+      rect:
+        serializedVersion: 2
+        x: 756
+        y: 974
+        width: 64
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1aa2885e54dc8790800000000000000
+      internalID: -7526407375565968866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_4
+      rect:
+        serializedVersion: 2
+        x: 756
+        y: 838
+        width: 179
+        height: 136
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5540df706249e6a00800000000000000
+      internalID: 751701078881141845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_5
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 838
+        width: 179
+        height: 136
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 105bb41f5547256e0800000000000000
+      internalID: -1850288584426539775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_6
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 911
+        width: 157
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 862844ee133f7aa90800000000000000
+      internalID: -7302600874981555608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_7
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 838
+        width: 146
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 936c8abc6991b26a0800000000000000
+      internalID: -6473051903962331591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_8
+      rect:
+        serializedVersion: 2
+        x: 1478
+        y: 962
+        width: 76
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 621b809d4e8362f20800000000000000
+      internalID: 3397465524442542374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_9
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 838
+        width: 218
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0f8455c1a3791ba0800000000000000
+      internalID: -6117731480168526068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_10
+      rect:
+        serializedVersion: 2
+        x: 1271
+        y: 911
+        width: 55
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c710a5c5c0068c10800000000000000
+      internalID: 2055331129365370816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_11
+      rect:
+        serializedVersion: 2
+        x: 1478
+        y: 831
+        width: 137
+        height: 131
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5fc8295759bd8930800000000000000
+      internalID: 4147174616687234909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_12
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 558
+        width: 284
+        height: 282
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 540bced68984ac530800000000000000
+      internalID: 3875990248822190149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_13
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 580
+        width: 258
+        height: 258
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e100ea5b927946930800000000000000
+      internalID: 4135596563230490654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_14
+      rect:
+        serializedVersion: 2
+        x: 950
+        y: 588
+        width: 259
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c63c1e8b91b909ba0800000000000000
+      internalID: -6084192561799249044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_15
+      rect:
+        serializedVersion: 2
+        x: 1209
+        y: 588
+        width: 259
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbc25797c8fa09960800000000000000
+      internalID: 7606772788496772283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_16
+      rect:
+        serializedVersion: 2
+        x: 1468
+        y: 745
+        width: 154
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9374e2cf0d40fbf0800000000000000
+      internalID: -292649245689482341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_17
+      rect:
+        serializedVersion: 2
+        x: 1497
+        y: 502
+        width: 236
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5149f0ca899c09720800000000000000
+      internalID: 2851000221684438037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_18
+      rect:
+        serializedVersion: 2
+        x: 1622
+        y: 745
+        width: 70
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d2a027432fd133b0800000000000000
+      internalID: -5534397124451458344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_19
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 376
+        width: 114
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe1aa1dfd829c3f60800000000000000
+      internalID: 8015442575347065327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_20
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 520
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cafbd3fcffe48f320800000000000000
+      internalID: 2591908446152277932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_21
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 298
+        width: 328
+        height: 260
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c04ea902826c8100800000000000000
+      internalID: 111572401425105090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_22
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 298
+        width: 284
+        height: 282
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7137d10038cd1b8d0800000000000000
+      internalID: -2832240235438574825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_23
+      rect:
+        serializedVersion: 2
+        x: 1047
+        y: 298
+        width: 225
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc77c1a58a5f78890800000000000000
+      internalID: -7455720554673440820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_24
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 261
+        width: 225
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f5faf3d3a541aa90800000000000000
+      internalID: -7304480550679808523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_25
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 429
+        width: 34
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8f6f12877bb87550800000000000000
+      internalID: 6158878612387753866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_26
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 425
+        width: 10
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a78cc82da8381820800000000000000
+      internalID: 2889121477323163554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_27
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 457
+        width: 17
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3c6459903f261cd0800000000000000
+      internalID: -2587829050100388806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_28
+      rect:
+        serializedVersion: 2
+        x: 1497
+        y: 259
+        width: 236
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d0dd9ef7d8783c80800000000000000
+      internalID: -8342785440618786607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_29
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 391
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f005ac3e2f3168110800000000000000
+      internalID: 1262718679448702991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_30
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 400
+        width: 13
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b13148ca1733ab890800000000000000
+      internalID: -7441578870957665509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_31
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 374
+        width: 34
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78415d72ae65460d0800000000000000
+      internalID: -3430521452458863481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_32
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 277
+        width: 73
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c291d0d24711f5c0800000000000000
+      internalID: -4183537003111804218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_33
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 383
+        width: 39
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50025d82f1e8b09e0800000000000000
+      internalID: -1654072173648338939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_34
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 322
+        width: 68
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7352a2a9c0d59ba0800000000000000
+      internalID: -6082726157258435718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_35
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 250
+        width: 53
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aac09ccef02b87160800000000000000
+      internalID: 7023559400351141034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_36
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 318
+        width: 23
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdf83aadfbf6026a0800000000000000
+      internalID: -6476053394361184293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_37
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 304
+        width: 23
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c38dc8b6748d43f60800000000000000
+      internalID: 8013267438257625148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_38
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 320
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b757a4d2edd928850800000000000000
+      internalID: 6377833599878198651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_39
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 285
+        width: 22
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32d04de966526c510800000000000000
+      internalID: 1568982642866785571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_40
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 274
+        width: 11
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbaa99993f556f4c0800000000000000
+      internalID: -4254118293262456133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_41
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 270
+        width: 23
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 682951a0566b8e0e0800000000000000
+      internalID: -2240340269539683706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_42
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 206
+        width: 49
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fcc3a898388911a0800000000000000
+      internalID: -6838284782524969740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_43
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 180
+        width: 76
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 202cc7262a6d7bcb0800000000000000
+      internalID: -4848170480915660286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_44
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 268
+        width: 86
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6229bbeebab381900800000000000000
+      internalID: 655339355413123622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_45
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 149
+        width: 96
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 373681e2f648604e0800000000000000
+      internalID: -2015778170152131725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_46
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 266
+        width: 93
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c5a87735cbc208f0800000000000000
+      internalID: -575673754450352704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_47
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 268
+        width: 86
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8278d5af76a605ab0800000000000000
+      internalID: -5021396589703493848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_48
+      rect:
+        serializedVersion: 2
+        x: 947
+        y: 149
+        width: 96
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8e65a93bdc6e4c40800000000000000
+      internalID: 5498451883886734990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_49
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 266
+        width: 93
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f85bfb1513113ac20800000000000000
+      internalID: 3216433462395254159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_50
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 249
+        width: 76
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b9a1b0cc4f5ee5b0800000000000000
+      internalID: -5337223725132437064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_51
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 243
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2a07acfd012ada40800000000000000
+      internalID: 5393659847686687278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_52
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 242
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0497b01614052cb30800000000000000
+      internalID: 4306092435450853696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_53
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 187
+        width: 39
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a3a3cedb7dbd9160800000000000000
+      internalID: 7033986532738573224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_54
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 187
+        width: 39
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e166adbfa286da020800000000000000
+      internalID: 2354652714007946782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_55
+      rect:
+        serializedVersion: 2
+        x: 1153
+        y: 1
+        width: 328
+        height: 260
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5c16f959c97f44d0800000000000000
+      internalID: -3148163708803998626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_56
+      rect:
+        serializedVersion: 2
+        x: 1481
+        y: 1
+        width: 258
+        height: 258
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07b1f05baa3ebecb0800000000000000
+      internalID: -4833519452730483856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_57
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 159
+        width: 50
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 207497a9dd463e8e0800000000000000
+      internalID: -1665376534254762238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_58
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 216
+        width: 19
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce75b6487467daa70800000000000000
+      internalID: 8839851693134534636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_59
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 186
+        width: 77
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0272454820d582b0800000000000000
+      internalID: -5582827291676610038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_60
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 89
+        width: 83
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30da65c7158fe40b0800000000000000
+      internalID: -5742379445988709117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_61
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 161
+        width: 21
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff78b4245cb2e6a90800000000000000
+      internalID: -7318864218209679361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_62
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 149
+        width: 55
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efc4a10c773a40070800000000000000
+      internalID: 8071756166874156286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_63
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 153
+        width: 41
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f45d5040647f3cb0800000000000000
+      internalID: -4882055514300787471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_64
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 156
+        width: 153
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4179253ab2d12edd0800000000000000
+      internalID: -2458370373329971436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_65
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 104
+        width: 34
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bc2eaa3252da0fa0800000000000000
+      internalID: -5833619116691411785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_66
+      rect:
+        serializedVersion: 2
+        x: 746
+        y: 98
+        width: 47
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa6392d5e92502540800000000000000
+      internalID: 4981072027993061039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_67
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 156
+        width: 153
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09ca7092743744d00800000000000000
+      internalID: 956015770377628816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_68
+      rect:
+        serializedVersion: 2
+        x: 952
+        y: 104
+        width: 34
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 399471e5036f17670800000000000000
+      internalID: 8534873456441248147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_69
+      rect:
+        serializedVersion: 2
+        x: 1105
+        y: 98
+        width: 47
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66bbc32427d96f3f0800000000000000
+      internalID: -867332764159132826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_70
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 20
+        width: 38
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c0a25faeeed17cf0800000000000000
+      internalID: -256178587058396992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_71
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 133
+        width: 64
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d35d81db25b42ef70800000000000000
+      internalID: 9215010606285378877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_72
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 103
+        width: 52
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27d9276f85b459c40800000000000000
+      internalID: 5518399763876322674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_73
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 66
+        width: 81
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de04df7035d0931d0800000000000000
+      internalID: -3370648195842621203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_74
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 55
+        width: 88
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5a73e4f27cc63980800000000000000
+      internalID: -8559429247664162209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_75
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 84
+        width: 27
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c286e6e89db0ebf0800000000000000
+      internalID: -297029110999907647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_76
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 55
+        width: 88
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0efbaa30c69bed2f0800000000000000
+      internalID: -946114998132097056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_77
+      rect:
+        serializedVersion: 2
+        x: 1052
+        y: 84
+        width: 27
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b24a115067032fb0800000000000000
+      internalID: -4673883878021512525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_78
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 62
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4daed0f86de64570800000000000000
+      internalID: 8450702785780821326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_79
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 29
+        width: 138
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f2e4bfd7ee752360800000000000000
+      internalID: 7144255918248878840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_80
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 29
+        width: 138
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 188f49e2b9b61ae50800000000000000
+      internalID: 6818849625061259393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_81
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 1
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb398306548c9670800000000000000
+      internalID: 8546851697803738045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_82
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 11
+        width: 113
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aea8fea947ec459d0800000000000000
+      internalID: -2786375269224576278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_83
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 1
+        width: 85
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3fee5105ff57e3d0800000000000000
+      internalID: -3177465506191970498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_84
+      rect:
+        serializedVersion: 2
+        x: 794
+        y: 11
+        width: 113
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b90b7c4c563577d80800000000000000
+      internalID: -8253036095574921061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBird_85
+      rect:
+        serializedVersion: 2
+        x: 883
+        y: 1
+        width: 85
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f0e3217e53797ad0800000000000000
+      internalID: -2704003251796975375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BombBird_0: 358616108414760745
+      BombBird_1: -8939095156647571066
+      BombBird_10: 2055331129365370816
+      BombBird_11: 4147174616687234909
+      BombBird_12: 3875990248822190149
+      BombBird_13: 4135596563230490654
+      BombBird_14: -6084192561799249044
+      BombBird_15: 7606772788496772283
+      BombBird_16: -292649245689482341
+      BombBird_17: 2851000221684438037
+      BombBird_18: -5534397124451458344
+      BombBird_19: 8015442575347065327
+      BombBird_2: 8576226103420631526
+      BombBird_20: 2591908446152277932
+      BombBird_21: 111572401425105090
+      BombBird_22: -2832240235438574825
+      BombBird_23: -7455720554673440820
+      BombBird_24: -7304480550679808523
+      BombBird_25: 6158878612387753866
+      BombBird_26: 2889121477323163554
+      BombBird_27: -2587829050100388806
+      BombBird_28: -8342785440618786607
+      BombBird_29: 1262718679448702991
+      BombBird_3: -7526407375565968866
+      BombBird_30: -7441578870957665509
+      BombBird_31: -3430521452458863481
+      BombBird_32: -4183537003111804218
+      BombBird_33: -1654072173648338939
+      BombBird_34: -6082726157258435718
+      BombBird_35: 7023559400351141034
+      BombBird_36: -6476053394361184293
+      BombBird_37: 8013267438257625148
+      BombBird_38: 6377833599878198651
+      BombBird_39: 1568982642866785571
+      BombBird_4: 751701078881141845
+      BombBird_40: -4254118293262456133
+      BombBird_41: -2240340269539683706
+      BombBird_42: -6838284782524969740
+      BombBird_43: -4848170480915660286
+      BombBird_44: 655339355413123622
+      BombBird_45: -2015778170152131725
+      BombBird_46: -575673754450352704
+      BombBird_47: -5021396589703493848
+      BombBird_48: 5498451883886734990
+      BombBird_49: 3216433462395254159
+      BombBird_5: -1850288584426539775
+      BombBird_50: -5337223725132437064
+      BombBird_51: 5393659847686687278
+      BombBird_52: 4306092435450853696
+      BombBird_53: 7033986532738573224
+      BombBird_54: 2354652714007946782
+      BombBird_55: -3148163708803998626
+      BombBird_56: -4833519452730483856
+      BombBird_57: -1665376534254762238
+      BombBird_58: 8839851693134534636
+      BombBird_59: -5582827291676610038
+      BombBird_6: -7302600874981555608
+      BombBird_60: -5742379445988709117
+      BombBird_61: -7318864218209679361
+      BombBird_62: 8071756166874156286
+      BombBird_63: -4882055514300787471
+      BombBird_64: -2458370373329971436
+      BombBird_65: -5833619116691411785
+      BombBird_66: 4981072027993061039
+      BombBird_67: 956015770377628816
+      BombBird_68: 8534873456441248147
+      BombBird_69: -867332764159132826
+      BombBird_7: -6473051903962331591
+      BombBird_70: -256178587058396992
+      BombBird_71: 9215010606285378877
+      BombBird_72: 5518399763876322674
+      BombBird_73: -3370648195842621203
+      BombBird_74: -8559429247664162209
+      BombBird_75: -297029110999907647
+      BombBird_76: -946114998132097056
+      BombBird_77: -4673883878021512525
+      BombBird_78: 8450702785780821326
+      BombBird_79: 7144255918248878840
+      BombBird_8: 3397465524442542374
+      BombBird_80: 6818849625061259393
+      BombBird_81: 8546851697803738045
+      BombBird_82: -2786375269224576278
+      BombBird_83: -3177465506191970498
+      BombBird_84: -8253036095574921061
+      BombBird_85: -2704003251796975375
+      BombBird_9: -6117731480168526068
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

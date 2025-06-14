@@ -1,0 +1,1261 @@
+fileFormatVersion: 2
+guid: aba8eb880bdc94dbb9815e424a9b86fa
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3467961180218570332
+    second: Kioni_0
+  - first:
+      213: -4205682011957305
+    second: Kioni_1
+  - first:
+      213: -8254398765007711461
+    second: Kioni_2
+  - first:
+      213: -1787080157890336440
+    second: Kioni_3
+  - first:
+      213: 8133969567116793651
+    second: Kioni_4
+  - first:
+      213: 2352356994197235964
+    second: Kioni_5
+  - first:
+      213: 6871298727808576882
+    second: Kioni_6
+  - first:
+      213: 2711793685323366646
+    second: Kioni_7
+  - first:
+      213: 5888247443866298103
+    second: Kioni_8
+  - first:
+      213: 9200979658991972707
+    second: Kioni_9
+  - first:
+      213: -9044209423879429644
+    second: Kioni_10
+  - first:
+      213: -7686782368979236578
+    second: Kioni_11
+  - first:
+      213: 7466284618320040734
+    second: Kioni_12
+  - first:
+      213: -3630584228712949689
+    second: Kioni_13
+  - first:
+      213: -2637456040951257674
+    second: Kioni_14
+  - first:
+      213: -8587690081804710630
+    second: Kioni_15
+  - first:
+      213: 7957057791396425911
+    second: Kioni_16
+  - first:
+      213: -5084234937172578024
+    second: Kioni_17
+  - first:
+      213: 5361593483459241804
+    second: Kioni_18
+  - first:
+      213: -9041868609824501776
+    second: Kioni_19
+  - first:
+      213: 8932221733815798161
+    second: Kioni_20
+  - first:
+      213: -4570071521808544845
+    second: Kioni_21
+  - first:
+      213: -7601799999809364206
+    second: Kioni_22
+  - first:
+      213: -3748317338295716720
+    second: Kioni_23
+  - first:
+      213: 735873355827725094
+    second: Kioni_24
+  - first:
+      213: -4200548803314279129
+    second: Kioni_25
+  - first:
+      213: -6754904097992447188
+    second: Kioni_26
+  - first:
+      213: 6928075927695138365
+    second: Kioni_27
+  - first:
+      213: 9091476108441119626
+    second: Kioni_28
+  - first:
+      213: 2081945401773493129
+    second: Kioni_29
+  - first:
+      213: -9042603060313457522
+    second: Kioni_30
+  - first:
+      213: 1886194270701131355
+    second: Kioni_31
+  - first:
+      213: -3944727587233401423
+    second: Kioni_32
+  - first:
+      213: 1059716498054845035
+    second: Kioni_33
+  - first:
+      213: 3549319172198104005
+    second: Kioni_34
+  - first:
+      213: 2550726033527011708
+    second: Kioni_35
+  - first:
+      213: 1590469452666515909
+    second: Kioni_36
+  - first:
+      213: -2842890486125250330
+    second: Kioni_37
+  - first:
+      213: -2552291889719986784
+    second: Kioni_38
+  - first:
+      213: -1914412887132828039
+    second: Kioni_39
+  - first:
+      213: -8619929688502840239
+    second: Kioni_40
+  - first:
+      213: 2701713400089185867
+    second: Kioni_41
+  - first:
+      213: 9206128397543820612
+    second: Kioni_42
+  - first:
+      213: -6729293268221437155
+    second: Kioni_43
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Kioni_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 593
+        width: 166
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a94a3e3ea35fdfc0800000000000000
+      internalID: -3467961180218570332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_1
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 593
+        width: 157
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c793a954fe01fff0800000000000000
+      internalID: -4205682011957305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 553
+        width: 165
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b13da419e0c727d80800000000000000
+      internalID: -8254398765007711461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_3
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 553
+        width: 259
+        height: 158
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8492cc390140337e0800000000000000
+      internalID: -1787080157890336440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_4
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 522
+        width: 148
+        height: 192
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33795d5c93aa1e070800000000000000
+      internalID: 8133969567116793651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_5
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 522
+        width: 503
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf82800193045a020800000000000000
+      internalID: 2352356994197235964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_6
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 509
+        width: 92
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27daf9889c1cb5f50800000000000000
+      internalID: 6871298727808576882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_7
+      rect:
+        serializedVersion: 2
+        x: 1491
+        y: 492
+        width: 133
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f0c8d53df932a520800000000000000
+      internalID: 2711793685323366646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_8
+      rect:
+        serializedVersion: 2
+        x: 1624
+        y: 475
+        width: 129
+        height: 229
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f6a0495ad147b150800000000000000
+      internalID: 5888247443866298103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_9
+      rect:
+        serializedVersion: 2
+        x: 1753
+        y: 660
+        width: 71
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 361bfcf304270bf70800000000000000
+      internalID: 9200979658991972707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_10
+      rect:
+        serializedVersion: 2
+        x: 1753
+        y: 469
+        width: 90
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f12d6f72738c7280800000000000000
+      internalID: -9044209423879429644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_11
+      rect:
+        serializedVersion: 2
+        x: 1843
+        y: 532
+        width: 50
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e19c1476920135590800000000000000
+      internalID: -7686782368979236578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_12
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 174
+        height: 592
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e13dde26d429d9760800000000000000
+      internalID: 7466284618320040734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_13
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 573
+        width: 55
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 748dd6031e29d9dc0800000000000000
+      internalID: -3630584228712949689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_14
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 553
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b5646064bfd56bd0800000000000000
+      internalID: -2637456040951257674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_15
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 573
+        width: 58
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1d82e0ce5562d880800000000000000
+      internalID: -8587690081804710630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_16
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 553
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b0307927e52d6e60800000000000000
+      internalID: 7957057791396425911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_17
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 1
+        width: 348
+        height: 552
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 811b237134b2179b0800000000000000
+      internalID: -5084234937172578024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_18
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 553
+        width: 48
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4723a3cdd4386a40800000000000000
+      internalID: 5361593483459241804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_19
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 522
+        width: 150
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ffc7adb764d48280800000000000000
+      internalID: -9041868609824501776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_20
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 1
+        width: 408
+        height: 521
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1994d1b8750a5fb70800000000000000
+      internalID: 8932221733815798161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_21
+      rect:
+        serializedVersion: 2
+        x: 931
+        y: 165
+        width: 150
+        height: 353
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bb09780a28d390c0800000000000000
+      internalID: -4570071521808544845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_22
+      rect:
+        serializedVersion: 2
+        x: 1081
+        y: 509
+        width: 79
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21f5ccd1d2bf08690800000000000000
+      internalID: -7601799999809364206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_23
+      rect:
+        serializedVersion: 2
+        x: 1081
+        y: 165
+        width: 220
+        height: 344
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09432718d3d4bfbc0800000000000000
+      internalID: -3748317338295716720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_24
+      rect:
+        serializedVersion: 2
+        x: 1301
+        y: 332
+        width: 135
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62349c51be8563a00800000000000000
+      internalID: 735873355827725094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_25
+      rect:
+        serializedVersion: 2
+        x: 1843
+        y: 462
+        width: 66
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72d92cc6e17a4b5c0800000000000000
+      internalID: -4200548803314279129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_26
+      rect:
+        serializedVersion: 2
+        x: 1436
+        y: 165
+        width: 63
+        height: 327
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2b645b0382c142a0800000000000000
+      internalID: -6754904097992447188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_27
+      rect:
+        serializedVersion: 2
+        x: 1499
+        y: 375
+        width: 149
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3e14378958752060800000000000000
+      internalID: 6928075927695138365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_28
+      rect:
+        serializedVersion: 2
+        x: 1624
+        y: 124
+        width: 249
+        height: 251
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8b65971a596b2e70800000000000000
+      internalID: 9091476108441119626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_29
+      rect:
+        serializedVersion: 2
+        x: 1648
+        y: 375
+        width: 126
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98b8772ff4e84ec10800000000000000
+      internalID: 2081945401773493129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_30
+      rect:
+        serializedVersion: 2
+        x: 1774
+        y: 375
+        width: 81
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8cf7292d68328280800000000000000
+      internalID: -9042603060313457522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_31
+      rect:
+        serializedVersion: 2
+        x: 1301
+        y: 165
+        width: 135
+        height: 167
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b56948a12bb1d2a10800000000000000
+      internalID: 1886194270701131355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_32
+      rect:
+        serializedVersion: 2
+        x: 1499
+        y: 174
+        width: 66
+        height: 199
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b5f443d8238149c0800000000000000
+      internalID: -3944727587233401423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_33
+      rect:
+        serializedVersion: 2
+        x: 1565
+        y: 310
+        width: 58
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b621e255a8ed4be00800000000000000
+      internalID: 1059716498054845035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_34
+      rect:
+        serializedVersion: 2
+        x: 1565
+        y: 253
+        width: 58
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cbf9556bf6b14130800000000000000
+      internalID: 3549319172198104005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_35
+      rect:
+        serializedVersion: 2
+        x: 1499
+        y: 124
+        width: 75
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c79f7bb20dff56320800000000000000
+      internalID: 2550726033527011708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_36
+      rect:
+        serializedVersion: 2
+        x: 1565
+        y: 174
+        width: 58
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c13c406a8b721610800000000000000
+      internalID: 1590469452666515909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_37
+      rect:
+        serializedVersion: 2
+        x: 931
+        y: 1
+        width: 112
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e8ba274a260c88d0800000000000000
+      internalID: -2842890486125250330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_38
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 124
+        width: 184
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a531268c00749cd0800000000000000
+      internalID: -2552291889719986784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_39
+      rect:
+        serializedVersion: 2
+        x: 1257
+        y: 1
+        width: 139
+        height: 147
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97e84054f93ae65e0800000000000000
+      internalID: -1914412887132828039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_40
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 1
+        width: 474
+        height: 136
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 154d1ff5e9bdf5880800000000000000
+      internalID: -8619929688502840239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_41
+      rect:
+        serializedVersion: 2
+        x: 1873
+        y: 1
+        width: 38
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4e8a39e50a6e7520800000000000000
+      internalID: 2701713400089185867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_42
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 1
+        width: 101
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44d4c3c500db2cf70800000000000000
+      internalID: 9206128397543820612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kioni_43
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 1
+        width: 113
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1bdb360d6fbc92a0800000000000000
+      internalID: -6729293268221437155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Kioni_0: -3467961180218570332
+      Kioni_1: -4205682011957305
+      Kioni_10: -9044209423879429644
+      Kioni_11: -7686782368979236578
+      Kioni_12: 7466284618320040734
+      Kioni_13: -3630584228712949689
+      Kioni_14: -2637456040951257674
+      Kioni_15: -8587690081804710630
+      Kioni_16: 7957057791396425911
+      Kioni_17: -5084234937172578024
+      Kioni_18: 5361593483459241804
+      Kioni_19: -9041868609824501776
+      Kioni_2: -8254398765007711461
+      Kioni_20: 8932221733815798161
+      Kioni_21: -4570071521808544845
+      Kioni_22: -7601799999809364206
+      Kioni_23: -3748317338295716720
+      Kioni_24: 735873355827725094
+      Kioni_25: -4200548803314279129
+      Kioni_26: -6754904097992447188
+      Kioni_27: 6928075927695138365
+      Kioni_28: 9091476108441119626
+      Kioni_29: 2081945401773493129
+      Kioni_3: -1787080157890336440
+      Kioni_30: -9042603060313457522
+      Kioni_31: 1886194270701131355
+      Kioni_32: -3944727587233401423
+      Kioni_33: 1059716498054845035
+      Kioni_34: 3549319172198104005
+      Kioni_35: 2550726033527011708
+      Kioni_36: 1590469452666515909
+      Kioni_37: -2842890486125250330
+      Kioni_38: -2552291889719986784
+      Kioni_39: -1914412887132828039
+      Kioni_4: 8133969567116793651
+      Kioni_40: -8619929688502840239
+      Kioni_41: 2701713400089185867
+      Kioni_42: 9206128397543820612
+      Kioni_43: -6729293268221437155
+      Kioni_5: 2352356994197235964
+      Kioni_6: 6871298727808576882
+      Kioni_7: 2711793685323366646
+      Kioni_8: 5888247443866298103
+      Kioni_9: 9200979658991972707
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
