@@ -11,13 +11,14 @@ using afl.UI;
 using TMPro;
 
 using ActorWorkspace.InAppDebug;
-using UnityEditor;
 
-namespace Project.InAppDebug
+namespace ActorWorkspace.InAppDebug
 {
-    public class PrototypeViewer : MonoBehaviour
+    public class ActorWorkspaceGUI : MonoBehaviour
     {
-        public GameObject animationListPanel;
+        [SerializeField] Camera navigationCamera;
+        public Camera CurrentCamera => navigationCamera;
+
         public AnimationListFormLogic animationListFormLogic;
         public SkinControlFormLogic skinControlFormLogic;
         public AnimationControlFormLogic animationControlFormLogic;
@@ -46,7 +47,7 @@ namespace Project.InAppDebug
         public async UniTask InitAsync()
         {
             {
-                var group = animationListPanel.Find("UIListView").GetComponent<UIEntityGroup>();
+                var group = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIEntityGroup>();
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
 
                 animationListFormLogic.OnClickEntity += OnClickEntityFromAnimationList;
@@ -76,8 +77,7 @@ namespace Project.InAppDebug
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
             }
 
-            // LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
-            LoadAsset("Assets/AssetData/SpineData/Kioni/Kioni_SkeletonData.asset");
+            LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
         }
 
         public void OpenAsset()
@@ -248,7 +248,7 @@ namespace Project.InAppDebug
             animationControlFormLogic.ChangeTrack(
                 trackInfoList[currentTrackIndex].Speed, trackInfoList[currentTrackIndex].Mix);
 
-            var uiListView = animationListPanel.Find("UIListView").GetComponent<UIListView>();
+            var uiListView = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIListView>();
 
             var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);

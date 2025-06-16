@@ -7,7 +7,7 @@ using afl.UI.v1;
 using Spine;
 using Spine.Unity;
 
-namespace Project.InAppDebug
+namespace ActorWorkspace.InAppDebug
 {
     public class SkinControlFormLogic : MonoBehaviour
     {

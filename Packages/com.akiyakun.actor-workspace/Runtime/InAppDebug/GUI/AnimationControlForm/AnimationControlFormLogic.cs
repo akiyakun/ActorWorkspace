@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using afl;
 
-namespace Project.InAppDebug
+namespace ActorWorkspace.InAppDebug
 {
     public class AnimationControlFormLogic : MonoBehaviour
     {

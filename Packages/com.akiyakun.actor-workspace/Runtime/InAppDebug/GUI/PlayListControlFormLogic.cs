@@ -6,7 +6,7 @@ using afl.UI.v1;
 
 using Spine.Unity;
 
-namespace Project.InAppDebug
+namespace ActorWorkspace.InAppDebug
 {
     public class PlayListControlFormLogic : MonoBehaviour
     {

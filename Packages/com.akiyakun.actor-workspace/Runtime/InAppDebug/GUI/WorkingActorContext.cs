@@ -1,7 +1,7 @@
 using UnityEngine;
 using afl;
 
-namespace Project.InAppDebug
+namespace ActorWorkspace.InAppDebug
 {
     // 現在ビューワーで読み込んでいるアクターの情報
     public class WorkingActorContext

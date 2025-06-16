@@ -11,7 +11,7 @@ using ActorWorkspace.InAppDebug;
 
 public class ViewerBehaviour : MonoBehaviour, ISceneBehaviour
 {
-    public PrototypeViewer prototypeViewer;
+    public ActorWorkspaceGUI actorWorkspaceGUI;
 
     public bool IsInitialized { get; private set; }
 
@@ -20,10 +20,10 @@ public class ViewerBehaviour : MonoBehaviour, ISceneBehaviour
         await UniTask.Yield();
 
 #if UNITY_EDITOR
-        prototypeViewer.ActorAssetDatabase = new Project.InAppDebug.Editor.ActorAssetDatabaseInEditor();
+        actorWorkspaceGUI.ActorAssetDatabase = new Project.InAppDebug.Editor.ActorAssetDatabaseInEditor();
 #else
-        // prototypeViewer.ActorAssetDatabase = new Project.InAppDebug.ActorAssetDatabaseInReference();
-        prototypeViewer.ActorAssetDatabase = GetComponent<ActorAssetDatabaseInReference>();
+        // actorWorkspaceGUI.ActorAssetDatabase = new Project.InAppDebug.ActorAssetDatabaseInReference();
+        actorWorkspaceGUI.ActorAssetDatabase = GetComponent<ActorAssetDatabaseInReference>();
 #endif
 
         // TextureLoader textureLoader = new();
@@ -32,7 +32,7 @@ public class ViewerBehaviour : MonoBehaviour, ISceneBehaviour
         // SkeletonJson json = new SkeletonJson(attachmentLoader);
         // SkeletonData skeletonData = json.readSkeletonData("mySkeleton.json");
 
-        await prototypeViewer.InitAsync();
+        await actorWorkspaceGUI.InitAsync();
 
         return true;
     }
