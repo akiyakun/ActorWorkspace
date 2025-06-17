@@ -1,19 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
-using ActorWorkspace.InAppDebug;
 using afl.MasterData;
 
-using Spine.Unity;
-
-namespace Project.InAppDebug
+namespace ActorWorkspace.ActorAssetDatabase
 {
-    public class ActorAssetDatabaseInReference : MonoBehaviour, IActorAssetDatabase
+    public abstract class ActorAssetDatabaseForReference : MonoBehaviour, IActorAssetDatabase
     {
         [SerializeField] ObjectReferenceScriptableObject objectReferences;
         List<ActorAssetInfo> actorAssetInfoList = new();
 
         // public ActorAssetDatabaseInReference()
-        void Awake()
+        protected void Awake()
         {
             //     var targetFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(
             //         "Assets/AssetData/SpineData");
@@ -44,31 +41,32 @@ namespace Project.InAppDebug
             return actorAssetInfoList;
         }
 
-        public GameObject CreateActorAsset(string path)
-        {
-            var original = GetActorAssetInfo(path);
-            if (original == null)
-            {
-                Debug.LogError($"Actor asset not found at path: {path}");
-                return null;
-            }
+        public abstract GameObject CreateActorAsset(string path);
+        // public GameObject CreateActorAsset(string path)
+        // {
+        //     var original = GetActorAssetInfo(path);
+        //     if (original == null)
+        //     {
+        //         Debug.LogError($"Actor asset not found at path: {path}");
+        //         return null;
+        //     }
 
-            var skeletonDataAsset = GameObject.Instantiate(original) as SkeletonDataAsset;
+        //     var skeletonDataAsset = GameObject.Instantiate(original) as SkeletonDataAsset;
 
-            // var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
-            Debug.Assert(skeletonDataAsset != null, $"SkeletonDataAsset not found at path: {path}");
-            var newSkeleton = new GameObject(skeletonDataAsset.name);
-            var skeletonAnimation = newSkeleton.AddComponent<SkeletonAnimation>();
-            skeletonAnimation.skeletonDataAsset = skeletonDataAsset;
-            skeletonAnimation.Initialize(true);
+        //     // var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
+        //     Debug.Assert(skeletonDataAsset != null, $"SkeletonDataAsset not found at path: {path}");
+        //     var newSkeleton = new GameObject(skeletonDataAsset.name);
+        //     var skeletonAnimation = newSkeleton.AddComponent<SkeletonAnimation>();
+        //     skeletonAnimation.skeletonDataAsset = skeletonDataAsset;
+        //     skeletonAnimation.Initialize(true);
 
-            // skeletonAnimation.skeleton.SetSkin(skins.Items[skinIndex]);
-            skeletonAnimation.Skeleton.SetSlotsToSetupPose();
+        //     // skeletonAnimation.skeleton.SetSkin(skins.Items[skinIndex]);
+        //     skeletonAnimation.Skeleton.SetSlotsToSetupPose();
 
-            return skeletonAnimation.gameObject;
-        }
+        //     return skeletonAnimation.gameObject;
+        // }
 
-        UnityEngine.Object GetActorAssetInfo(string path)
+        protected UnityEngine.Object GetActorAssetInfo(string path)
         {
             foreach (var data in objectReferences.GetList())
             {

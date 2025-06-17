@@ -2291,8 +2291,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Project.InAppDebug.PrototypeViewer, Project.InAppDebug.Runtime
+      - m_Target: {fileID: 9064520843997160985}
+        m_TargetAssemblyTypeName: ActorWorkspace.InAppDebug.ActorWorkspaceGUI, com.akiyakun.actor-workspace.InAppDebug.Runtime
         m_MethodName: OnLoadAsset
         m_Mode: 1
         m_Arguments:
@@ -4331,8 +4331,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Project.InAppDebug.PrototypeViewer, Project.InAppDebug.Runtime
+      - m_Target: {fileID: 9064520843997160985}
+        m_TargetAssemblyTypeName: ActorWorkspace.InAppDebug.ActorWorkspaceGUI, com.akiyakun.actor-workspace.InAppDebug.Runtime
         m_MethodName: OpenAsset
         m_Mode: 1
         m_Arguments:
@@ -5980,6 +5980,15 @@ MonoBehaviour:
   animationControlFormLogic: {fileID: 3044921598478439293}
   playListControlFormLogic: {fileID: 4037576782471100985}
   openAssetDialog: {fileID: 7592060935622637340}
+  actorAssetDatabase:
+    unityGameObject: {fileID: 0}
+    rawObject:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &8926110899537796706
 GameObject:
   m_ObjectHideFlags: 0
@@ -6158,9 +6167,17 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 770295408376925993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000061035156
+      objectReference: {fileID: 0}
     - target: {fileID: 1912699521435510118, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Name
       value: UIListView
+      objectReference: {fileID: 0}
+    - target: {fileID: 2738744352918865007, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
+      propertyPath: m_Value
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2995991457717537214, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_AnchorMax.x
@@ -6304,7 +6321,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99999994
       objectReference: {fileID: 0}
     - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Value
@@ -6737,13 +6754,17 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 770295408376925993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000061035156
+      objectReference: {fileID: 0}
     - target: {fileID: 1912699521435510118, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Name
       value: UIListView
       objectReference: {fileID: 0}
     - target: {fileID: 2738744352918865007, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2995991457717537214, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_AnchorMax.x
@@ -6891,6 +6912,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Size
+      value: 0.99999994
+      objectReference: {fileID: 0}
+    - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
+      propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -7565,6 +7590,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 770295408376925993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000061035156
+      objectReference: {fileID: 0}
     - target: {fileID: 1912699521435510118, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Name
       value: UIListView
@@ -7735,7 +7764,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.9999999
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

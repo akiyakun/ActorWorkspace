@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Spine;
 using Spine.Unity;
@@ -9,12 +10,11 @@ using afl;
 using afl.UI.v1;
 using afl.UI;
 using TMPro;
-
-using ActorWorkspace.InAppDebug;
+using ActorWorkspace.ActorAssetDatabase;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class ActorWorkspaceGUI : MonoBehaviour
+    public class ActorWorkspaceGUI : MonoBehaviour, IAsyncInitializable
     {
         [SerializeField] Camera navigationCamera;
         public Camera CurrentCamera => navigationCamera;
@@ -25,7 +25,13 @@ namespace ActorWorkspace.InAppDebug
         public PlayListControlFormLogic playListControlFormLogic;
         public GameObject openAssetDialog;
 
-        public IActorAssetDatabase ActorAssetDatabase { get; set; }
+        // public IActorAssetDatabase ActorAssetDatabase { get; set; }
+        [SerializeField] SerializableInterface<IActorAssetDatabase> actorAssetDatabase;
+        public IActorAssetDatabase ActorAssetDatabase
+        {
+            get => actorAssetDatabase.Interface;
+            set => actorAssetDatabase.Interface = value;
+        }
 
         public WorkingActorContext CurrentWorkingActorContext { get; set; }
 
@@ -38,13 +44,16 @@ namespace ActorWorkspace.InAppDebug
         }
         List<TrackInfo> trackInfoList = ListEx.Create<TrackInfo>(16);
 
-        void Awake()
-        {
-            // openAssetDialog.SetActive(false);
-        }
+        // From IAsyncInitializable
+        public bool IsInitialized { get; protected set; }
 
-        // async void Start()
-        public async UniTask InitAsync()
+        // void Awake()
+        // {
+        //     // openAssetDialog.SetActive(false);
+        // }
+
+        // From IAsyncInitializable
+        public async UniTask<int> InitializeAsync(CancellationToken cancellationToken = default)
         {
             {
                 var group = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIEntityGroup>();
@@ -78,6 +87,15 @@ namespace ActorWorkspace.InAppDebug
             }
 
             LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
+
+            IsInitialized = true;
+            return 0;
+        }
+
+        // From IAsyncInitializable
+        public async UniTask TerminateAsync(CancellationToken cancellationToken = default)
+        {
+            await UniTask.Yield();
         }
 
         public void OpenAsset()

@@ -1,21 +1,21 @@
-#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
-using ActorWorkspace.InAppDebug;
 using afl;
+using ActorWorkspace.ActorAssetDatabase;
+using ActorWorkspace.ActorAssetDatabase.Editor;
 using Spine.Unity;
 
 using UnityEditor;
 using afl.Editor;
 
-namespace Project.InAppDebug.Editor
+namespace ActorWorkspace.Editor.UnitySpine.ActorAssetDatabase
 {
-    public class ActorAssetDatabaseInEditor : IActorAssetDatabase
+    public class SpineActorAssetDatabaseForEditor : ActorAssetDatabaseInEditor
     {
-        List<ActorAssetInfo> actorAssetInfoList = new();
-
-        public ActorAssetDatabaseInEditor()
+        protected override void Awake()
         {
+            base.Awake();
+
             var targetFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(
                 "Assets/AssetData/SpineData");
             IReadOnlyList<SkeletonDataAsset> result =
@@ -30,18 +30,11 @@ namespace Project.InAppDebug.Editor
                 // Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
                 actorAssetInfoList.Add(info);
             }
-
         }
 
-        public List<ActorAssetInfo> GetAll()
-        {
-            return actorAssetInfoList;
-        }
-
-        public GameObject CreateActorAsset(string path)
+        public override GameObject CreateActorAsset(string path)
         {
             return SpineHelper.CreateSkeletonAnimationFromAssetDatabae(path).gameObject;
         }
     }
 }
-#endif

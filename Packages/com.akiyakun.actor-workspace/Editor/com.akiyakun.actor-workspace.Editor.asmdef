@@ -2,17 +2,21 @@
     "name": "com.akiyakun.actor-workspace.Editor",
     "rootNamespace": "ActorWorkspace.Editor",
     "references": [
+        "GUID:98557ddb935f44ae59f5af2cce2426f6",
+        "GUID:d1f443f62531b45de830682d1f1c296a",
         "GUID:878380d8c26584ae3ab741d0e3a254b5"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": [
+    "includePlatforms": [
         "Editor"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "ENABLE_SPINE_UNITY"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
