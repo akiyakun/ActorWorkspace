@@ -147,7 +147,67 @@ namespace ActorWorkspace.InAppDebug
             animationControlFormLogic.ResetUI(loop: animationControlFormLogic.IsLoop);
             skinControlFormLogic.ResetUI(skeletonAnimation);
             playListControlFormLogic.ResetUI(skeletonAnimation);
+
+
+
+            skeletonAnimation.AnimationState.Event += HandleSpineEvent;
+
+            var c = GetComponent<SpineEventDebuggerGUI>();
+            c.skeletonAnimation = skeletonAnimation;
+            c.Set();
+
+            var e = GetComponent<SpineEventGizmoVisualizer>();
+            e.skeletonAnimation = skeletonAnimation;
+
+            skeletonAnimation.gameObject.AddComponent<SpineAudioFromStreamingAssets>();
+
         }
+
+        /*
+            使えそうな文字
+            moji-moji_moji:[](),.<>/&*@#=moj
+
+            SpineEditorでみやすさを考慮すると「-」や「=」を区切り文字にするのが良さそう
+        */
+        void HandleSpineEvent(TrackEntry trackEntry, Spine.Event e)
+        {
+            ActorEventData actorEventData = new();
+            actorEventData.Name = ParseEventName(e.Data.Name);
+
+            Debug.Log($"Spine Event: {e.Data.Name}, int: {e.Int}, float: {e.Float}, string: {e.String}\nName: {actorEventData.Name}");
+        }
+
+        public class ActorEventData
+        {
+            // public int Id;
+            public string Name;
+
+            public int Int;
+            public int Float;
+            public string String;
+        }
+
+        public static string ParseEventName(string value)
+        {
+            var result = value.Split('=', System.StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(result.Length >= 1);
+            return result[0];
+        }
+
+        public void ExecuteActorEvent(ActorEventData actorEventData)
+        {
+            switch (actorEventData.Name)
+            {
+                case "emitter":
+                    break;
+                case "LoadAsset":
+                    break;
+                default:
+                    Debug.LogWarning($"Unknown Actor Event: {actorEventData.Name}");
+                    break;
+            }
+        }
+
 
         // アニメーションリストからアニメーションをクリックしたときの処理
         public void OnClickEntityFromAnimationList(UIEntity sender)
