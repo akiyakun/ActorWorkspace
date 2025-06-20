@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using afl.MasterData;
+using Cysharp.Threading.Tasks;
 
 namespace ActorWorkspace.ActorAssetDatabase
 {
-    public abstract class ActorAssetDatabaseForReference : MonoBehaviour, IActorAssetDatabase
+    public abstract class ActorAssetDatabaseForReference :
+        MonoBehaviour, IActorAssetDatabase, IAWActorFactory
     {
         [SerializeField] ObjectReferenceScriptableObject objectReferences;
         List<ActorAssetInfo> actorAssetInfoList = new();
@@ -78,5 +80,36 @@ namespace ActorWorkspace.ActorAssetDatabase
 
             return null;
         }
+
+        protected int GetActorAssetId(string path)
+        {
+            int count = actorAssetInfoList.Count;
+            for (int i = 0; i < count; ++i)
+            {
+                var data = actorAssetInfoList[i];
+                if (data.Name == path)
+                {
+                    // aflのマスタは1originの仕様のため+1
+                    return i + 1;
+                }
+            }
+
+            return 0;
+        }
+
+        protected UnityEngine.Object GetActorAssetReference(int id)
+        {
+            if (id <= 0 || id > (actorAssetInfoList.Count + 1))
+            {
+                Debug.Assert(false, $"Invalid id: {id}");
+                return null;
+            }
+
+            return objectReferences.GetList()[id - 1].Object;
+        }
+
+        // From IAWActorFactory
+        public abstract UniTask<IAWActor> Create(int id);
+
     }
 }

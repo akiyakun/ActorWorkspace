@@ -4,6 +4,8 @@ namespace ActorWorkspace
 {
     public interface IAWActor
     {
-        public IAWAnimation Animation { get; }
+        GameObject GameObject { get; }
+
+        // public IAWAnimation Animation { get; }
     }
 }

@@ -4,7 +4,7 @@ using Spine.Unity;
 
 namespace ActorWorkspace.Editor.UnitySpine
 {
-    public static partial class SpineHelper
+    public static partial class SpineUtility
     {
         public static SkeletonAnimation CreateSkeletonAnimationFromAssetDatabae(string path)
         {

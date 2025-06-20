@@ -34,7 +34,7 @@ namespace ActorWorkspace.Editor.UnitySpine.ActorAssetDatabase
 
         public override GameObject CreateActorAsset(string path)
         {
-            return SpineHelper.CreateSkeletonAnimationFromAssetDatabae(path).gameObject;
+            return SpineUtility.CreateSkeletonAnimationFromAssetDatabae(path).gameObject;
         }
     }
 }

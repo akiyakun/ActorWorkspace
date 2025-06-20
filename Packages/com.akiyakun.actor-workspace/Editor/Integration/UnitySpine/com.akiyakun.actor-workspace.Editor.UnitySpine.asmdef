@@ -1,5 +1,5 @@
 {
-    "name": "com.akiyakun.actor-workspace.UnitySpine.Editor",
+    "name": "com.akiyakun.actor-workspace.Editor.UnitySpine",
     "rootNamespace": "ActorWorkspace.Editor.UnitySpine",
     "references": [
         "GUID:98557ddb935f44ae59f5af2cce2426f6",
