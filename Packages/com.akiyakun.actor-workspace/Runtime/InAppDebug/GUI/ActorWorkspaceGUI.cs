@@ -160,6 +160,7 @@ namespace ActorWorkspace.InAppDebug
             e.skeletonAnimation = skeletonAnimation;
 
             skeletonAnimation.gameObject.AddComponent<SpineAudioFromStreamingAssets>();
+            skeletonAnimation.gameObject.AddComponent<SpineEffectPlayer>();
 
         }
 
