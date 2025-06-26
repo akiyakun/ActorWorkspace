@@ -10,10 +10,30 @@ using afl;
 using afl.UI.v1;
 using afl.UI;
 using TMPro;
-using ActorWorkspace.ActorAssetDatabase;
+using ActorWorkspace.ActorAssetCollection;
+using afl.MasterData;
+using ActorWorkspace.UnitySpine;
 
 namespace ActorWorkspace.InAppDebug
 {
+    public class ActorWorkspaceGUIContextProvider : UniversalContextProvider
+    {
+        public IAssetRepository AssetRepository { get; private set; }
+        public IAWActorFactory ActorFactory { get; private set; }
+
+        public WorkingActorContext CurrentWorkingActorContext { get; set; }
+
+        public ActorWorkspaceGUIContextProvider()
+        {
+            var actorAssetCollectionInAssetDatabase = new ActorAssetCollectionInAssetDatabase();
+            actorAssetCollectionInAssetDatabase.assetRootDirectory = "Assets/AssetBundleData/Actor";
+            actorAssetCollectionInAssetDatabase.Init();
+
+            AssetRepository = actorAssetCollectionInAssetDatabase;
+            ActorFactory = new SpineActorFactoryInAssetDatabase(AssetRepository);
+        }
+    }
+
     public class ActorWorkspaceGUI : MonoBehaviour, IAsyncInitializable
     {
         [SerializeField] Camera navigationCamera;
@@ -25,15 +45,14 @@ namespace ActorWorkspace.InAppDebug
         public PlayListControlFormLogic playListControlFormLogic;
         public GameObject openAssetDialog;
 
-        // public IActorAssetDatabase ActorAssetDatabase { get; set; }
-        [SerializeField] SerializableInterface<IActorAssetDatabase> actorAssetDatabase;
-        public IActorAssetDatabase ActorAssetDatabase
-        {
-            get => actorAssetDatabase.Interface;
-            set => actorAssetDatabase.Interface = value;
-        }
-
-        public WorkingActorContext CurrentWorkingActorContext { get; set; }
+        // [SerializeField] SerializableInterface<IActorAssetCollection> actorAssetDatabase;
+        // public IActorAssetCollection ActorAssetDatabase
+        // {
+        //     get => actorAssetDatabase.Interface;
+        //     set => actorAssetDatabase.Interface = value;
+        // }
+        public ActorWorkspaceGUIContextProvider ContextProvider { get; private set; }
+        // public WorkingActorContext CurrentWorkingActorContext { get; set; }
 
         int currentTrackIndex = 0;
 
@@ -55,6 +74,8 @@ namespace ActorWorkspace.InAppDebug
         // From IAsyncInitializable
         public async UniTask<int> InitializeAsync(CancellationToken cancellationToken = default)
         {
+            ContextProvider = new();
+
             {
                 var group = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIEntityGroup>();
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
@@ -86,7 +107,7 @@ namespace ActorWorkspace.InAppDebug
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
             }
 
-            LoadAsset("Assets/AssetData/SpineData/Player/Player_SkeletonData.asset");
+            // await LoadAsset(1);
 
             IsInitialized = true;
             return 0;
@@ -105,12 +126,14 @@ namespace ActorWorkspace.InAppDebug
             var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
             listView.Clear();
 
-            foreach (var assetInfo in ActorAssetDatabase.GetAll())
+            var database = ContextProvider.AssetRepository.ToList();
+            foreach (var model in database)
             {
+                ActorAssetInfo info = model as ActorAssetInfo;
                 var entity = listView.AddEntity();
-                entity.UserData = assetInfo;
-                entity.name = assetInfo.Name;
-                entity.GetComponentInChildren<TMP_Text>().text = assetInfo.Name;
+                entity.UserData = info;
+                entity.name = info.Name;
+                entity.GetComponentInChildren<TMP_Text>().text = info.Name;
             }
         }
 
@@ -122,23 +145,25 @@ namespace ActorWorkspace.InAppDebug
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
             Debug.Assert(assetInfo != null);
 
-            LoadAsset(assetInfo.Path);
+            LoadAsset(assetInfo.Id).Forget();
         }
 
-        void LoadAsset(string path)
+        async UniTask LoadAsset(int id)
         {
-            if (CurrentWorkingActorContext != null)
+            if (ContextProvider.CurrentWorkingActorContext != null)
             {
-                CurrentWorkingActorContext.Release();
-                CurrentWorkingActorContext = null;
+                ContextProvider.CurrentWorkingActorContext.Release();
+                ContextProvider.CurrentWorkingActorContext = null;
             }
 
             SkeletonAnimation skeletonAnimation = null;
 
-            skeletonAnimation = ActorAssetDatabase.CreateActorAsset(path).GetComponent<SkeletonAnimation>();
+            // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
+            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id);
+            skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
 
-            CurrentWorkingActorContext = new();
-            CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
+            ContextProvider.CurrentWorkingActorContext = new();
+            ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
 
             openAssetDialog.SetActive(false);
 
@@ -154,7 +179,7 @@ namespace ActorWorkspace.InAppDebug
         public void OnClickEntityFromAnimationList(UIEntity sender)
         {
             var animation = sender.UserData as Spine.Animation;
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
 
             // Ctrlが押されている場合は再生リストに追加する
             if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
@@ -214,7 +239,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnSkinChanged(int index)
         {
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             var skeleton = skeletonAnimation.Skeleton;
 
             if (index < 0 || skeleton.Data.Skins.Count <= index)
@@ -230,7 +255,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnSpeedValueChanged(float value)
         {
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (trackEntry == null) return;
             trackEntry.TimeScale = value;
@@ -240,7 +265,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnMixValueChanged(float value)
         {
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             // TrackごとにMixを設定するようなことはできない
             AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
             stateData.DefaultMix = value;
@@ -250,7 +275,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnLoopValueChanged(bool value)
         {
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (trackEntry == null) return;
 
@@ -269,7 +294,7 @@ namespace ActorWorkspace.InAppDebug
 
             var uiListView = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIListView>();
 
-            var skeletonAnimation = CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             if (trackEntry == null)
             {

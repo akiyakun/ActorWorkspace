@@ -5,6 +5,6 @@ namespace ActorWorkspace
 {
     public interface IAWActorFactory
     {
-        UniTask<IAWActor> Create(int id);
+        UniTask<IAWActor> CreateAsync(int id);
     }
 }
