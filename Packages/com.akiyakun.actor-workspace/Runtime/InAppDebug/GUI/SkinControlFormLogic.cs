@@ -25,20 +25,20 @@ namespace ActorWorkspace.InAppDebug
             listView.OnClick.RemoveListener(OnClickFromListView);
         }
 
-        // fixme: 引数 skeletonAnimation
-        public void ResetUI(SkeletonAnimation skeletonAnimation)
+        public void ResetUI(IAWActor actor)
         {
-            SkeletonData skeletonData =  skeletonAnimation.Skeleton.Data;
-            ExposedList<Skin> skins = skeletonData.Skins;
+            // SkeletonData skeletonData =  skeletonAnimation.Skeleton.Data;
+            // ExposedList<Skin> skins = skeletonData.Skins;
 
             listView.Clear();
 
-            for (int i = 0; i < skins.Count; i++)
+            var skinList = actor.SkinList;
+            for (int i = 0; i < skinList.Count; i++)
             {
                 var entity = listView.AddEntity();
                 entity.Id = i;
-                entity.name = skins.Items[i].Name;
-                entity.GetComponentInChildren<TMP_Text>().text = skins.Items[i].Name;
+                entity.name = skinList[i].Name;
+                entity.GetComponentInChildren<TMP_Text>().text = skinList[i].Name;
             }
         }
 

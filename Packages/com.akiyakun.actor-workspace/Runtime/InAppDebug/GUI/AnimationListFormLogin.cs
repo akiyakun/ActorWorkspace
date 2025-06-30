@@ -7,6 +7,7 @@ using afl.UI.v1;
 
 using Spine;
 using Spine.Unity;
+using System.Linq;
 
 namespace ActorWorkspace.InAppDebug
 {
@@ -82,19 +83,19 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-        public void ResetUI(SkeletonAnimation skeletonAnimation)
+        public void ResetUI(IAWActor actor)
         {
-            ResetListView(skeletonAnimation);
+            ResetListView(actor);
         }
 
-        public void ResetListView(SkeletonAnimation skeletonAnimation)
+        public void ResetListView(IAWActor actor)
         {
             listView.Clear();
 
-            SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
-            for (int i = 0; i < skeletonData.Animations.Count; i++)
+            var animationList = actor.AnimationController.AnimationList;
+            for (int i = 0; i < animationList.Count; i++)
             {
-                var animation = skeletonData.Animations.Items[i];
+                var animation = animationList[i];
                 var entity = listView.AddEntity();
                 entity.Id = i;
                 entity.UserData = animation;

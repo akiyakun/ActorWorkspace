@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using afl.MasterData;
 
-namespace ActorWorkspace.ActorAssetCollection
+namespace ActorWorkspace.MasterData
 {
     [System.Serializable]
     public class ActorAssetInfo : AssetModel

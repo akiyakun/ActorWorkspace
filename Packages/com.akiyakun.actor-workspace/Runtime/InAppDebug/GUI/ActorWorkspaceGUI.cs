@@ -10,30 +10,11 @@ using afl;
 using afl.UI.v1;
 using afl.UI;
 using TMPro;
-using ActorWorkspace.ActorAssetCollection;
+using ActorWorkspace.MasterData;
 using afl.MasterData;
-using ActorWorkspace.UnitySpine;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class ActorWorkspaceGUIContextProvider : UniversalContextProvider
-    {
-        public IAssetRepository AssetRepository { get; private set; }
-        public IAWActorFactory ActorFactory { get; private set; }
-
-        public WorkingActorContext CurrentWorkingActorContext { get; set; }
-
-        public ActorWorkspaceGUIContextProvider()
-        {
-            var actorAssetCollectionInAssetDatabase = new ActorAssetCollectionInAssetDatabase();
-            actorAssetCollectionInAssetDatabase.assetRootDirectory = "Assets/AssetBundleData/Actor";
-            actorAssetCollectionInAssetDatabase.Init();
-
-            AssetRepository = actorAssetCollectionInAssetDatabase;
-            ActorFactory = new SpineActorFactoryInAssetDatabase(AssetRepository);
-        }
-    }
-
     public class ActorWorkspaceGUI : MonoBehaviour, IAsyncInitializable
     {
         [SerializeField] Camera navigationCamera;
@@ -156,30 +137,33 @@ namespace ActorWorkspace.InAppDebug
                 ContextProvider.CurrentWorkingActorContext = null;
             }
 
-            SkeletonAnimation skeletonAnimation = null;
+            // SkeletonAnimation skeletonAnimation = null;
 
             // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
             IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id);
-            skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
+            // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
 
             ContextProvider.CurrentWorkingActorContext = new();
-            ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
+            // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
+            ContextProvider.CurrentWorkingActorContext.Actor = actor;
 
             openAssetDialog.SetActive(false);
 
             // UIをリセット
-            animationListFormLogic.ResetUI(skeletonAnimation);
+            animationListFormLogic.ResetUI(actor);
             animationControlFormLogic.ResetUI(loop: animationControlFormLogic.IsLoop);
-            skinControlFormLogic.ResetUI(skeletonAnimation);
-            playListControlFormLogic.ResetUI(skeletonAnimation);
+            skinControlFormLogic.ResetUI(actor);
+            playListControlFormLogic.ResetUI(actor);
         }
 
 
         // アニメーションリストからアニメーションをクリックしたときの処理
         public void OnClickEntityFromAnimationList(UIEntity sender)
         {
-            var animation = sender.UserData as Spine.Animation;
-            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // var animation = sender.UserData as Spine.Animation;
+            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var animation = sender.UserData as IAWAnimation;
+            var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
 
             // Ctrlが押されている場合は再生リストに追加する
             if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
@@ -188,16 +172,20 @@ namespace ActorWorkspace.InAppDebug
                 return;
             }
 
-            AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+            // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
 
-            TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
+            // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
+            // if (cu != null && cu.Animation == animation)
+            IAWTrack cu = animationController.GetTrack(currentTrackIndex);
             if (cu != null && cu.Animation == animation)
             {
                 // 再生チェックマークを更新
                 animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, false);
 
                 // 同じアニメーションが選択された場合は停止させる
-                skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
+                // animationController.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
+                animationController.SetEmptyAnimation(currentTrackIndex);
+
                 // ClearTrack()だけだと一時停止みたいになってしまう
                 // skeletonAnimation.AnimationState.ClearTrack(currentTrackIndex);
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, false);
@@ -210,7 +198,8 @@ namespace ActorWorkspace.InAppDebug
                     // 別のトラックが再生中なので再生ができない
                     // 停止させる
                     animationListFormLogic.SetPlayingCheckmark(sender, currentTrackIndex, false);
-                    skeletonAnimation.AnimationState.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
+                    // animationController.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
+                    animationController.SetEmptyAnimation(currentTrackIndex);
                     animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, false);
                     return;
                 }
@@ -221,15 +210,18 @@ namespace ActorWorkspace.InAppDebug
                 //     stateData.SetMix(cu.Animation, animation, stateData.DefaultMix);
                 // }
 
-                TrackEntry trackEntry = skeletonAnimation.AnimationState.SetAnimation(
-                    currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop);
+                // TrackEntry trackEntry =
+                animationController.SetAnimation(
+                    currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop
+                    , timeScale: trackInfoList[currentTrackIndex].Speed
+                );
                 // MixDurationを0にしないとDefaultMixが適応されない?
                 // trackEntry.MixDuration = 3.0f;
 
                 // skeletonAnimation.AnimationState.AddAnimation(
                 //     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop, delay: 0.0f);
 
-                trackEntry.TimeScale = trackInfoList[currentTrackIndex].Speed;
+                // trackEntry.TimeScale = trackInfoList[currentTrackIndex].Speed;
 
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, true);
 
@@ -239,6 +231,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnSkinChanged(int index)
         {
+            /* fixme
             var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             var skeleton = skeletonAnimation.Skeleton;
 
@@ -251,35 +244,41 @@ namespace ActorWorkspace.InAppDebug
             var skin = skeleton.Data.Skins.Items[index];
             skeleton.SetSkin(skin);
             skeleton.SetSlotsToSetupPose();
+            */
         }
 
         public void OnSpeedValueChanged(float value)
         {
-            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-            if (trackEntry == null) return;
-            trackEntry.TimeScale = value;
+            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
+            var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
+            if (track == null) return;
+            track.TimeScale = value;
             trackInfoList[currentTrackIndex].Speed = value;
             // Debug.Log($"OnSpeedValueChanged: trackEntry.TimeScale={trackEntry.TimeScale}, value={value}");
         }
 
         public void OnMixValueChanged(float value)
         {
-            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
             // TrackごとにMixを設定するようなことはできない
-            AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-            stateData.DefaultMix = value;
+            // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+            // stateData.DefaultMix = value;
+            track.MixDuration = value;
             trackInfoList[currentTrackIndex].Mix = value;
             // Debug.Log($"OnMixValueChanged: stateData.DefaultMix={stateData.DefaultMix}, value={value}");
         }
 
         public void OnLoopValueChanged(bool value)
         {
-            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-            if (trackEntry == null) return;
+            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
+            // if (trackEntry == null) return;
+            var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
+            var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
 
-            skeletonAnimation.AnimationState.SetAnimation(currentTrackIndex, animation: trackEntry.Animation, loop: value);
+            animationController.SetAnimation(currentTrackIndex, animation: track.Animation, loop: value);
         }
 
         // index: UIの0-4のボタンのインデックス
@@ -294,20 +293,22 @@ namespace ActorWorkspace.InAppDebug
 
             var uiListView = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIListView>();
 
-            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-            if (trackEntry == null)
+            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
+            var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
+            if (track == null)
             {
                 afl.Service.Input.EventSystemHelper.SetSelectedGameObject(null);
                 return;
             }
 
-            SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
-            // foreach (Spine.Animation animation in skeletonData.Animations)
-            for (int i = 0; i < skeletonData.Animations.Count; i++)
+            // SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
+            // for (int i = 0; i < skeletonData.Animations.Count; i++)
+            var animationList = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.AnimationList;
+            for (int i = 0; i < animationList.Count; i++)
             {
-                var animation = skeletonData.Animations.Items[i];
-                if (animation == trackEntry.Animation)
+                var animation = animationList[i];
+                if (animation == track.Animation)
                 {
                     var entity = uiListView.ContentRoot.GetEntity(i);
                     Debug.Assert(entity != null, $"Entity not found for index {i} in UIListView");

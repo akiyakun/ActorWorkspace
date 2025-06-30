@@ -14,15 +14,20 @@ namespace ActorWorkspace.InAppDebug
 
         [SerializeField] UIListView listView;
 
-        SkeletonAnimation skeletonAnimation;
-        Spine.Animation lastAnimation;
+        // SkeletonAnimation skeletonAnimation;
+        // Spine.Animation lastAnimation;
+        IAWActor actor;
+        IAWAnimationController animationController;
+        IAWAnimation lastAnimation;
 
-        public void ResetUI(SkeletonAnimation skeletonAnimation)
+        public void ResetUI(IAWActor actor)
         {
-            this.skeletonAnimation = skeletonAnimation;
-            lastAnimation = null;
+            // this.skeletonAnimation = skeletonAnimation;
+            // lastAnimation = null;
+            this.actor = actor;
 
-            skeletonAnimation.state.Complete += OnAnimationComplete;
+            // skeletonAnimation.state.Complete += OnAnimationComplete;
+            animationController.OnAnimationComplate += OnAnimationComplete;
         }
 
         public void ClearPlayList()
@@ -30,10 +35,11 @@ namespace ActorWorkspace.InAppDebug
             listView.Clear();
             lastAnimation = null;
 
-            skeletonAnimation.state.SetEmptyAnimation(trackIndex, 0.0f);
+            // skeletonAnimation.state.SetEmptyAnimation(trackIndex, 0.0f);
+            animationController.SetEmptyAnimation(trackIndex, 0.0f);
         }
 
-        public void AddPlayList(Spine.Animation animation)
+        public void AddPlayList(IAWAnimation animation)
         {
             var entity = listView.AddEntity();
             entity.UserData = animation;
@@ -60,25 +66,38 @@ namespace ActorWorkspace.InAppDebug
             var itemList = listView.ItemList;
             for (int i = 0; i < itemList.Count; i++)
             {
-                var animation = itemList[i].UserData as Spine.Animation;
+                // var animation = itemList[i].UserData as Spine.Animation;
+                var animation = itemList[i].UserData as IAWAnimation;
                 if (i == 0)
                 {
-                    skeletonAnimation.state.SetAnimation(trackIndex, animation, loop: false);
+                    // skeletonAnimation.state.SetAnimation(trackIndex, animation, loop: false);
+                    animationController.SetAnimation(trackIndex, animation, loop: false);
                 }
                 else
                 {
-                    skeletonAnimation.state.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
+                    // skeletonAnimation.state.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
+                    animationController.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
                 }
             }
         }
 
-        void OnAnimationComplete(Spine.TrackEntry entry)
+        // void OnAnimationComplete(Spine.TrackEntry entry)
+        // {
+        //     if (lastAnimation == null) return;
+
+        //     if (lastAnimation == entry.Animation)
+        //     {
+        //         Debug.Log($"OnAnimationComplete: {entry.Animation.Name}");
+        //         ResetAnimations();
+        //     }
+        // }
+        void OnAnimationComplete(IAWAnimation animation)
         {
             if (lastAnimation == null) return;
 
-            if (lastAnimation == entry.Animation)
+            if (lastAnimation == animation)
             {
-                Debug.Log($"OnAnimationComplete: {entry.Animation.Name}");
+                Debug.Log($"OnAnimationComplete: {animation.Name}");
                 ResetAnimations();
             }
         }

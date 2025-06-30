@@ -6,18 +6,18 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using afl;
 using afl.MasterData;
-using Spine.Unity;
 
 using UnityEditor;
 // using afl.Editor;
 
-namespace ActorWorkspace.ActorAssetCollection
+namespace ActorWorkspace.MasterData
 {
     /// <summary>
     /// AssetDatabaseからアセットリストを作成
     /// Editor専用
     /// </summary>
-    public class ActorAssetCollectionInAssetDatabase : IAssetRepository
+    public class ActorAssetCollectionInAssetDatabase<TAsset> : IAssetRepository
+         where TAsset : UnityEngine.Object
     {
         [SerializeField] public string assetRootDirectory;
         // [SerializeReference] public System.Type actorAssetType;
@@ -65,14 +65,14 @@ namespace ActorWorkspace.ActorAssetCollection
             Debug.Assert(string.IsNullOrEmpty(assetRootDirectory) == false);
             var targetFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(assetRootDirectory);
             Debug.Assert(targetFolder != null);
-            IReadOnlyList<SkeletonDataAsset> result = FindAssets<SkeletonDataAsset>(targetFolder);
+            IReadOnlyList<TAsset> result = FindAssets<TAsset>(targetFolder);
             for (int i = 0; i < result.Count; i++)
             {
-                var skeletonDataAsset = result[i];
+                var asset = result[i];
 
                 var info = new ActorAssetInfo();
                 info.Id = i + 1; // MasterDataのIdは1から始まる
-                info.AssetLocator = AssetDatabase.GetAssetPath(skeletonDataAsset);
+                info.AssetLocator = AssetDatabase.GetAssetPath(asset);
                 info.Name = Path.GetDirectoryName(info.AssetLocator).Replace(assetRootDirectory, "");
                 // Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
                 actorAssetInfoList.Add(info);
