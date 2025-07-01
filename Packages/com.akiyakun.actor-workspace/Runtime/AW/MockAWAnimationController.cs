@@ -16,8 +16,9 @@ namespace ActorWorkspace
         {
 
         }
-        public void SetAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f, float timeScale = 1.0f)
+        public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
+            return track;
         }
         public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
         {

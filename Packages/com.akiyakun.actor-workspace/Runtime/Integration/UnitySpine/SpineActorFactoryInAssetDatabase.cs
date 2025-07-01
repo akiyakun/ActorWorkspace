@@ -35,7 +35,7 @@ namespace ActorWorkspace.UnitySpine
             // Debug.Log($"SpineActorFactoryInAssetDatabase.CreateAsync(): {locator}");
             // var skeletonAnimation = SpineUtility.CreateSkeletonAnimationFromAssetDatabae(locator);
             var skeletonAnimation = CreateSkeletonAnimationFromAssetDatabae(locator);
-            var actorMonoBehaviour = skeletonAnimation.gameObject.AddComponent<AWActorMonoBehaviour>();
+            var actorMonoBehaviour = skeletonAnimation.gameObject.AddComponent<SpineSkeletonActor>();
             return actorMonoBehaviour as IAWActor;
         }
 

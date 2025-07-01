@@ -26,7 +26,7 @@ namespace ActorWorkspace
 
         // FIXME; spine
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);
-        public void SetAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f, float timeScale = 1.0f);
+        public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop);
         public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
         // fixme: loop intにしたい
 

@@ -5,9 +5,7 @@ using Spine.Unity;
 
 namespace ActorWorkspace.UnitySpine
 {
-    using IntegrationData = SkeletonAnimation;
     using ImplAnimtionController = SpineSkeletonAnimation;
-    // using ImplSkin = SpineSkeletonAnimation;
     public class SpineSkeletonActor : MonoBehaviour, IAWActor
     {
         public GameObject GameObject => this.gameObject;
@@ -15,20 +13,22 @@ namespace ActorWorkspace.UnitySpine
         public IAWAnimationController AnimationController { get; protected set; }
         public IReadOnlyList<IAWSkin> SkinList => skinList;
 
-        IntegrationData integrationData;
+        SkeletonAnimation skeletonAnimation;
         // ImplAnimtion implAnimtion;
-        ImplAnimtionController implAnimtionController;
+        SpineSkeletonAnimationController spineSkeletonAnimationController;
         // ImplSkin implSkin;
         List<IAWSkin> skinList;
 
+        // FIXME: Awakeよくない
         void Awake()
         {
-            integrationData = GetComponent<SkeletonAnimation>();
-            Debug.Assert(integrationData != null);
+            skeletonAnimation = GetComponent<SkeletonAnimation>();
+            Debug.Assert(skeletonAnimation != null);
 
             // implAnimtion = new SpineSkeletonAnimation(integrationData);
             // Animation = implAnimtion;
-            implAnimtionController = new SpineSkeletonAnimationController(integrationData);
+            spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation);
+            AnimationController = spineSkeletonAnimationController as IAWAnimationController;
 
             skinList = new List<IAWSkin>();
         }

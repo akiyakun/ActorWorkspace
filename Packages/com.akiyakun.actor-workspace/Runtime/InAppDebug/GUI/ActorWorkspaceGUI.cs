@@ -17,6 +17,8 @@ namespace ActorWorkspace.InAppDebug
 {
     public class ActorWorkspaceGUI : MonoBehaviour, IAsyncInitializable
     {
+        public const string AssetRootDirectory = "Assets/AssetBundleData/Actor";
+
         [SerializeField] Camera navigationCamera;
         public Camera CurrentCamera => navigationCamera;
 
@@ -52,10 +54,16 @@ namespace ActorWorkspace.InAppDebug
         //     // openAssetDialog.SetActive(false);
         // }
 
+        public void SetContextProvider(ActorWorkspaceGUIContextProvider contextProvider)
+        {
+            ContextProvider = contextProvider;
+        }
+
         // From IAsyncInitializable
         public async UniTask<int> InitializeAsync(CancellationToken cancellationToken = default)
         {
-            ContextProvider = new();
+            // ContextProvider = contextProvider;
+            Debug.Assert(ContextProvider != null);
 
             {
                 var group = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIEntityGroup>();
@@ -88,7 +96,9 @@ namespace ActorWorkspace.InAppDebug
                 await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
             }
 
-            // await LoadAsset(1);
+#if UNITY_EDITOR
+            await InitializeEditorAsync(cancellationToken);
+#endif
 
             IsInitialized = true;
             return 0;
@@ -211,17 +221,15 @@ namespace ActorWorkspace.InAppDebug
                 // }
 
                 // TrackEntry trackEntry =
-                animationController.SetAnimation(
-                    currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop
-                    , timeScale: trackInfoList[currentTrackIndex].Speed
-                );
+                var track = animationController.SetAnimation(
+                    currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop);
                 // MixDurationを0にしないとDefaultMixが適応されない?
                 // trackEntry.MixDuration = 3.0f;
 
                 // skeletonAnimation.AnimationState.AddAnimation(
                 //     currentTrackIndex, animation: animation, loop: animationControlFormLogic.IsLoop, delay: 0.0f);
 
-                // trackEntry.TimeScale = trackInfoList[currentTrackIndex].Speed;
+                track.TimeScale = trackInfoList[currentTrackIndex].Speed;
 
                 animationControlFormLogic.TrackAnimationChanged(currentTrackIndex, true);
 
@@ -321,5 +329,45 @@ namespace ActorWorkspace.InAppDebug
             afl.Service.Input.EventSystemHelper.SetSelectedGameObject(null);
         }
 
+
+#if UNITY_EDITOR
+        [Space(10)]
+        [Header("Editor Debug Only")]
+
+        [SerializeField] string 実行時に読み込むアセットフォルダーのパス;
+        string ForceLoadAssetAtRunning
+        {
+            get => 実行時に読み込むアセットフォルダーのパス;
+            set => 実行時に読み込むアセットフォルダーのパス = value;
+        }
+
+        async UniTask InitializeEditorAsync(CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(ForceLoadAssetAtRunning)) return;
+
+            // var path = AssetDatabase.GetAssetPath(ForceLoadAssetAtRunning);
+            var path = Utility.GetDirectoryPath(ForceLoadAssetAtRunning);
+            Debug.Log($"ForceLoadAssetAtRunning: {path}");
+
+            // if (string.IsNullOrEmpty(ForceLoadAssetAtRunning) == false)
+            {
+                var list = ContextProvider.AssetRepository.ToList();
+                for (int i = 0; i < list.Count; ++i)
+                {
+                    var model = list[i];
+                    // var path = Utility.GetDirectoryPath(model.GetName()).Replace(ActorWorkspaceGUIContextProvider.AssetRootDirectory, "");
+                    // var path = Utility.GetDirectoryPath(model.GetName()).Replace(ActorWorkspaceGUIContextProvider.AssetRootDirectory, "");
+                    // if (path == ForceLoadAssetAtRunning)
+                    string modelFullPath = Utility.GetDirectoryPath(Utility.PathCombine(ActorWorkspaceGUI.AssetRootDirectory, model.GetName()));
+                    Debug.Log($"modelFullPath: {modelFullPath}");
+                    if (path == modelFullPath)
+                    {
+                        await LoadAsset(model.GetId());
+                        return;
+                    }
+                }
+            }
+        }
+#endif
     }
 }

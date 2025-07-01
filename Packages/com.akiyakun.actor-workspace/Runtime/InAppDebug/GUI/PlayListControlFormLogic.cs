@@ -25,6 +25,7 @@ namespace ActorWorkspace.InAppDebug
             // this.skeletonAnimation = skeletonAnimation;
             // lastAnimation = null;
             this.actor = actor;
+            animationController = actor.AnimationController;
 
             // skeletonAnimation.state.Complete += OnAnimationComplete;
             animationController.OnAnimationComplate += OnAnimationComplete;

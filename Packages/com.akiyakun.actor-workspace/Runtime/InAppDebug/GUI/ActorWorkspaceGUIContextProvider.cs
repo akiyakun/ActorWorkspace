@@ -18,14 +18,17 @@ namespace ActorWorkspace.InAppDebug
             ActorFactory = new MockAWActorFactory();
         }
 
-        // public ActorWorkspaceGUIContextProvider(IAssetRepository assetRepository, IAWActorFactory actorFactory)
-        // {
-        //     var actorAssetCollectionInAssetDatabase = new ActorAssetCollectionInAssetDatabase();
-        //     actorAssetCollectionInAssetDatabase.assetRootDirectory = "Assets/AssetBundleData/Actor";
-        //     actorAssetCollectionInAssetDatabase.Init();
+        public ActorWorkspaceGUIContextProvider(IAssetRepository assetRepository, IAWActorFactory actorFactory)
+        {
+            AssetRepository = assetRepository;
+            ActorFactory = actorFactory;
 
-        //     AssetRepository = actorAssetCollectionInAssetDatabase;
-        //     ActorFactory = new SpineActorFactoryInAssetDatabase(AssetRepository);
-        // }
+            // var actorAssetCollectionInAssetDatabase = new ActorAssetCollectionInAssetDatabase();
+            // actorAssetCollectionInAssetDatabase.assetRootDirectory = "Assets/AssetBundleData/Actor";
+            // actorAssetCollectionInAssetDatabase.Init();
+
+            // AssetRepository = actorAssetCollectionInAssetDatabase;
+            // ActorFactory = new SpineActorFactoryInAssetDatabase(AssetRepository);
+        }
     }
 }

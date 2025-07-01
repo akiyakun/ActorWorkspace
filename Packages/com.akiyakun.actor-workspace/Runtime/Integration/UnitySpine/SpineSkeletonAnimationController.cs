@@ -9,30 +9,48 @@ namespace ActorWorkspace.UnitySpine
     // だけど使用するときはそのトラックのスピード等は保存されていて欲しい
     public class SpineTrack : IAWTrack
     {
-        public float TimeScale
+        public int TrackIndex;
+
+        float timeScale = 1.0f;
+        public override float TimeScale
         {
-            get => TrackEntry.TimeScale;
-            set => TrackEntry.TimeScale = value;
+            get => timeScale;
+            set => SetTimeScale(value);
         }
 
-        public float MixDuration
-        {
-            get => TrackEntry.DefaultMix;
-            set => TrackEntry.DefaultMix = value;
-        }
+        public override float MixDuration { get; set; }
+        // {
+        //     get => TrackEntry.DefaultMix;
+        //     set => TrackEntry.DefaultMix = value;
+        // }
 
-        public IAWAnimation Animation => TrackEntry?.Animation;
+        public override IAWAnimation Animation { get; protected set; }
         public TrackEntry TrackEntry { get; set; }
 
-        public void Set(TrackEntry trackEntry)
+        SpineSkeletonAnimation spineSkeletonAnimation;
+
+        private SpineTrack() { }
+        public SpineTrack(int trackIndex)
         {
-            if (TrackEntry != null)
+            TrackIndex = trackIndex;
+        }
+
+        public void Set(SpineSkeletonAnimation spineSkeletonAnimation)
+        {
+            this.spineSkeletonAnimation = spineSkeletonAnimation;
+            Animation = spineSkeletonAnimation as IAWAnimation;
+        }
+
+        public void SetTimeScale(float value)
+        {
+            timeScale = value;
+
+            // SkeletonAnimationが存在するならそのトラックのTimeScaleにも反映させる
+            if (spineSkeletonAnimation == null) return;
+            TrackEntry trackEntry = spineSkeletonAnimation.SkeletonAnimation.AnimationState.GetCurrent(TrackIndex);
+            if (trackEntry != null)
             {
-                TrackEntry = trackEntry;
-            }
-            else
-            {
-                TrackEntry = null;
+                trackEntry.TimeScale = timeScale;
             }
         }
 
@@ -45,14 +63,14 @@ namespace ActorWorkspace.UnitySpine
         public event System.Action<IAWAnimation> OnAnimationComplate;
 
         SkeletonAnimation skeletonAnimation;
-        List<IAWAnimation> animationList = new List<IAWAnimation>();
+        List<SpineSkeletonAnimation> animationList = new();
 
         List<SpineTrack> trackList = new List<SpineTrack>();
 
         public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation)
         {
             this.skeletonAnimation = skeletonAnimation;
-            Dbug.Assert(skeletonAnimation != null);
+            Debug.Assert(skeletonAnimation != null);
 
             // IAWAnimationのリストを作成
             {
@@ -67,7 +85,7 @@ namespace ActorWorkspace.UnitySpine
             {
                 for (int i = 0; i < IAWTrack.MaxTrack; i++)
                 {
-                    trackList.Add(new SpineTrack());
+                    trackList.Add(new SpineTrack(i));
                 }
             }
         }
@@ -75,34 +93,37 @@ namespace ActorWorkspace.UnitySpine
 
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {
+            var track = trackList[trackIndex];
+
             // デフォルト(負の値)のときは設定されたデフォルト時間を使う
             if (mixDuration < 0.0f)
             {
-                AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-                mixDuration = stateData.DefaultMix;
+                // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+                // mixDuration = stateData.DefaultMix;
+                mixDuration = track.MixDuration;
             }
 
             skeletonAnimation.state.SetEmptyAnimation(trackIndex, mixDuration);
-            var track = trackList[trackIndex];
             track.Set(null);
         }
-        public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
+        public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
-            TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackIndex, animation, delay: delay, loop: loop);
+            // TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackIndex, animation.Name, loop: loop);
             // trackEntry.TimeScale = timeScale;
             var track = trackList[trackIndex];
-            track.Set(trackEntry);
+            track.Set(animation as SpineSkeletonAnimation);
             return track;
         }
         public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
         {
-            skeletonAnimation.state.AddAnimation(trackIndex, animation, loop: false, delay: delay);
+            skeletonAnimation.state.AddAnimation(trackIndex, animation.Name, loop: false, delay: delay);
         }
 
-        public AWTrack GetTrack(int trackIndex)
+        public IAWTrack GetTrack(int trackIndex)
         {
-            TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(trackIndex);
-            if (cu == null) return null;
+            // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(trackIndex);
+            // if (cu == null) return null;
+            // trackList[trackIndex].TrackEntry = cu;
             return trackList[trackIndex];
         }
     }

@@ -12,17 +12,19 @@ namespace ActorWorkspace.UnitySpine
         public string Name { get; private set; }
 
         SkeletonAnimation skeletonAnimation;
+        public SkeletonAnimation SkeletonAnimation => skeletonAnimation;
+
         Spine.Animation spineAnimation;
 
-        public IReadOnlyList<AWAnimationData> AnimationList => animationDataList;
+        // public IReadOnlyList<AWAnimationData> AnimationList => animationDataList;
 
         public SpineSkeletonAnimation(SkeletonAnimation skeletonAnimation, Spine.Animation spineAnimation)
         {
             this.skeletonAnimation = skeletonAnimation;
-            Dbug.Assert(skeletonAnimation != null);
+            Debug.Assert(skeletonAnimation != null);
 
             this.spineAnimation = spineAnimation;
-            Dbug.Assert(spineAnimation != null);
+            Debug.Assert(spineAnimation != null);
 
             Name = spineAnimation.Name;
         }
