@@ -61,16 +61,23 @@ namespace ActorWorkspace.UnitySpine
         public IReadOnlyList<IAWAnimation> AnimationList => animationList;
 
         public event System.Action<IAWAnimation> OnAnimationComplate;
+        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
 
         SkeletonAnimation skeletonAnimation;
+        IAWEventDecoder eventDecoder;
+
         List<SpineSkeletonAnimation> animationList = new();
 
         List<SpineTrack> trackList = new List<SpineTrack>();
 
-        public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation)
+
+        public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation, IAWEventDecoder eventDecoder)
         {
             this.skeletonAnimation = skeletonAnimation;
             Debug.Assert(skeletonAnimation != null);
+
+            this.eventDecoder = eventDecoder;
+            Debug.Assert(eventDecoder != null);
 
             // IAWAnimationのリストを作成
             {
@@ -88,6 +95,10 @@ namespace ActorWorkspace.UnitySpine
                     trackList.Add(new SpineTrack(i));
                 }
             }
+
+            // コールバック
+            // FIXME: 終了処理
+            skeletonAnimation.AnimationState.Event += OnHandleEvent;
         }
 
 
@@ -129,6 +140,13 @@ namespace ActorWorkspace.UnitySpine
             // if (cu == null) return null;
             // trackList[trackIndex].TrackEntry = cu;
             return trackList[trackIndex];
+        }
+
+
+        void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
+        {
+            var animation = trackList[trackEntry.TrackIndex].Animation;
+            OnAnimationEvent?.Invoke(animation, eventDecoder.Decode(spineEvent));
         }
     }
 }

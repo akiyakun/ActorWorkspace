@@ -39,6 +39,7 @@ namespace ActorWorkspace
                 if (newAsset != null)
                 {
                     cache.Add(path, newAsset);
+                    return newAsset;
                 }
             }
 

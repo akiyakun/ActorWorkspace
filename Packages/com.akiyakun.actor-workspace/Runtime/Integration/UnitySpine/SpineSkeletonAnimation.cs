@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace ActorWorkspace.UnitySpine
 {
-    using IntegrationData = SkeletonAnimation;
     public class SpineSkeletonAnimation : IAWAnimation
     {
         public string Name { get; private set; }
@@ -15,8 +14,6 @@ namespace ActorWorkspace.UnitySpine
         public SkeletonAnimation SkeletonAnimation => skeletonAnimation;
 
         Spine.Animation spineAnimation;
-
-        // public IReadOnlyList<AWAnimationData> AnimationList => animationDataList;
 
         public SpineSkeletonAnimation(SkeletonAnimation skeletonAnimation, Spine.Animation spineAnimation)
         {

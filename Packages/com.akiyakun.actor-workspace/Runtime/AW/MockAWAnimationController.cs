@@ -10,6 +10,7 @@ namespace ActorWorkspace
         public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new MockAWAnimation() };
 
         public event System.Action<IAWAnimation> OnAnimationComplate;
+        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
 
         // FIXME; spine
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)

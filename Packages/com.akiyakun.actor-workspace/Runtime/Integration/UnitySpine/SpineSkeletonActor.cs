@@ -6,29 +6,28 @@ using System.Linq;
 
 namespace ActorWorkspace.UnitySpine
 {
-    using ImplAnimtionController = SpineSkeletonAnimation;
     public class SpineSkeletonActor : MonoBehaviour, IAWActor
     {
         public GameObject GameObject => this.gameObject;
-        // public IAWAnimation Animation { get; protected set; }
         public IAWAnimationController AnimationController { get; protected set; }
         public IReadOnlyList<IAWSkin> SkinList => skinList.Cast<IAWSkin>().ToList();
 
         SkeletonAnimation skeletonAnimation;
-        // ImplAnimtion implAnimtion;
+        IAWEventDecoder eventDecoder;
         SpineSkeletonAnimationController spineSkeletonAnimationController;
-        // ImplSkin implSkin;
         List<SpineSkin> skinList;
 
         // FIXME: Awakeよくない
+        // eventDecoder も受け取りたい
         void Awake()
         {
             skeletonAnimation = GetComponent<SkeletonAnimation>();
             Debug.Assert(skeletonAnimation != null);
 
-            // implAnimtion = new SpineSkeletonAnimation(integrationData);
-            // Animation = implAnimtion;
-            spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation);
+            eventDecoder = new SpineEventDecoder();
+            Debug.Assert(eventDecoder != null);
+
+            spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
             AnimationController = spineSkeletonAnimationController as IAWAnimationController;
 
             var skins = skeletonAnimation.Skeleton.Data.Skins.Items;

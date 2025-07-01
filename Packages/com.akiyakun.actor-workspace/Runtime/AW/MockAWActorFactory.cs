@@ -6,6 +6,8 @@ namespace ActorWorkspace
 {
     public class MockAWActorFactory : IAWActorFactory
     {
+        public event System.Action<IAWActor> OnCreated;
+
         public UniTask<IAWActor> CreateAsync(int id, CancellationToken cancellationToken = default)
         {
             return UniTask.FromResult<IAWActor>(new MockAWActor());

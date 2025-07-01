@@ -22,6 +22,8 @@ namespace ActorWorkspace
 
         // public System.Action<AWAnimationData> OnAnimationComplate { get; }
         public event System.Action<IAWAnimation> OnAnimationComplate;
+        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
+        // public event System.Action<AWEventData> OnEvent;
 
 
         // FIXME; spine

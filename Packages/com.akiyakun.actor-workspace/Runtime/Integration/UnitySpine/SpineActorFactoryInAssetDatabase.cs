@@ -13,6 +13,8 @@ namespace ActorWorkspace.UnitySpine
     // AssetDatabaseからSpineのアセットを生成
     public class SpineActorFactoryInAssetDatabase : IAWActorFactory
     {
+        public event System.Action<IAWActor> OnCreated;
+
         IAssetRepository assetRepository;
 
         private SpineActorFactoryInAssetDatabase()
@@ -38,8 +40,14 @@ namespace ActorWorkspace.UnitySpine
             // Debug.Log($"SpineActorFactoryInAssetDatabase.CreateAsync(): {locator}");
             // var skeletonAnimation = SpineUtility.CreateSkeletonAnimationFromAssetDatabae(locator);
             var skeletonAnimation = CreateSkeletonAnimationFromAssetDatabae(locator);
-            var actorMonoBehaviour = skeletonAnimation.gameObject.AddComponent<SpineSkeletonActor>();
-            return actorMonoBehaviour as IAWActor;
+
+            var spineSkeletonActor = skeletonAnimation.gameObject.AddComponent<SpineSkeletonActor>();
+            IAWActor actor = spineSkeletonActor as IAWActor;
+            Debug.Assert(actor != null);
+
+            OnCreated?.Invoke(actor);
+
+            return actor;
         }
 
         public static SkeletonAnimation CreateSkeletonAnimationFromAssetDatabae(string path)
