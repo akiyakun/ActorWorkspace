@@ -108,8 +108,12 @@ namespace ActorWorkspace.UnitySpine
         }
         public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
-            // TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackIndex, animation.Name, loop: loop);
-            // trackEntry.TimeScale = timeScale;
+            if (animation != null)
+            {
+                TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackIndex, animation.Name, loop: loop);
+                // trackEntry.TimeScale = timeScale;
+            }
+
             var track = trackList[trackIndex];
             track.Set(animation as SpineSkeletonAnimation);
             return track;

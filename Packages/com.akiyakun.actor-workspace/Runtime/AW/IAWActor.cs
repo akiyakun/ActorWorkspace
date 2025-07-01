@@ -9,6 +9,8 @@ namespace ActorWorkspace
         // IAWAnimation Animation { get; }
         IAWAnimationController AnimationController { get; }
         IReadOnlyList<IAWSkin> SkinList { get; }
+
+        public void SetSkin(int skinIndex);
     }
 
     public interface IAWSkin

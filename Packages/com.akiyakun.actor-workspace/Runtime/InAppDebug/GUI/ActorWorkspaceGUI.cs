@@ -94,7 +94,7 @@ namespace ActorWorkspace.InAppDebug
             }
 
 #if UNITY_EDITOR
-            await InitializeEditorAsync(cancellationToken);
+            await InitializeEditorAsync(cancellationToken: cancellationToken);
 #endif
 
             IsInitialized = true;
@@ -133,10 +133,10 @@ namespace ActorWorkspace.InAppDebug
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
             Debug.Assert(assetInfo != null);
 
-            LoadAsset(assetInfo.Id).Forget();
+            LoadAsset(assetInfo.Id, destroyCancellationToken).Forget();
         }
 
-        async UniTask LoadAsset(int id)
+        async UniTask LoadAsset(int id, CancellationToken cancellationToken)
         {
             if (ContextProvider.CurrentWorkingActorContext != null)
             {
@@ -147,8 +147,9 @@ namespace ActorWorkspace.InAppDebug
             // SkeletonAnimation skeletonAnimation = null;
 
             // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
-            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id);
+            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id, cancellationToken: cancellationToken);
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
+            if (cancellationToken.IsCancellationRequested) return;
 
             ContextProvider.CurrentWorkingActorContext = new();
             // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
@@ -236,20 +237,20 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnSkinChanged(int index)
         {
-            /* fixme
-            var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            var skeleton = skeletonAnimation.Skeleton;
+            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
+            // var skeleton = skeletonAnimation.Skeleton;
+            // var skinList = ContextProvider.CurrentWorkingActorContext.Actor.SkinList;
 
-            if (index < 0 || skeleton.Data.Skins.Count <= index)
-            {
-                Debug.Assert(false);
-                return;
-            }
+            // if (index < 0 || skinList.Count <= index)
+            // {
+            //     Debug.Assert(false);
+            //     return;
+            // }
 
-            var skin = skeleton.Data.Skins.Items[index];
-            skeleton.SetSkin(skin);
-            skeleton.SetSlotsToSetupPose();
-            */
+            // var skin = skeleton.Data.Skins.Items[index];
+            // skeleton.SetSkin(skin);
+            // skeleton.SetSlotsToSetupPose();
+            ContextProvider.CurrentWorkingActorContext.Actor.SetSkin(index);
         }
 
         public void OnSpeedValueChanged(float value)
@@ -359,7 +360,7 @@ namespace ActorWorkspace.InAppDebug
                     Debug.Log($"modelFullPath: {modelFullPath}");
                     if (path == modelFullPath)
                     {
-                        await LoadAsset(model.GetId());
+                        await LoadAsset(model.GetId(), cancellationToken: cancellationToken);
                         return;
                     }
                 }

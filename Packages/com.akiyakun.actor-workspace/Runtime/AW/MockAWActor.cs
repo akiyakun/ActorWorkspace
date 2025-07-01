@@ -12,5 +12,9 @@ namespace ActorWorkspace
         // public IAWAnimation Animation => mockAWAnimation;
         public IAWAnimationController AnimationController => mockAWAnimationController;
         public IReadOnlyList<IAWSkin> SkinList => new List<IAWSkin>();
+
+        public void SetSkin(int skinIndex)
+        {
+        }
     }
 }

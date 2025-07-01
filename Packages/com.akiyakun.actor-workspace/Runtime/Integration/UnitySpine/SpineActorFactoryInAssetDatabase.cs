@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using afl.MasterData;
 using Spine.Unity;
@@ -25,9 +26,11 @@ namespace ActorWorkspace.UnitySpine
         }
 
         // From IActorFactory
-        public virtual async UniTask<IAWActor> CreateAsync(int id)
+        public virtual async UniTask<IAWActor> CreateAsync(int id, CancellationToken cancellationToken = default)
         {
-            await UniTask.Yield();
+            await UniTask.Yield(cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return null;
+
             // Debug.Assert((uint)id < (uint)masterData.Length);
             var model = assetRepository.GetAssetModel(id);
             Debug.Assert(model != null, $"AssetModel not found for id: {id}");
