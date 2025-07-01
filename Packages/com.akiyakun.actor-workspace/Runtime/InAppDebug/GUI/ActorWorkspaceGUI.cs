@@ -4,14 +4,11 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Spine;
-using Spine.Unity;
 using afl;
 using afl.UI.v1;
 using afl.UI;
 using TMPro;
 using ActorWorkspace.MasterData;
-using afl.MasterData;
 
 namespace ActorWorkspace.InAppDebug
 {

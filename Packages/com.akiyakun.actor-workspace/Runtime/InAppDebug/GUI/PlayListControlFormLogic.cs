@@ -1,10 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using afl;
 using afl.UI.v1;
-
-using Spine.Unity;
 
 namespace ActorWorkspace.InAppDebug
 {
