@@ -102,10 +102,14 @@ namespace ActorWorkspace.InAppDebug
         }
 
         // From IAsyncInitializable
-        public async UniTask TerminateAsync(CancellationToken cancellationToken = default)
+        // public async UniTask TerminateAsync(CancellationToken cancellationToken = default)
+        // {
+        //     await UniTask.Yield();
+        // }
+        public void Terminate()
         {
-            await UniTask.Yield();
         }
+
 
         public void OpenAsset()
         {
