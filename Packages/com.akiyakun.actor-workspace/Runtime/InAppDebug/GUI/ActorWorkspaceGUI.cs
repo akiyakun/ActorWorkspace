@@ -64,14 +64,16 @@ namespace ActorWorkspace.InAppDebug
 
             {
                 var group = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIEntityGroup>();
-                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+                await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
 
                 animationListFormLogic.OnClickEntity += OnClickEntityFromAnimationList;
             }
 
             {
                 var group = skinControlFormLogic.gameObject.Find("Root/UIListView").GetComponent<UIEntityGroup>();
-                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+                await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
 
                 skinControlFormLogic.OnSkinChanged += OnSkinChanged;
             }
@@ -85,20 +87,23 @@ namespace ActorWorkspace.InAppDebug
 
             {
                 var group = playListControlFormLogic.gameObject.Find("Root/UIListView").GetComponent<UIEntityGroup>();
-                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+                await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             }
 
             {
                 var group = openAssetDialog.Find("UIListView").GetComponent<UIEntityGroup>();
-                await group.Initialize(UIContextProvider.Default, this.destroyCancellationToken);
+                await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             }
 
 #if UNITY_EDITOR
             await InitializeEditorAsync(cancellationToken: cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
 #endif
 
             IsInitialized = true;
-            return 0;
+            return GeneralReturnCode.Success;
         }
 
         // From IAsyncInitializable
@@ -308,7 +313,7 @@ namespace ActorWorkspace.InAppDebug
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
             if (track == null)
             {
-                afl.Service.Input.EventSystemHelper.SetSelectedGameObject(null);
+                afl.Service.Input.IInputUIEventModule.SetSelectedGameObject(null);
                 return;
             }
 
@@ -328,7 +333,7 @@ namespace ActorWorkspace.InAppDebug
                 }
             }
 
-            afl.Service.Input.EventSystemHelper.SetSelectedGameObject(null);
+            afl.Service.Input.IInputUIEventModule.SetSelectedGameObject(null);
         }
 
 
