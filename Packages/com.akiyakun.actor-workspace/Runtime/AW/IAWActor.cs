@@ -5,20 +5,11 @@ namespace ActorWorkspace
 {
     public interface IAWActor
     {
-        GameObject GameObject { get; }
-        // IAWAnimation Animation { get; }
-        IAWAnimationController AnimationController { get; }
-        IReadOnlyList<IAWSkin> SkinList { get; }
+        public GameObject GameObject { get; }
+        // public IAWAnimation Animation { get; }
+        public IAWAnimationController AnimationController { get; }
+        public IReadOnlyList<IAWSkin> SkinList { get; }
 
         public void SetSkin(int skinIndex);
-    }
-
-    public interface IAWSkin
-    {
-        string Name { get; }
-    }
-    public class MockAWSkin : IAWSkin
-    {
-        public string Name => "MockSkin";
     }
 }
