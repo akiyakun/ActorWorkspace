@@ -9,11 +9,11 @@
       }
     },
     "com.akiyakun.unitycicd": {
-      "version": "https://github.com/akiyakun/unity-ci-cd.git?path=/Packages/com.akiyakun.unitycicd",
+      "version": "https://github.com/akiyakun/unity-ci-cd.git?path=/Packages/com.akiyakun.unitycicd#develop",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "be3b5dbadbbfb6ba72a530cb94de45ce4d2def34"
+      "hash": "ee3ebb661ea0e9b7747c7ffcde73af9ff1cd7f95"
     },
     "com.annulusgames.lit-motion": {
       "version": "https://github.com/annulusgames/LitMotion.git?path=src/LitMotion/Assets/LitMotion",
@@ -38,7 +38,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "e1c6b543124134b6ab3897b5fb42a3d577fe0384"
+      "hash": "ac344759d1fe3dfd2e9fb039a5d57cfb4d7f29ee"
     },
     "com.esotericsoftware.spine.spine-unity": {
       "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Assets/Spine#4.2",
@@ -51,7 +51,7 @@
         "com.unity.modules.physics2d": "1.0.0",
         "com.esotericsoftware.spine.spine-csharp": "4.2.0"
       },
-      "hash": "e1c6b543124134b6ab3897b5fb42a3d577fe0384"
+      "hash": "ac344759d1fe3dfd2e9fb039a5d57cfb4d7f29ee"
     },
     "com.esotericsoftware.spine.timeline": {
       "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Modules/com.esotericsoftware.spine.timeline#4.2",
@@ -61,7 +61,7 @@
         "com.unity.timeline": "1.2.10",
         "com.esotericsoftware.spine.spine-unity": "4.2.13"
       },
-      "hash": "e1c6b543124134b6ab3897b5fb42a3d577fe0384"
+      "hash": "ac344759d1fe3dfd2e9fb039a5d57cfb4d7f29ee"
     },
     "com.esotericsoftware.spine.urp-shaders": {
       "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Modules/com.esotericsoftware.spine.urp-shaders#4.2",
@@ -70,7 +70,7 @@
       "dependencies": {
         "com.unity.render-pipelines.universal": "7.1.5"
       },
-      "hash": "e1c6b543124134b6ab3897b5fb42a3d577fe0384"
+      "hash": "ac344759d1fe3dfd2e9fb039a5d57cfb4d7f29ee"
     },
     "com.unity.addressables": {
       "version": "2.5.0",
@@ -316,7 +316,7 @@
       "url": "https://packages.unity.com"
     },
     "cyou.sumomo.afl": {
-      "version": "https://github.com/akiyakun/afl.git?path=/Packages/cyou.sumomo.afl#v0.3.0",
+      "version": "https://github.com/akiyakun/afl.git?path=/Packages/cyou.sumomo.afl#develop",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -324,7 +324,7 @@
         "com.cysharp.unitask": "2.1.0",
         "com.annulusgames.lit-motion": "1.0.0"
       },
-      "hash": "4affce90489c1c41cd5431cafe406a8e21f1a8fd"
+      "hash": "46db1d9075134e8aace08204744372fb82e14388"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

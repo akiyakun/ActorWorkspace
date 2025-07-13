@@ -60,7 +60,7 @@ namespace ActorWorkspace.InAppDebug
         public async UniTask<int> InitializeAsync(CancellationToken cancellationToken = default)
         {
             // ContextProvider = contextProvider;
-            Debug.Assert(ContextProvider != null);
+            Debug.Assert(ContextProvider != null, "先に SetContextProvider() を呼び出してください。");
 
             {
                 var group = animationListFormLogic.gameObject.Find("UIListView").GetComponent<UIEntityGroup>();

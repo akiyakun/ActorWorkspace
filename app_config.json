@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.3",
   "environment": {
     "company_name": "sumomo",
     "product_name": "ActorWorkspace",
@@ -12,7 +12,8 @@
     "keep_filename": ".autokeep",
     "overwrite_base_dotfiles": true,
     "overwrite_response_file": true,
-    "screenshot_directory": "build"
+    "screenshot_directory": "build",
+    "force_console_settings": true
   },
   "asset_bundle": {
     "enable_auto_addressing": true,

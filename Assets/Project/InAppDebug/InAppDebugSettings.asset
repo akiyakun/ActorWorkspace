@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dea69d41f90c6ea4fa55c27c1d60c145, type: 3}
-  m_Name: AddressableAssetGroupSortSettings
+  m_Script: {fileID: 11500000, guid: 930571c792901364fa594af05271f801, type: 3}
+  m_Name: InAppDebugSettings
   m_EditorClassIdentifier: 
-  sortOrder:
-  - 1445bcf65011fe84e90632d9df42be7d
-  - f0168c08aae984f39aa8f9dc53e89bd7
+  AutoAddressingDirectory: 
+  DebugPageGroupList: []

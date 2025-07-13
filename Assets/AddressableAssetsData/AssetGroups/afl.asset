@@ -10,18 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: afl
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: f0168c08aae984f39aa8f9dc53e89bd7
+  m_GroupName: afl
+  m_GUID: 1445bcf65011fe84e90632d9df42be7d
   m_SerializeEntries:
-  - m_GUID: 8eada531331e04b7991e627045a545ef
-    m_Address: afl/Services/Audio/Unity/MasterAudioMixer
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 962247021a6f945c1827ac880ce397ad
-    m_Address: afl/InAppDebug/DebugMenu/DebugMenuForm
+  - m_GUID: 27c685df4af3568429de636a7e0a2371
+    m_Address: afl/InAppDebug/InAppDebugSettings
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -29,5 +24,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 79e6cdf3106e949eba80c28c7876f099, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 685fdbec1b3574d7a910b2dcfb9dc1cb, type: 2}
-    - {fileID: 11400000, guid: efedaff57672648b7ba71e6f6a3bacf7, type: 2}
+    - {fileID: 11400000, guid: e804c8280c67bae4c9cfa479f5ca4c36, type: 2}
+    - {fileID: 11400000, guid: 7c9d223fd1388f24ea8060c2c978b47d, type: 2}

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 930571c792901364fa594af05271f801, type: 3}
-  m_Name: DebuggerSettingsScriptableObject
+  m_Script: {fileID: 11500000, guid: 5834b5087d578d24c926ce20cd31e6d6, type: 3}
+  m_Name: afl_ContentUpdateGroupSchema
   m_EditorClassIdentifier: 
-  AutoAddressingDirectory: 
-  DebugPageGroupList: []
+  m_Group: {fileID: 11400000, guid: fc96929f6d2a8c94b998b53389bb1782, type: 2}
+  m_StaticContent: 0

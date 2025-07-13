@@ -1,4 +1,4 @@
-# v1.2.5
+# v1.2.6
 
 ###################################################################################################
 # 公式の.gitignoreのコピー
@@ -116,10 +116,13 @@ Thumbs.db
 
 # afl
 /builds/
+# /tools/bin/
+# /tools/utility/
 /tools/master_data/
 
 # Addressable
-# 自動生成されるのでignoreしてよさそう？
+# link.xmlは自動生成されるものなので除外する
+# https://discussions.unity.com/t/link-xml-part-of-version-control/868834/5
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml.meta
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml
 # Recorder
