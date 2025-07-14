@@ -761,7 +761,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 903, y: 481}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &261146747703614263
 CanvasRenderer:
@@ -5021,7 +5021,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: -1933655731
+  m_SortingLayerID: 335587783
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &4306498893645280944
@@ -5980,15 +5980,7 @@ MonoBehaviour:
   animationControlFormLogic: {fileID: 3044921598478439293}
   playListControlFormLogic: {fileID: 4037576782471100985}
   openAssetDialog: {fileID: 7592060935622637340}
-  actorAssetDatabase:
-    unityGameObject: {fileID: 0}
-    rawObject:
-      rid: -2
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+  "\u5B9F\u884C\u6642\u306B\u8AAD\u307F\u8FBC\u3080\u30A2\u30BB\u30C3\u30C8\u30D5\u30A9\u30EB\u30C0\u30FC\u306E\u30D1\u30B9": 
 --- !u!1 &8926110899537796706
 GameObject:
   m_ObjectHideFlags: 0

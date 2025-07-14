@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using afl;
+using afl.MasterData;
 using afl.UI.v1;
 using afl.UI;
 using TMPro;
@@ -17,6 +18,8 @@ namespace ActorWorkspace.InAppDebug
         public const string AssetRootDirectory = "Assets/AssetBundleData/Actor";
 
         [SerializeField] Camera navigationCamera;
+        public Camera NavigationCamera => navigationCamera;
+
         public Camera CurrentCamera => navigationCamera;
 
         public AnimationListFormLogic animationListFormLogic;
@@ -121,16 +124,27 @@ namespace ActorWorkspace.InAppDebug
             openAssetDialog.SetActive(true);
 
             var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
+
+            // リストをクリア
             listView.Clear();
 
-            var database = ContextProvider.AssetRepository.ToList();
-            foreach (var model in database)
+            // リストを作成
+            for (int categoty = 0; categoty < ContextProvider.AssetRepositories.Count; ++categoty)
             {
-                ActorAssetInfo info = model as ActorAssetInfo;
-                var entity = listView.AddEntity();
-                entity.UserData = info;
-                entity.name = info.Name;
-                entity.GetComponentInChildren<TMP_Text>().text = info.Name;
+                var assetRepository = ContextProvider.AssetRepositories.Get(categoty);
+                Debug.Assert(assetRepository != null);
+
+                var database = assetRepository.ToList();
+                foreach (var model in database)
+                {
+                    ActorAssetInfo info = model as ActorAssetInfo;
+                    info.Category = categoty;
+
+                    var entity = listView.AddEntity();
+                    entity.UserData = info;
+                    entity.name = info.Name;
+                    entity.GetComponentInChildren<TMP_Text>().text = info.Name;
+                }
             }
         }
 
@@ -142,10 +156,10 @@ namespace ActorWorkspace.InAppDebug
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
             Debug.Assert(assetInfo != null);
 
-            LoadAsset(assetInfo.Id, destroyCancellationToken).Forget();
+            LoadAsset(assetInfo.Id, assetInfo.Category, destroyCancellationToken).Forget();
         }
 
-        async UniTask LoadAsset(int id, CancellationToken cancellationToken)
+        async UniTask LoadAsset(int id, int category, CancellationToken cancellationToken)
         {
             if (ContextProvider.CurrentWorkingActorContext != null)
             {
@@ -156,7 +170,7 @@ namespace ActorWorkspace.InAppDebug
             // SkeletonAnimation skeletonAnimation = null;
 
             // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
-            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id, cancellationToken: cancellationToken);
+            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id, category, cancellationToken: cancellationToken);
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
             if (cancellationToken.IsCancellationRequested) return;
 
@@ -358,7 +372,11 @@ namespace ActorWorkspace.InAppDebug
 
             // if (string.IsNullOrEmpty(ForceLoadAssetAtRunning) == false)
             {
-                var list = ContextProvider.AssetRepository.ToList();
+                int category = 0;
+                IAssetRepository assetRepository = ContextProvider.AssetRepositories.Get(category);
+
+                // var list = ContextProvider.AssetRepository.ToList();
+                var list = assetRepository.ToList();
                 for (int i = 0; i < list.Count; ++i)
                 {
                     var model = list[i];
@@ -369,7 +387,7 @@ namespace ActorWorkspace.InAppDebug
                     Debug.Log($"modelFullPath: {modelFullPath}");
                     if (path == modelFullPath)
                     {
-                        await LoadAsset(model.GetId(), cancellationToken: cancellationToken);
+                        await LoadAsset(model.GetId(), category, cancellationToken: cancellationToken);
                         return;
                     }
                 }

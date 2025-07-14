@@ -8,7 +8,10 @@ namespace ActorWorkspace.UnitySpine
 {
     public class SpineSkeletonActor : MonoBehaviour, IAWActor
     {
+        public int ActorCategory { get; set; }
         public GameObject GameObject => this.gameObject;
+        public IAWActorParam IActorParam { get; set; }
+
         public IAWAnimationController AnimationController { get; protected set; }
         public IReadOnlyList<IAWSkin> SkinList => skinList.Cast<IAWSkin>().ToList();
 
@@ -37,6 +40,11 @@ namespace ActorWorkspace.UnitySpine
                 var skin = new SpineSkin(skins[i]);
                 skinList.Add(skin);
             }
+        }
+
+        public void Restore()
+        {
+            IActorParam?.Restore();
         }
 
         public void SetSkin(int skinIndex)

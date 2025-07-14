@@ -8,6 +8,7 @@ namespace ActorWorkspace.MasterData
     [System.Serializable]
     public class ActorAssetInfo : AssetModel
     {
+        public int Category;
         public string Name;
         // public string Path;
 

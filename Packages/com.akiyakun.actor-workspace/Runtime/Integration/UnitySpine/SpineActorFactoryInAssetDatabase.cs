@@ -28,7 +28,7 @@ namespace ActorWorkspace.UnitySpine
         }
 
         // From IActorFactory
-        public virtual async UniTask<IAWActor> CreateAsync(int id, CancellationToken cancellationToken = default)
+        public virtual async UniTask<IAWActor> CreateAsync(int id, int category = 0, CancellationToken cancellationToken = default)
         {
             await UniTask.Yield(cancellationToken);
             if (cancellationToken.IsCancellationRequested) return null;
