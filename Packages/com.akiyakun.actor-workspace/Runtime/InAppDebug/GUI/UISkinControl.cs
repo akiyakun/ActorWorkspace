@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using afl;
 using afl.UI;
@@ -6,18 +8,19 @@ using afl.UI.v1;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class SkinControlFormLogic : MonoBehaviour
+    public class UISkinControl : UIEntityGroup
     {
         [SerializeField] UIListView listView;
 
         public event System.Action<int> OnSkinChanged;
 
-        void Awake()
+        protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
             listView.OnClick.AddListener(OnClickFromListView);
+            return await UniTask.FromResult<int>(GeneralReturnCode.Success);
         }
 
-        void OnDestroy()
+        protected override void InnerTerminate()
         {
             listView.OnClick.RemoveListener(OnClickFromListView);
         }

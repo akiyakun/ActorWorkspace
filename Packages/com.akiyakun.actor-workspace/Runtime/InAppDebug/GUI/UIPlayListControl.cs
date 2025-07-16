@@ -1,11 +1,14 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 using afl;
+using afl.UI;
 using afl.UI.v1;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class PlayListControlFormLogic : MonoBehaviour
+    public class UIPlayListControl : UIEntityGroup
     {
         const int trackIndex = 0;
 

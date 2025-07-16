@@ -16,30 +16,30 @@ namespace ActorWorkspace.MasterData
     /// AssetDatabaseからアセットリストを作成
     /// Editor専用
     /// </summary>
-    public class ActorAssetCollectionInAssetDatabase<TAsset> : IAssetRepository
+    public class AssetCollectionInAssetDatabase<TAsset> : IAssetRepository
          where TAsset : UnityEngine.Object
     {
         [SerializeField] public string assetRootDirectory;
         // [SerializeReference] public System.Type actorAssetType;
         // [SerializeReference] public IAWActorFactory actorFactory;
 
-        protected List<ActorAssetInfo> actorAssetInfoList = new();
+        protected List<AssetModel> assetList = new();
 
 
         // From IRawMasterData
-        public virtual int Length => actorAssetInfoList.Count;
+        public virtual int Length => assetList.Count;
 
         // From IRawMasterData
-        public virtual IModel this[int index] => actorAssetInfoList[index];
+        public virtual IModel this[int index] => assetList[index];
 
 
         // From IRepository
         public T Get<T>(int id) where T : class, IModel
         {
-            int count = actorAssetInfoList.Count;
+            int count = assetList.Count;
             for (int i = 0; i < count; ++i)
             {
-                var info = actorAssetInfoList[i];
+                var info = assetList[i];
                 if (info.Id == id)
                 {
                     return info as T;
@@ -52,7 +52,7 @@ namespace ActorWorkspace.MasterData
         // From IRepository
         public IReadOnlyList<IModel> ToList()
         {
-            return actorAssetInfoList.ToList<IModel>();
+            return assetList.ToList<IModel>();
         }
 
         // From IAssetRepository
@@ -70,19 +70,19 @@ namespace ActorWorkspace.MasterData
             {
                 var asset = result[i];
 
-                var info = new ActorAssetInfo();
-                info.Id = i + 1; // MasterDataのIdは1から始まる
-                info.AssetLocator = AssetDatabase.GetAssetPath(asset);
-                info.Name = Path.GetDirectoryName(info.AssetLocator).Replace(assetRootDirectory, "");
+                var model = new AssetModel();
+                model.Id = i + 1; // MasterDataのIdは1から始まる
+                model.AssetLocator = AssetDatabase.GetAssetPath(asset);
+                // info.Name = Path.GetDirectoryName(info.AssetLocator).Replace(assetRootDirectory, "");
                 // Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
-                actorAssetInfoList.Add(info);
+                assetList.Add(model);
             }
         }
 
         // // From IActorAssetCollection
         // public virtual List<ActorAssetInfo> GetAll()
         // {
-        //     return actorAssetInfoList;
+        //     return assetList;
         // }
 
         // From IActorAssetCollection

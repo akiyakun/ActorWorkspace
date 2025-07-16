@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using afl;
 using afl.UI;
@@ -6,7 +8,7 @@ using afl.UI.v1;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class AnimationListFormLogic : MonoBehaviour
+    public class UIAnimationList : UIEntityGroup
     {
         [SerializeField] UIListView listView;
 
@@ -19,7 +21,8 @@ namespace ActorWorkspace.InAppDebug
 
         // [SerializeField] GameObject trackControl;
 
-        public event System.Action<UIEntity> OnClickEntity;
+        // public event System.Action<UIEntity> OnClickEntity;
+
         // public event System.Action<float> OnMixValueChanged;
         // public event System.Action<bool> OnLoopValueChanged;
         // public event System.Action<int> OnActiveTrackChanged;
@@ -29,7 +32,8 @@ namespace ActorWorkspace.InAppDebug
 
         // public bool IsLoop => loopToggle.isOn;
 
-        void Awake()
+
+        protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
             //     speedInputField = speedControl.Find("InputField").GetComponent<TMP_InputField>();
 
@@ -54,9 +58,11 @@ namespace ActorWorkspace.InAppDebug
 
                 //         // OnAnimationChanged += InnerOnAnimationChanged;
             }
+
+            return await UniTask.FromResult<int>(GeneralReturnCode.Success);
         }
 
-        void OnDestroy()
+        protected override void InnerTerminate()
         {
             // イベント解除
             {
@@ -140,7 +146,8 @@ namespace ActorWorkspace.InAppDebug
         {
             var entity = sender.GetComponent<UIEntity>();
             if (entity == null) return;
-            OnClickEntity?.Invoke(entity);
+            // OnClickEntity?.Invoke(entity);
+            OnClickFromEntity(entity);
         }
 
     }

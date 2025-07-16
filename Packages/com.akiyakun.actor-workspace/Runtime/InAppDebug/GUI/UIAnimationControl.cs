@@ -1,11 +1,14 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using afl;
+using afl.UI;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class AnimationControlFormLogic : MonoBehaviour
+    public class UIAnimationControl : UIEntityGroup
     {
         [SerializeField] GameObject speedControl;
         TMP_InputField speedInputField;
@@ -26,7 +29,7 @@ namespace ActorWorkspace.InAppDebug
 
         public bool IsLoop => loopToggle.isOn;
 
-        void Awake()
+        protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
             speedInputField = speedControl.Find("InputField").GetComponent<TMP_InputField>();
 
@@ -45,13 +48,15 @@ namespace ActorWorkspace.InAppDebug
                 trackControl.Find("Track1").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack1ToggleChanged);
                 trackControl.Find("Track2").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack2ToggleChanged);
                 trackControl.Find("Track3").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack3ToggleChanged);
-                trackControl.Find("Track4").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack4ToggleChanged);
+                // trackControl.Find("Track4").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack4ToggleChanged);
 
                 // OnAnimationChanged += InnerOnAnimationChanged;
             }
+
+            return await UniTask.FromResult<int>(GeneralReturnCode.Success);
         }
 
-        void OnDestroy()
+        protected override void InnerTerminate()
         {
             // イベント解除
             {
