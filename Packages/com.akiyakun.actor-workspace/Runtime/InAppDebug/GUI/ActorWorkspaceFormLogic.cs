@@ -21,8 +21,8 @@ namespace ActorWorkspace.InAppDebug
         [SerializeField] Camera actorCamera;
         public Camera ActorCamera => actorCamera;
 
-        [SerializeField] Camera uiCamera;
-        public Camera UICamera => uiCamera;
+        // [SerializeField] Camera uiCamera;
+        // public Camera UICamera => uiCamera;
 
         // public Camera CurrentCamera => navigationCamera;
 
