@@ -39,6 +39,7 @@ namespace ActorWorkspace.InAppDebug
                 entity.Id = i;
                 entity.name = skinList[i].Name;
                 entity.GetComponentInChildren<TMP_Text>().text = skinList[i].Name;
+                entity.SetStay();
             }
         }
 

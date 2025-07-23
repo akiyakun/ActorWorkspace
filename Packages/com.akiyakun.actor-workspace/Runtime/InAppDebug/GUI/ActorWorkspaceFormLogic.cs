@@ -135,10 +135,10 @@ namespace ActorWorkspace.InAppDebug
             // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             // if (ret < 0) return ret;
 
-#if UNITY_EDITOR
-            await InitializeEditorAsync(cancellationToken: cancellationToken);
-            if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-#endif
+// #if UNITY_EDITOR
+//             await InitializeEditorAsync(cancellationToken: cancellationToken);
+//             if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+// #endif
 
             Debug.Log("ActorWorkspaceGUI initialized successfully.");
 
@@ -189,6 +189,8 @@ namespace ActorWorkspace.InAppDebug
                     entity.UserData = info;
                     entity.name = info.Name;
                     entity.GetComponentInChildren<TMP_Text>().text = info.Name;
+                    // entity.OnEntityEvent(UIEntityEvent.Type.Open);
+                    entity.SetStay();
                 }
             }
 
@@ -226,6 +228,7 @@ namespace ActorWorkspace.InAppDebug
             // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
             ContextProvider.CurrentWorkingActorContext.Actor = actor;
 
+            openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Close);
             openAssetDialog.SetActive(false);
 
             // UIをリセット
@@ -233,6 +236,10 @@ namespace ActorWorkspace.InAppDebug
             uiAnimationControl.ResetUI(loop: uiAnimationControl.IsLoop);
             uiSkinControl.ResetUI(actor);
             uiPlayListControl.ResetUI(actor);
+
+            // Debug.Assert(Form != null);
+            // Debug.Assert(Form.GameObject != null);
+            // Form.GameObject.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
         }
 
 
@@ -429,17 +436,19 @@ namespace ActorWorkspace.InAppDebug
                 int category = 0;
                 IAssetRepository assetRepository = ContextProvider.AssetRepositories.Get(category);
 
-                // var list = ContextProvider.AssetRepository.ToList();
                 var list = assetRepository.ToList();
                 for (int i = 0; i < list.Count; ++i)
                 {
-                    var model = list[i];
+                    var model = list[i] as AssetModel;
                     // var path = Utility.GetDirectoryPath(model.GetName()).Replace(ActorWorkspaceGUIContextProvider.AssetRootDirectory, "");
                     // var path = Utility.GetDirectoryPath(model.GetName()).Replace(ActorWorkspaceGUIContextProvider.AssetRootDirectory, "");
                     // if (path == ForceLoadAssetAtRunning)
-                    string modelFullPath = Utility.GetDirectoryPath(Utility.PathCombine(ActorWorkspaceFormLogic.AssetRootDirectory, model.GetName()));
+
+                    // string modelFullPath = Utility.GetDirectoryPath(Utility.PathCombine(ActorWorkspaceFormLogic.AssetRootDirectory, model.GetName()));
+                    string modelFullPath = model.AssetLocator;
+                    // Utility.GetDirectoryPath(Utility.PathCombine(ActorWorkspaceFormLogic.AssetRootDirectory, model.GetName()));
                     Debug.Log($"modelFullPath: {modelFullPath}");
-                    if (path == modelFullPath)
+                    // if (path == modelFullPath)
                     {
                         await LoadAsset(model.GetId(), category, cancellationToken: cancellationToken);
                         return;

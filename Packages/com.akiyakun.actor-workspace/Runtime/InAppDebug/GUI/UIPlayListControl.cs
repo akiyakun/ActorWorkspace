@@ -44,8 +44,8 @@ namespace ActorWorkspace.InAppDebug
         {
             var entity = listView.AddEntity();
             entity.UserData = animation;
-
             entity.gameObject.Find("DefaultButton/Text").GetComponent<TMP_Text>().text = animation.Name;
+            entity.SetStay();
 
             // var state = skeletonAnimation.state;
             // if (listView.ItemCount == 1)

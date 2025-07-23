@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using afl;
 using afl.MasterData;
-
 using UnityEditor;
-// using afl.Editor;
 
 namespace ActorWorkspace.MasterData
 {
@@ -73,7 +70,7 @@ namespace ActorWorkspace.MasterData
                 var model = new AssetModel();
                 model.Id = i + 1; // MasterDataのIdは1から始まる
                 model.AssetLocator = AssetDatabase.GetAssetPath(asset);
-                // info.Name = Path.GetDirectoryName(info.AssetLocator).Replace(assetRootDirectory, "");
+                // model.Name = Path.GetDirectoryName(info.AssetLocator).Replace(assetRootDirectory, "");
                 // Debug.Log($"Found SkeletonDataAsset: {info.Name} at {info.Path}");
                 assetList.Add(model);
             }

@@ -101,6 +101,7 @@ namespace ActorWorkspace.InAppDebug
                 entity.Id = i;
                 entity.UserData = animation;
                 entity.transform.Find("DefaultButton/Text").GetComponent<TMP_Text>().text = animation.Name;
+                entity.SetStay();
             }
         }
         /// <returns>既に別のトラックが再生中の場合falseが返ります</returns>

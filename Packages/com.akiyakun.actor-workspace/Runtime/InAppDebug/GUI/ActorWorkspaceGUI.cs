@@ -10,16 +10,30 @@ namespace ActorWorkspace.InAppDebug
     {
         [SerializeField] ManagedCanvas managedCanvas;
 
-        // [SerializeField] ActorWorkspaceFormLogic actorWorkspaceFormLogic;
-        // public ActorWorkspaceFormLogic Logic => actorWorkspaceFormLogic;
+#if UNITY_EDITOR
+        [SerializeField] IAsyncInitializable editorOnly;
+#endif
+
+        [SerializeField] ActorWorkspaceFormLogic actorWorkspaceFormLogic;
+        public ActorWorkspaceFormLogic Logic => actorWorkspaceFormLogic;
 
         // From IAsyncInitializable
-        public bool IsInitialized { get; }
+        public bool IsInitialized { get; private set; }
 
         // From IAsyncInitializable
         public async UniTask<int> InitializeAsync(CancellationToken cancellationToken = default)
         {
             Debug.Assert(managedCanvas != null);
+
+#if UNITY_EDITOR
+            if (editorOnly != null)
+            {
+                int ret = await editorOnly.InitializeAsync(cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (ret < 0) return ret;
+            }
+#endif
+
             return await managedCanvas.InitializeAsync(cancellationToken);
         }
 
