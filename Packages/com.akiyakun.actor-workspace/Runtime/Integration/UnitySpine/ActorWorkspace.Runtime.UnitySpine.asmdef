@@ -1,21 +1,16 @@
 {
-    "name": "com.akiyakun.actor-workspace.Editor.UnitySpine",
-    "rootNamespace": "ActorWorkspace.Editor.UnitySpine",
+    "name": "ActorWorkspace.Runtime.UnitySpine",
+    "rootNamespace": "ActorWorkspace.UnitySpine",
     "references": [
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
         "GUID:98557ddb935f44ae59f5af2cce2426f6",
-        "GUID:d1f443f62531b45de830682d1f1c296a",
+        "GUID:dfff3b766ea0b44d4a4577604643770f",
         "GUID:878380d8c26584ae3ab741d0e3a254b5",
-        "GUID:4e7a00e03e485476db08a21a234f1f7c",
         "GUID:72d1fea872bd7a449bf3818f2b0a6708",
         "GUID:68765d262e2128e4ab49c983f3411946",
-        "GUID:d081815e631c29f46ab6f2ac745854df",
-        "GUID:173464ddf4cdb6640a4dfa8a9281ad69",
-        "GUID:1e7d09e628f0eb342b6a8ab5b3c0d487"
+        "GUID:d081815e631c29f46ab6f2ac745854df"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

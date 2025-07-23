@@ -1,5 +1,5 @@
 {
-    "name": "com.akiyakun.actor-workspace.Runtime",
+    "name": "ActorWorkspace.Runtime",
     "rootNamespace": "ActorWorkspace",
     "references": [
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
