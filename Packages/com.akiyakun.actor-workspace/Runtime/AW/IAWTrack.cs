@@ -4,13 +4,16 @@ using UnityEngine;
 namespace ActorWorkspace
 {
     // fixme: interface
-    public class IAWTrack
+    public interface IAWTrack
     {
         public static int MaxTrack = 4;
 
-        public virtual float TimeScale { get; set; }
-        public virtual float MixDuration { get; set; }
+        public int TrackIndex { get; }
 
-        public virtual IAWAnimation Animation { get; protected set; }
+        public float TimeScale { get; set; }
+        public float MixDuration { get; set; }
+
+        public IAWAnimation Animation { get; }
+
     }
 }

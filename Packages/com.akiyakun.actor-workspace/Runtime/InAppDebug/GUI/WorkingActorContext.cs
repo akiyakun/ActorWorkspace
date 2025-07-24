@@ -9,19 +9,30 @@ namespace ActorWorkspace.InAppDebug
         // public GameObject GameObject;
         public IAWActor Actor;
 
-        public void Release()
+        // public void Reset()
+        // {
+        //     Actor = null;
+        // }
+
+        public void Set(IAWActor actor)
         {
-            // FIXME:
-            // if (GameObject != null)
-            // {
-            //     Object.DestroyImmediate(GameObject);
-            //     GameObject = null;
-            // }
-            if (Actor.GameObject != null)
-            {
-                Object.DestroyImmediate(Actor.GameObject);
-                Actor = null;
-            }
+            Debug.Assert(actor != null);
+            Actor = actor;
         }
+
+        // public void Release()
+        // {
+        //     // FIXME:
+        //     // if (GameObject != null)
+        //     // {
+        //     //     Object.DestroyImmediate(GameObject);
+        //     //     GameObject = null;
+        //     // }
+        //     if (Actor.GameObject != null)
+        //     {
+        //         Object.DestroyImmediate(Actor.GameObject);
+        //         Actor = null;
+        //     }
+        // }
     }
 }

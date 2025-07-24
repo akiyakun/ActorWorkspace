@@ -32,6 +32,7 @@ namespace ActorWorkspace.InAppDebug
         UIPlayListControl uiPlayListControl;
         public GameObject openAssetDialog;
 
+        bool loadActorRequesting;
         int currentTrackIndex = 0;
 
         class TrackInfo
@@ -143,7 +144,7 @@ namespace ActorWorkspace.InAppDebug
             Debug.Log("ActorWorkspaceGUI initialized successfully.");
 
             // IsInitialized = true;
-            return GeneralReturnCode.Success;
+            return await UniTask.FromResult(GeneralReturnCode.Success);
         }
 
         // From IAsyncInitializable
@@ -223,14 +224,31 @@ namespace ActorWorkspace.InAppDebug
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
             Debug.Assert(assetInfo != null);
 
-            LoadAsset(assetInfo.AssetModel.Id, assetInfo.Category, destroyCancellationToken).Forget();
+            LoadActorRequest(assetInfo.AssetModel.Id, assetInfo.Category);
+
+            openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Close);
+            openAssetDialog.SetActive(false);
+        }
+
+        public void LoadActorRequest(int id, int category)
+        {
+            LoadAsset(id, category, destroyCancellationToken).Forget();
         }
 
         async UniTask LoadAsset(int id, int category, CancellationToken cancellationToken)
         {
+            if (loadActorRequesting == true)
+            {
+                Debug.Assert(loadActorRequesting == false);
+                return;
+            }
+
+            loadActorRequesting = true;
+
             if (ContextProvider.CurrentWorkingActorContext != null)
             {
-                ContextProvider.CurrentWorkingActorContext.Release();
+                ContextProvider.ActorFactory.Release(ContextProvider.CurrentWorkingActorContext.Actor);
+                // ContextProvider.CurrentWorkingActorContext.Reset();
                 ContextProvider.CurrentWorkingActorContext = null;
             }
 
@@ -243,10 +261,7 @@ namespace ActorWorkspace.InAppDebug
 
             ContextProvider.CurrentWorkingActorContext = new();
             // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
-            ContextProvider.CurrentWorkingActorContext.Actor = actor;
-
-            openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Close);
-            openAssetDialog.SetActive(false);
+            ContextProvider.CurrentWorkingActorContext.Set(actor);
 
             // UIをリセット
             uiAnimationList.ResetUI(actor);
@@ -257,6 +272,8 @@ namespace ActorWorkspace.InAppDebug
             // Debug.Assert(Form != null);
             // Debug.Assert(Form.GameObject != null);
             // Form.GameObject.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
+
+            loadActorRequesting = false;
         }
 
 

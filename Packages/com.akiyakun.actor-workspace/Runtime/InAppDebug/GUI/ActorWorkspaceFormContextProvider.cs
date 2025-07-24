@@ -1,3 +1,4 @@
+#nullable enable
 using UnityEngine;
 using afl;
 using afl.MasterData;
@@ -9,7 +10,7 @@ namespace ActorWorkspace.InAppDebug
         public AssetRepositoryCategorize AssetRepositories { get; private set; }
         public IAWActorFactory ActorFactory { get; private set; }
 
-        public WorkingActorContext CurrentWorkingActorContext { get; set; }
+        public WorkingActorContext? CurrentWorkingActorContext { get; set; }
 
         public ActorWorkspaceFormContextProvider()
         {
@@ -26,3 +27,4 @@ namespace ActorWorkspace.InAppDebug
         }
     }
 }
+#nullable restore

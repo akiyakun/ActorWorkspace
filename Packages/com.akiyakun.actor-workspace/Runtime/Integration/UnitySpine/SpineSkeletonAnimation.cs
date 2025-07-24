@@ -8,6 +8,7 @@ namespace ActorWorkspace.UnitySpine
 {
     public class SpineSkeletonAnimation : IAWAnimation
     {
+        // From IAWAnimation
         public string Name { get; private set; }
 
         SkeletonAnimation skeletonAnimation;
@@ -25,5 +26,11 @@ namespace ActorWorkspace.UnitySpine
 
             Name = spineAnimation.Name;
         }
+
+        // From IAWAnimation
+        // public void Stop()
+        // {
+        //     // skeletonAnimation.state.SetEmptyAnimation(trackIndex, mixDuration);
+        // }
     }
 }

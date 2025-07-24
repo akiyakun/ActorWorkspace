@@ -91,6 +91,10 @@ namespace ActorWorkspace.InAppDebug
 
         public void ResetListView(IAWActor actor)
         {
+            Debug.Assert(actor != null);
+            Debug.Assert(actor.AnimationController != null);
+            Debug.Assert(actor.AnimationController.AnimationList != null);
+
             listView.Clear();
 
             var animationList = actor.AnimationController.AnimationList;

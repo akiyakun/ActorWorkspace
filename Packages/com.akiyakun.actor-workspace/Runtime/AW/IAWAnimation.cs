@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace ActorWorkspace
 {
+    // アニメーションのデータクラス
+    // 再生制御は IAWAnimationController が行う
+    //
     // MEMO:
     // Animatorや、AnimatinClip、SkeletonAnimationなどのアニメーション実装クラスをラップする
     public interface IAWAnimation
@@ -11,6 +14,8 @@ namespace ActorWorkspace
 
         // public IEnumerable<AWAnimationData> AnimationList { get; }
         // public IReadOnlyList<AWAnimationData> AnimationList { get; }
+
+        // public void Stop();
 
     }
 }
