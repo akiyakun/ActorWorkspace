@@ -13,7 +13,7 @@ using ActorWorkspace.MasterData;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class ActorWorkspaceFormLogic : UIFormLogic<ActorWorkspaceGUIContextProvider>
+    public class ActorWorkspaceFormLogic : UIFormLogic<ActorWorkspaceFormContextProvider>
     {
         public const string AssetRootDirectory = "Assets/AssetBundleData/Actor";
         public const string AnimationListControlPath = "Root/AnimationListControl";
@@ -49,7 +49,7 @@ namespace ActorWorkspace.InAppDebug
         //     // openAssetDialog.SetActive(false);
         // }
 
-        public void SetContextProvider(ActorWorkspaceGUIContextProvider contextProvider)
+        public void SetContextProvider(ActorWorkspaceFormContextProvider contextProvider)
         {
             ContextProvider = contextProvider;
         }
@@ -135,10 +135,10 @@ namespace ActorWorkspace.InAppDebug
             // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             // if (ret < 0) return ret;
 
-// #if UNITY_EDITOR
-//             await InitializeEditorAsync(cancellationToken: cancellationToken);
-//             if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-// #endif
+            // #if UNITY_EDITOR
+            //             await InitializeEditorAsync(cancellationToken: cancellationToken);
+            //             if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+            // #endif
 
             Debug.Log("ActorWorkspaceGUI initialized successfully.");
 
@@ -155,23 +155,22 @@ namespace ActorWorkspace.InAppDebug
         {
         }
 
-
-        public void OpenAsset()
+        // 全てのアセットのリストを生成して返します
+        public List<ActorAssetInfo> GetAllAssetList()
         {
-            var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
+            List<ActorAssetInfo> list = new();
 
-            // リストをクリア
-            listView.Clear();
-
-            // リストを作成
             for (int categoty = 0; categoty < ContextProvider.AssetRepositories.Count; ++categoty)
             {
                 var assetRepository = ContextProvider.AssetRepositories.Get(categoty);
                 Debug.Assert(assetRepository != null);
 
-                var database = assetRepository.ToList();
-                foreach (var model in database)
+                IReadOnlyList<IModel> database = assetRepository.ToList();
+                for (int i = 0; i < database.Count; ++i)
                 {
+                    var model = database[i] as AssetModel;
+                    Debug.Assert(model != null);
+
                     var info = new ActorAssetInfo();
                     info.AssetModel = model as AssetModel;
                     info.Category = categoty;
@@ -185,13 +184,31 @@ namespace ActorWorkspace.InAppDebug
                         info.Name = info.AssetModel.AssetLocator;
                     }
 
-                    var entity = listView.AddEntity();
-                    entity.UserData = info;
-                    entity.name = info.Name;
-                    entity.GetComponentInChildren<TMP_Text>().text = info.Name;
-                    // entity.OnEntityEvent(UIEntityEvent.Type.Open);
-                    entity.SetStay();
+                    list.Add(info);
                 }
+            }
+
+            return list;
+        }
+
+
+        public void OpenAsset()
+        {
+            var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
+
+            // リストをクリア
+            listView.Clear();
+
+            // UIリストを作成
+            var allList = GetAllAssetList();
+            foreach (var info in allList)
+            {
+                var entity = listView.AddEntity();
+                entity.UserData = info;
+                entity.name = info.Name;
+                entity.GetComponentInChildren<TMP_Text>().text = info.Name;
+                // entity.OnEntityEvent(UIEntityEvent.Type.Open);
+                entity.SetStay();
             }
 
             openAssetDialog.SetActive(true);

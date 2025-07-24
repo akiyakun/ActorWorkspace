@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ActorWorkspace
+namespace ActorWorkspace.Tests
 {
-    public class MockAWActor : IAWActor
+    public class FakeAWActor : IAWActor
     {
         public int ActorCategory { get; set; }
         public GameObject GameObject => null;
@@ -13,7 +13,7 @@ namespace ActorWorkspace
         public IAWAnimationController AnimationController { get; set; } = new MockAWAnimationController();
         public IReadOnlyList<IAWSkin> SkinList => new List<IAWSkin>();
 
-        public MockAWActor(int category)
+        public FakeAWActor(int category)
         {
             ActorCategory = category;
             IActorParam = new MockAWActorParam();
