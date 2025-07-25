@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,9 +19,11 @@ namespace ActorWorkspace
         public IAWAnimationController AnimationController { get; }
         public IReadOnlyList<IAWSkin> SkinList { get; }
 
+        // 初期状態に戻す
         public void Restore();
 
         // public IAWActorParam GetActorParam();
         public void SetSkin(int skinIndex);
     }
 }
+#nullable restore

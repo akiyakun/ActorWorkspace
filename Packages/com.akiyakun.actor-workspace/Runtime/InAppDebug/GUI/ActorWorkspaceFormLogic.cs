@@ -232,10 +232,10 @@ namespace ActorWorkspace.InAppDebug
 
         public void LoadActorRequest(int id, int category)
         {
-            LoadAsset(id, category, destroyCancellationToken).Forget();
+            LoadActorAsync(id, category, destroyCancellationToken).Forget();
         }
 
-        async UniTask LoadAsset(int id, int category, CancellationToken cancellationToken)
+        public async UniTask LoadActorAsync(int id, int category, CancellationToken cancellationToken)
         {
             if (loadActorRequesting == true)
             {
@@ -395,8 +395,10 @@ namespace ActorWorkspace.InAppDebug
             // if (trackEntry == null) return;
             var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
-
-            animationController.SetAnimation(currentTrackIndex, animation: track.Animation, loop: value);
+            if (track.Animation != null)
+            {
+                animationController.SetAnimation(currentTrackIndex, animation: track.Animation, loop: value);
+            }
         }
 
         // index: UIの0-4のボタンのインデックス
@@ -484,7 +486,7 @@ namespace ActorWorkspace.InAppDebug
                     Debug.Log($"modelFullPath: {modelFullPath}");
                     // if (path == modelFullPath)
                     {
-                        await LoadAsset(model.GetId(), category, cancellationToken: cancellationToken);
+                        await LoadActorAsync(model.GetId(), category, cancellationToken: cancellationToken);
                         return;
                     }
                 }

@@ -5,6 +5,6 @@ namespace ActorWorkspace
 {
     public interface IAWSkin
     {
-        string Name { get; }
+        public string Name { get; }
     }
 }
