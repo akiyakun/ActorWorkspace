@@ -1,5 +1,5 @@
 {
-    "name": "com.akiyakun.actor-workspace.InAppDebug.Runtime",
+    "name": "ActorWorkspace.InAppDebug",
     "rootNamespace": "ActorWorkspace.InAppDebug",
     "references": [
         "GUID:98557ddb935f44ae59f5af2cce2426f6",
