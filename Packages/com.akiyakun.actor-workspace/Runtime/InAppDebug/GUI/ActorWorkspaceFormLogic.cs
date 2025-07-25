@@ -26,6 +26,8 @@ namespace ActorWorkspace.InAppDebug
 
         // public Camera CurrentCamera => navigationCamera;
 
+        public event System.Action<IAWActor> OnCreatedActor;
+
         UIAnimationList uiAnimationList;
         UISkinControl uiSkinControl;
         UIAnimationControl uiAnimationControl;
@@ -212,8 +214,10 @@ namespace ActorWorkspace.InAppDebug
                 entity.SetStay();
             }
 
-            openAssetDialog.SetActive(true);
-            openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
+            {
+                // openAssetDialog.SetActive(true);
+                openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
+            }
         }
 
         public void OnLoadAsset()
@@ -224,10 +228,14 @@ namespace ActorWorkspace.InAppDebug
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
             Debug.Assert(assetInfo != null);
 
-            LoadActorRequest(assetInfo.AssetModel.Id, assetInfo.Category);
+            {
+                var group = openAssetDialog.GetComponent<UIEntityGroup>();
+                group.SetCloseComplateAtInactive(true);
+                group.SendEntityEvent(UIEntityEvent.Type.Close);
+                // openAssetDialog.SetActive(false);
+            }
 
-            openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Close);
-            openAssetDialog.SetActive(false);
+            LoadActorRequest(assetInfo.AssetModel.Id, assetInfo.Category);
         }
 
         public void LoadActorRequest(int id, int category)
@@ -258,6 +266,9 @@ namespace ActorWorkspace.InAppDebug
             IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id, category, cancellationToken: cancellationToken);
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
             if (cancellationToken.IsCancellationRequested) return;
+
+            // コールバック呼び出し
+            OnCreatedActor?.Invoke(actor);
 
             ContextProvider.CurrentWorkingActorContext = new();
             // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
