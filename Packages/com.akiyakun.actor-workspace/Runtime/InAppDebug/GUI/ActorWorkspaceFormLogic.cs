@@ -52,9 +52,18 @@ namespace ActorWorkspace.InAppDebug
         //     // openAssetDialog.SetActive(false);
         // }
 
+        // MEMO: 設定のしかた何か違う気がする、Context作ってそれを内部でGetContextしたほうが？
+        ActorWorkspaceFormContextProvider injectContextProvider;
         public void SetContextProvider(ActorWorkspaceFormContextProvider contextProvider)
         {
-            ContextProvider = contextProvider;
+            injectContextProvider = contextProvider;
+        }
+
+        // From UIFormLogic
+        protected override ActorWorkspaceFormContextProvider InnerCreateContextProvider()
+        {
+            Debug.Assert(injectContextProvider != null);
+            return injectContextProvider;
         }
 
         // From IAsyncInitializable

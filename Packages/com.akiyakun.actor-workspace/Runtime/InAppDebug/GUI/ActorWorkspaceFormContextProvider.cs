@@ -25,6 +25,10 @@ namespace ActorWorkspace.InAppDebug
             AssetRepositories = assetRepositories;
             ActorFactory = actorFactory;
         }
+
+        public override void Release()
+        {
+        }
     }
 }
 #nullable restore
