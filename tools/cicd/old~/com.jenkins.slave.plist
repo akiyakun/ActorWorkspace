@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>UserName</key>
+    <string>LifeServer</string>
+    <key>Label</key>
+    <string>com.jenkins.slave</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/buildserver/local/jenkins/LaunchMacOS.sh</string>
+    </array>
+    <key>KeepAlive</key>
+    <true/>
+    <key>RunAtLoad</key>
+    <true/>
+<!--
+    <key>StandardOutPath</key> 
+    <string>/tmp/stdout.log</string> 
+    <key>StandardErrorPath</key> 
+    <string>/tmp/stderr.log</string> 
+--> 
+</dict> 
+</plist> 

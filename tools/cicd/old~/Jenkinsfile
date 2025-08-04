@@ -1,0 +1,246 @@
+#!/usr/bin/env groovy
+
+Common = null
+
+pipeline {
+    agent {
+        // DEFAULT_AGENT はJenkinsの環境変数で設定
+        label "${DEFAULT_AGENT}"
+    }
+    // agent any
+
+    // environment {
+    //     // CONFIG = ""
+    //     // UNITY_PATH = ""
+    //     // OUTPUT_BUILD = "aiueo"
+    // }
+
+    // parameters {
+    //     string(name: 'EXTERNAL_OUTPUT_ARTIFACTS', defaultValue: '', description:
+    //           '各ビルドの成果物の保存先フォルダを指定します。\n'\
+    //         + '外部ストレージ等に保存できます。\n'\
+    //         + '例)\n'\
+    //         + 'macOS: /Volumes/shared_folder/artifacts\n')
+
+    //     string(name: 'TARGET', defaultValue: 'Tests', description: '''\
+    //         説明''')
+
+    //     choice(name: 'STAGE', choices: 'staging\nproduction', description: '説明')
+    // }
+
+    options {
+        gitLabConnection('GitLab')
+        // gitlabBuilds(builds: ['Test', 'Android', 'iOS'])
+    }
+
+    triggers {
+        // ここに記述された設定がジョブ設定で優先・上書きされます
+        gitlab(
+            triggerOnPush: true,
+            triggerOnMergeRequest: true,
+            addNoteOnMergeRequest: true,
+            addCiMessage: true,
+            // branchFilterType: 'All',
+            branchFilterType: "NameBasedFilter",
+            includeBranchesSpec: "${includeBranchesSpec}",
+            excludeBranchesSpec: "${excludeBranchesSpec}",
+            pendingBuildName: "Jenkins"
+        )
+    }
+
+    stages {
+        stage('Startup'){
+            steps {
+                script {
+                    Common = load("tools/ci-cd/Common.groovy")
+                    Common.ReadConfig()
+                    Common.CleanupBuild()
+                }
+            }
+        }
+
+        stage('Tests') {
+            agent { label "${Common.GetAgentInfo(Common.Config.tests.agent).name}" }
+
+            environment {
+                UNITY_PATH = "${Common.GetAgentInfo(Common.Config.tests.agent).unity_path}"
+            }
+
+            steps {
+                script {
+                    if (Common.Config.tests.enable) {
+                        if(isUnix()) {
+                            sh '''
+                                cd tools/build/
+                                python3 unity_tests.py --unity_path "${UNITY_PATH}" --platform playmode
+                            '''
+                        } else {
+                            bat '''
+                                cd tools/build/
+                                py -3 unity_tests.py --unity_path "%UNITY_PATH%" --platform playmode
+                            '''
+                        }
+
+                        echo 'NUnit Results.'
+                        nunit(testResultsPattern: 'build/test_results.xml')
+                    }
+                }
+            }
+
+            post {
+                success {
+                    script {
+                        // echo 'Tests success.' 
+                        updateGitlabCommitStatus name: "${env.STAGE_NAME}", state: 'success'
+                    }
+                }
+                failure {
+                    script {
+                        // echo 'Tests failure.' 
+                        updateGitlabCommitStatus name: "${env.STAGE_NAME}", state: 'failed'
+                        Common.SendMsgTestFailed()
+                    }
+                }
+            } // post
+        } // stage 'Tests'
+
+        stage('Jobs'){
+            steps {
+                script {
+                    def stepsForParallel = [:]
+                    Common.Config.jobs.each {
+                        def JobConfig = it
+                        // echo 'job:' + JobConfig["platform"]
+                        if (JobConfig['enable']) {
+                            stepsForParallel[it["platform"]] = {
+                                stage(JobConfig['platform']){
+                                    script {
+                                        // echo "Build Job: ${JobConfig['job_name']}"
+                                        def build_info = build job: "${JobConfig['job_name']}",
+                                            propagate: true,
+                                            parameters: [
+                                                string(name: 'AGENT', value: "${JobConfig['agent']}")
+                                            ]
+                                        // echo "end: ${build_info.getResult()}"
+
+                                        if (build_info.getResult() == 'SUCCESS') {
+                                            updateGitlabCommitStatus name: "${JobConfig['platform']}", state: 'success'
+                                        } else {
+                                            updateGitlabCommitStatus name: "${JobConfig['platform']}", state: 'failed'
+                                        }
+
+                                        // currentBuild.result = build_info.getResult()
+                                        // currentBuild.result = "FAILURE"
+                                    }
+                                }// stage
+                            }
+                        }
+                    }// jobs
+
+                    stepsForParallel['failFast'] = true
+                    // stepsForParallel.failFast = true
+                    parallel stepsForParallel
+                    // parallel branches: stepsForParallel, failFast: true
+
+                    // currentBuild.result = 'SUCCESS'
+                    echo 'End paralell.'
+                }// script
+            }// steps
+        }// stage
+
+        stage('Saving Artifacts') {
+            agent { label "${Common.GetAgentInfo(Common.Config.artifacts.agent).name}" }
+            environment { 
+                OUTPUT_DIR = "${Common.GetAgentInfo(Common.Config.artifacts.agent).external_output_artifacts}/${BUILD_NUMBER}"
+            }
+            when {
+                anyOf {
+                    expression {
+                        echo "${GIT_BRANCH.split('/')[1]}"
+                        return "${GIT_BRANCH.split('/')[1]}" == 'develop'
+                    }
+                    // expression {
+                    //     return "${GIT_BRANCH.split('/')[1]}" == 'when_build1'
+                    // }
+                }
+            }
+            steps {
+                script {
+                    if (Common.Config.artifacts.enable) {
+                        // それぞれのジョブ成果物をこのワークスペースにコピー
+                        echo 'Copy artifacts to this workspace.'
+                        Common.Config.jobs.each {
+                            if (Common.IsJobEnable(it)) {
+                                copyArtifacts(projectName: "${it['job_name']}")
+                            }
+                        }
+
+                        echo "External output artifacts '${OUTPUT_DIR}'"
+                        if(isUnix()) {
+                            sh '''
+                                python3 tools/build/copy_files.py -src "./build/"  -dest "${OUTPUT_DIR}"
+                            '''
+                        } else {
+                            bat '''
+                                py -3 tools/build/copy_files.py -src "./build/"  -dest "%OUTPUT_DIR%"
+                            '''
+                        }
+
+                        echo 'End Saving Artifacts.'
+                        Common.SendMsgArtifacts()
+                    }
+                }// script
+            }// steps
+        }// stage 'Saving Artifacts'
+    }// stages
+
+    post { 
+        // always { 
+        //     script {
+        //         Common.CleanupBuild()
+        //     }
+        // }
+        success {
+            script {
+                echo 'success'
+                updateGitlabCommitStatus name: 'Jenkins', state: 'success'
+            }
+        }
+        failure {
+            script {
+                echo 'failure'
+                updateGitlabCommitStatus name: 'Jenkins', state: 'failed'
+                Common.SendMsgBuildFailed()
+            }
+        }
+        changed {
+            echo 'Things were different before...'
+        }
+    } // post
+    /*
+    post {
+        always {
+            echo 'One way or another, I have finished'
+            deleteDir() // clean up our workspace
+        }
+        success {
+            echo 'I succeeeded!'
+        }
+        unstable {
+            echo 'I am unstable :/'
+        }
+        failure {
+            echo 'I failed :('
+        }
+        changed {
+            echo 'Things were different before...'
+        }
+    }
+    always : 常に実行
+    success : ビルド成功時
+    unstable : ビルドが不安定な時
+    failure : ビルド失敗時
+    changed : パイプラインが変更した際
+        ソースコードの変更があった際も実行されそうな気がするけど未確認。
+    */
+}

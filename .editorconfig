@@ -49,6 +49,8 @@ dotnet_diagnostic.IDE0002.severity = none
 dotnet_diagnostic.IDE0004.severity = none
 # オブジェクト初期化子を使用する
 dotnet_diagnostic.IDE0017.severity = none
+# readonly 修飾子を追加する
+dotnet_diagnostic.IDE0044.severity = none
 # 不要なかっこを削除する
 dotnet_diagnostic.IDE0047.severity = none
 # 型参照のためのフレームワーク型名の代わりに言語キーワードを使用する

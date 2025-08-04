@@ -1,0 +1,98 @@
+{
+  "version": "1.2.0",
+  "environment": {
+    "build_settings_path": "Assets/Editor/BuildSettings.asset",
+    "agent": "BuildServer"
+  },
+  "notify": {
+    "enable": true,
+    "channel": "chat_channel",
+    "artifacts_url": "/buildserver/artifacts"
+  },
+  "runners": [
+    {
+      "name": "macOS",
+      "unity_path": "/Applications/Unity/Hub/Editor/6000.0.50f1-x86_64/Unity.app/Contents/MacOS/Unity",
+      "xcode_path": "/Applications/Xcode 11.1.app/Contents/Developer",
+      "external_output_artifacts": "/Volumes/dev/buildserver/artifacts"
+    },
+    {
+      "name": "Windows",
+      "unity_path": "C:/Program Files/Unity/Hub/Editor/6000.0.50f1/Editor/Unity.exe",
+      "external_output_artifacts": "//BuildServer2/artifacts"
+    }
+  ],
+  "tests": {
+    "enable": true,
+    "agent": "BuildServer"
+  },
+  "artifacts": {
+    "enable": true,
+    "agent": "BuildServer"
+  },
+  "jobs": [
+    {
+      "enable": false,
+      "runner": "Windows",
+      "platform": "Android",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "Android - Build"
+    },
+    {
+      "enable": false,
+      "runner": "macOS",
+      "platform": "iOS",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "iOS - Build"
+    },
+    {
+      "enable": false,
+      "runner": "Windows",
+      "platform": "Windows",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "Game",
+      "job_name": "Windows - Build"
+    },
+    {
+      "enable": false,
+      "runner": "macOS",
+      "platform": "macOS",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "macOS - Build"
+    },
+    {
+      "enable": false,
+      "runner": "Windows",
+      "platform": "WebGL",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "WebGL - Build"
+    },
+    {
+      "enable": false,
+      "runner": "Windows",
+      "platform": "Switch",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "Switch - Build"
+    },
+    {
+      "enable": false,
+      "runner": "Windows",
+      "platform": "PS4",
+      "debug_skip": false,
+      "cleanup_build": false,
+      "application_filename": "",
+      "job_name": "PS4 - Build"
+    }
+  ]
+}
