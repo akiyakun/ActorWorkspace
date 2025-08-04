@@ -155,7 +155,7 @@ namespace ActorWorkspace.InAppDebug
             Debug.Log("ActorWorkspaceGUI initialized successfully.");
 
             // IsInitialized = true;
-            return await UniTask.FromResult(GeneralReturnCode.Success);
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
         // From IAsyncInitializable

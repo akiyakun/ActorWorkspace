@@ -11,19 +11,19 @@ using ActorWorkspace.InAppDebug;
 
 namespace Project.InAppDebug
 {
-    public class ActorWorkspaceSceneBehaviour : afl.SceneMonoBehaviour
+    public class ActorWorkspaceSceneBehaviour : afl.SceneBehaviourBase
     {
         [SerializeField] ActorWorkspaceGUI actorWorkspaceGUI;
 
         // public bool IsInitialized { get; private set; }
 
-        protected override async UniTask<int> OnInitializeAsync(CancellationToken cancellationToken = default)
+        protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken = default)
         {
             Debug.Assert(actorWorkspaceGUI != null, "ActorWorkspaceGUI Prefabの参照を設定してください。");
 
 #if UNITY_EDITOR
             // actorWorkspaceGUI.ActorAssetDatabase = new Project.InAppDebug.Editor.ActorAssetDatabaseInEditor();
-            actorWorkspaceGUI.SetContextProvider(new ActorWorkspaceGUIContextProvider());
+            // actorWorkspaceGUI.SetContextProvider(new ActorWorkspaceGUIContextProvider());
 #else
         // actorWorkspaceGUI.ActorAssetDatabase = new Project.InAppDebug.ActorAssetDatabaseInReference();
         actorWorkspaceGUI.ActorAssetDatabase = GetComponent<ActorAssetDatabaseInReference>();

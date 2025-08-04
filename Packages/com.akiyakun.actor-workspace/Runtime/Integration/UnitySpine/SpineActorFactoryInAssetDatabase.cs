@@ -14,6 +14,7 @@ namespace ActorWorkspace.UnitySpine
     public class SpineActorFactoryInAssetDatabase : IAWActorFactory
     {
         public event System.Action<IAWActor> OnCreated;
+        public event System.Action<IAWActor> OnRelease;
 
         IAssetRepository assetRepository;
 
@@ -63,6 +64,10 @@ namespace ActorWorkspace.UnitySpine
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
 
             return skeletonAnimation;
+        }
+
+        public void Release(IAWActor actor)
+        {
         }
 
     }

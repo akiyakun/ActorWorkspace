@@ -59,7 +59,7 @@ namespace ActorWorkspace.InAppDebug
                 //         // OnAnimationChanged += InnerOnAnimationChanged;
             }
 
-            return await UniTask.FromResult<int>(GeneralReturnCode.Success);
+            return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
         }
 
         protected override void InnerTerminate()

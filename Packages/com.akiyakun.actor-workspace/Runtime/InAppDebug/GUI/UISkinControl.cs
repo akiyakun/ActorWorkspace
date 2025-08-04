@@ -17,7 +17,7 @@ namespace ActorWorkspace.InAppDebug
         protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
             listView.OnClick.AddListener(OnClickFromListView);
-            return await UniTask.FromResult<int>(GeneralReturnCode.Success);
+            return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
         }
 
         protected override void InnerTerminate()

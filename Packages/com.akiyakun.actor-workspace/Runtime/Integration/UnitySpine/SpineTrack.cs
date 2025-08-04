@@ -12,19 +12,19 @@ namespace ActorWorkspace.UnitySpine
         public int TrackIndex { get; protected set; }
 
         float timeScale = 1.0f;
-        public override float TimeScale
+        public float TimeScale
         {
             get => timeScale;
             set => SetTimeScale(value);
         }
 
-        public override float MixDuration { get; set; }
+        public float MixDuration { get; set; }
         // {
         //     get => TrackEntry.DefaultMix;
         //     set => TrackEntry.DefaultMix = value;
         // }
 
-        public override IAWAnimation Animation { get; protected set; }
+        public IAWAnimation Animation { get; protected set; }
         public TrackEntry TrackEntry { get; set; }
 
         SpineSkeletonAnimation spineSkeletonAnimation;
