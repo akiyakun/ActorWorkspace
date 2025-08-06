@@ -8,7 +8,7 @@ using afl.UI;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class UIAnimationControl : UIEntityGroup
+    public class UIAnimationControl : UIEntityRootGroup
     {
         [SerializeField] GameObject speedControl;
         TMP_InputField speedInputField;

@@ -8,7 +8,7 @@ using afl.UI.v1;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class UIPlayListControl : UIEntityGroup
+    public class UIPlayListControl : UIEntityRootGroup
     {
         const int trackIndex = 0;
 

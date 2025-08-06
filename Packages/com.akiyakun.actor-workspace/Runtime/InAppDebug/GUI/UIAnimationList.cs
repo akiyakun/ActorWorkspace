@@ -8,7 +8,7 @@ using afl.UI.v1;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class UIAnimationList : UIEntityGroup
+    public class UIAnimationList : UIEntityRootGroup
     {
         [SerializeField] UIListView listView;
 

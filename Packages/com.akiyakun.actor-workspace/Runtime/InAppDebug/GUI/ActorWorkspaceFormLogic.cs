@@ -225,7 +225,7 @@ namespace ActorWorkspace.InAppDebug
 
             {
                 // openAssetDialog.SetActive(true);
-                openAssetDialog.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
+                openAssetDialog.GetComponent<UIEntityRootGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
             }
         }
 
@@ -238,7 +238,7 @@ namespace ActorWorkspace.InAppDebug
             Debug.Assert(assetInfo != null);
 
             {
-                var group = openAssetDialog.GetComponent<UIEntityGroup>();
+                var group = openAssetDialog.GetComponent<UIEntityRootGroup>();
                 group.SetCloseComplateAtInactive(true);
                 group.SendEntityEvent(UIEntityEvent.Type.Close);
                 // openAssetDialog.SetActive(false);

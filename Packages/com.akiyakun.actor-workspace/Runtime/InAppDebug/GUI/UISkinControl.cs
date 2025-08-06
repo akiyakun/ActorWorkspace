@@ -8,7 +8,7 @@ using afl.UI.v1;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class UISkinControl : UIEntityGroup
+    public class UISkinControl : UIEntityRootGroup
     {
         [SerializeField] UIListView listView;
 
