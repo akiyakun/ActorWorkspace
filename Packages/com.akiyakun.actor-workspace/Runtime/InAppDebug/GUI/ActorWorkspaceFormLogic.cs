@@ -83,9 +83,12 @@ namespace ActorWorkspace.InAppDebug
                 //     originCamera.gameObject.SetActive(false);
                 // }
 
+                // MEMO: 250810 何か変更して刺激を与えないとカメラ描画を始めてくれない(???)
+                ActorCamera.enabled = false;
+                ActorCamera.enabled = true;
+
                 var cameraControlArea = Form.Root.transform.Find("CameraControlArea").GetComponent<CameraControlArea>();
                 cameraControlArea.SetSourceCamera(ActorCamera);
-
             }
 
             // UIカメラの設定
