@@ -52,6 +52,12 @@ namespace ActorWorkspace.MasterData
             return assetList.ToList<IModel>();
         }
 
+        // From IRepository
+        public bool Validate()
+        {
+            return true;
+        }
+
         // From IAssetRepository
         public AssetModel GetAssetModel(int id) => Get<AssetModel>(id);
 
