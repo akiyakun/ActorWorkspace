@@ -491,6 +491,7 @@ namespace ActorWorkspace.InAppDebug
             Debug.Log($"ForceLoadAssetAtRunning: {path}");
 
             // if (string.IsNullOrEmpty(ForceLoadAssetAtRunning) == false)
+            /* とりあえず何か読み込みしたいときのコード
             {
                 int category = 0;
                 IAssetRepository assetRepository = ContextProvider.AssetRepositories.Get(category);
@@ -514,6 +515,9 @@ namespace ActorWorkspace.InAppDebug
                     }
                 }
             }
+            //*/
+
+            await UniTask.CompletedTask;
         }
 #endif
     }
