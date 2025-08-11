@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ActorWorkspace
+namespace ActorWorkspace.Tests
 {
-    public class MockAWAnimationController : IAWAnimationController
+    public class FakeAWAnimationController : IAWAnimationController
     {
         IAWTrack track = default;
 
-        public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new MockAWAnimation() };
+        public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
 
         public event System.Action<IAWAnimation> OnAnimationComplate;
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;

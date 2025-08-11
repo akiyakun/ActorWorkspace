@@ -278,6 +278,7 @@ namespace ActorWorkspace.InAppDebug
             IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id, category, cancellationToken: cancellationToken);
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
             if (cancellationToken.IsCancellationRequested) return;
+            Debug.Assert(actor != null);
 
             // コールバック呼び出し
             OnCreatedActor?.Invoke(actor);

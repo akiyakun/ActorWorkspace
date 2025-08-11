@@ -15,9 +15,12 @@ namespace ActorWorkspace
         // MEMO: こういう場合良い名前ないですか？
         public IAWActorParam IActorParam { get; }
 
+        public IAWActorDisplay ActorDisplay { get; }
         // public IAWAnimation Animation { get; }
         public IAWAnimationController AnimationController { get; }
         public IReadOnlyList<IAWSkin> SkinList { get; }
+
+        // public IActorBehaviour ActorBehaviour { get; protected set; }
 
         // 初期状態に戻す
         public void Restore();

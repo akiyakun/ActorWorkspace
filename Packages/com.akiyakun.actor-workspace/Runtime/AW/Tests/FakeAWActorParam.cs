@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ActorWorkspace
+namespace ActorWorkspace.Tests
 {
-    public class MockAWActorParam : IAWActorParam
+    public class FakeAWActorParam : IAWActorParam
     {
         public void Restore()
         {

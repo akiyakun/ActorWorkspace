@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ActorWorkspace
+namespace ActorWorkspace.Tests
 {
-    public class MockAWAnimation : IAWAnimation
+    public class FakeAWAnimation : IAWAnimation
     {
-        public string Name => "MockAWAnimation";
+        public string Name => nameof(FakeAWAnimation);
 
         // public IReadOnlyList<AWAnimationData> AnimationList => new List<AWAnimationData>();
 

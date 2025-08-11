@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ActorWorkspace
 {
-    public class MockAWSkin : IAWSkin
+    // アクターの表示部分(View)
+    public interface IAWActorDisplay
     {
-        public string Name => "MockSkin";
     }
 }

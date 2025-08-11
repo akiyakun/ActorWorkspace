@@ -8,10 +8,11 @@ namespace ActorWorkspace.UnitySpine
 {
     public class SpineSkeletonActor : MonoBehaviour, IAWActor
     {
-        public int ActorCategory { get; set; }
-        public GameObject GameObject => this.gameObject;
-        public IAWActorParam IActorParam { get; set; }
+        public virtual int ActorCategory { get; protected set; }
+        public virtual GameObject GameObject => this.gameObject;
+        public virtual IAWActorParam IActorParam { get; protected set; }
 
+        public IAWActorDisplay ActorDisplay { get; protected set; }
         public IAWAnimationController AnimationController { get; protected set; }
         public IReadOnlyList<IAWSkin> SkinList => skinList.Cast<IAWSkin>().ToList();
 
@@ -22,13 +23,20 @@ namespace ActorWorkspace.UnitySpine
 
         // FIXME: Awakeよくない
         // eventDecoder も受け取りたい
-        void Awake()
+        protected virtual void Awake()
         {
-            skeletonAnimation = GetComponent<SkeletonAnimation>();
-            Debug.Assert(skeletonAnimation != null);
+            skeletonAnimation = GetComponentInChildren<SkeletonAnimation>();
+            Debug.Assert(skeletonAnimation != null, "SkeletonAnimation component not found in children.");
 
             eventDecoder = new SpineEventDecoder();
             Debug.Assert(eventDecoder != null);
+
+            {
+                // var skeletonMecanim = GetComponent<SkeletonMecanim>();
+                // var skeletonAnimation = GetComponent<SkeletonAnimation>();
+
+                ActorDisplay = new SpineActorDisplay(skeletonAnimation);
+            }
 
             spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
             AnimationController = spineSkeletonAnimationController as IAWAnimationController;
