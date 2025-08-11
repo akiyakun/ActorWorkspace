@@ -12,9 +12,7 @@ namespace ActorWorkspace
         // 継承先で実装で使用するActorParamを使うだろうから定義しない
         // public ActorParam ActorParam { get; }
 
-        // MEMO: こういう場合良い名前ないですか？
-        public IAWActorParam IActorParam { get; }
-
+        public IAWActorParam ActorParam { get; }
         public IAWActorDisplay ActorDisplay { get; }
         // public IAWAnimation Animation { get; }
         public IAWAnimationController AnimationController { get; }

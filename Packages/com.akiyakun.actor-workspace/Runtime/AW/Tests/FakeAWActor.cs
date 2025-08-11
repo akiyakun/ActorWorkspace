@@ -7,8 +7,8 @@ namespace ActorWorkspace.Tests
     {
         public int ActorCategory { get; set; }
         public GameObject GameObject => null;
-        public IAWActorParam IActorParam { get; set; }
 
+        public IAWActorParam ActorParam { get; set; }
         public IAWActorDisplay ActorDisplay { get; set; }
         // public IAWAnimation Animation => mockAWAnimation;
         public IAWAnimationController AnimationController { get; set; }
@@ -21,7 +21,7 @@ namespace ActorWorkspace.Tests
         public FakeAWActor(int category)
         {
             ActorCategory = category;
-            IActorParam = new FakeAWActorParam();
+            ActorParam = new FakeAWActorParam();
 
             ActorDisplay = new FakeAWActorDisplay();
             AnimationController = new FakeAWAnimationController();
@@ -30,12 +30,12 @@ namespace ActorWorkspace.Tests
 
         public void Restore()
         {
-            IActorParam.Restore();
+            ActorParam.Restore();
         }
 
         public IAWActorParam GetActorParam()
         {
-            return IActorParam;
+            return ActorParam;
         }
 
         public void SetSkin(int skinIndex)
