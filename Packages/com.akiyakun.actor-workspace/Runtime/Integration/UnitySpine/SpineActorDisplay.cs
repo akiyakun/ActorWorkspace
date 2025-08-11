@@ -16,5 +16,17 @@ namespace ActorWorkspace.UnitySpine
             this.skeletonAnimation = skeletonAnimation;
             Debug.Assert(skeletonAnimation != null);
         }
+
+        // From IAWActorDisplay
+        public void Restore()
+        {
+
+        }
+
+        // From IAWActorDisplay
+        public void DoUpdate(float deltaTime)
+        {
+
+        }
     }
 }

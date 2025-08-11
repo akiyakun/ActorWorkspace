@@ -10,11 +10,11 @@ namespace ActorWorkspace.UnitySpine
     {
         public virtual int ActorCategory { get; protected set; }
         public virtual GameObject GameObject => this.gameObject;
-        public virtual IAWActorParam IActorParam { get; protected set; }
 
-        public IAWActorDisplay ActorDisplay { get; protected set; }
-        public IAWAnimationController AnimationController { get; protected set; }
-        public IReadOnlyList<IAWSkin> SkinList => skinList.Cast<IAWSkin>().ToList();
+        public virtual IAWActorParam ActorParam { get; protected set; }
+        public virtual IAWActorDisplay ActorDisplay { get; protected set; }
+        public virtual IAWAnimationController AnimationController { get; protected set; }
+        public virtual IReadOnlyList<IAWSkin> SkinList => skinList.Cast<IAWSkin>().ToList();
 
         SkeletonAnimation skeletonAnimation;
         IAWEventDecoder eventDecoder;
@@ -52,7 +52,7 @@ namespace ActorWorkspace.UnitySpine
 
         public void Restore()
         {
-            IActorParam?.Restore();
+            ActorParam?.Restore();
         }
 
         public void SetSkin(int skinIndex)
