@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using UnityEngine;
+using afl;
 
 namespace ActorWorkspace
 {
@@ -9,16 +10,14 @@ namespace ActorWorkspace
         public int ActorCategory { get; }
         public GameObject GameObject { get; }
 
-        // 継承先で実装で使用するActorParamを使うだろうから定義しない
-        // public ActorParam ActorParam { get; }
+        public AWActorContextProvider ContextProvider { get; }
 
         public IAWActorParam ActorParam { get; }
         public IAWActorDisplay ActorDisplay { get; }
         // public IAWAnimation Animation { get; }
         public IAWAnimationController AnimationController { get; }
         public IReadOnlyList<IAWSkin> SkinList { get; }
-
-        // public IActorBehaviour ActorBehaviour { get; protected set; }
+        public IAWActorBehaviourController ActorBehaviourController { get; }
 
         // 初期状態に戻す
         public void Restore();

@@ -8,24 +8,30 @@ namespace ActorWorkspace.Tests
         public int ActorCategory { get; set; }
         public GameObject GameObject => null;
 
+        public AWActorContextProvider ContextProvider { get; set; }
+
         public IAWActorParam ActorParam { get; set; }
         public IAWActorDisplay ActorDisplay { get; set; }
         // public IAWAnimation Animation => mockAWAnimation;
         public IAWAnimationController AnimationController { get; set; }
         public IReadOnlyList<IAWSkin> SkinList { get; set; }
+        public IAWActorBehaviourController ActorBehaviourController { get; set; }
 
         private FakeAWActor()
         {
         }
 
-        public FakeAWActor(int category)
+        public FakeAWActor(AWActorContextProvider awActorContextProvider, int category)
         {
             ActorCategory = category;
-            ActorParam = new FakeAWActorParam();
 
+            ContextProvider = awActorContextProvider;
+
+            ActorParam = new FakeAWActorParam();
             ActorDisplay = new FakeAWActorDisplay();
             AnimationController = new FakeAWAnimationController();
             SkinList = new List<IAWSkin>();
+            ActorBehaviourController = new AWActorBehaviourController(this);
         }
 
         public void Restore()

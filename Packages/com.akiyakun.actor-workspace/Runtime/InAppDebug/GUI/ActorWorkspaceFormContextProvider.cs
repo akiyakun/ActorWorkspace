@@ -8,6 +8,9 @@ namespace ActorWorkspace.InAppDebug
     public class ActorWorkspaceFormContextProvider : UniversalContextProvider
     {
         public AssetRepositoryCategorize AssetRepositories { get; private set; }
+
+        public IAWActorManager ActorManager { get; private set; }
+        public AWActorContextProvider ActorContextProvider { get; private set; }
         public IAWActorFactory ActorFactory { get; private set; }
 
         public WorkingActorContext? CurrentWorkingActorContext { get; set; }
@@ -17,13 +20,26 @@ namespace ActorWorkspace.InAppDebug
             AssetRepositories = new();
             AssetRepositories.AddCategory(0, new afl.MasterData.Tests.DummyAssetRepository());
 
-            ActorFactory = new Tests.FakeAWActorFactory();
+            ActorManager = new AWActorManager();
+            ActorContextProvider = new AWActorContextProvider(ActorManager);
+            ActorFactory = new Tests.FakeAWActorFactory(ActorContextProvider);
         }
 
-        public ActorWorkspaceFormContextProvider(AssetRepositoryCategorize assetRepositories, IAWActorFactory actorFactory)
+        public ActorWorkspaceFormContextProvider(AssetRepositoryCategorize assetRepositories,
+            IAWActorManager actorManager, AWActorContextProvider actorContextProvider, IAWActorFactory actorFactory)
         {
             AssetRepositories = assetRepositories;
+            Debug.Assert(assetRepositories != null);
+
+            ActorManager = actorManager;
+            Debug.Assert(actorManager != null);
+
+            ActorContextProvider = actorContextProvider;
+            Debug.Assert(actorContextProvider != null);
+
             ActorFactory = actorFactory;
+            Debug.Assert(actorFactory != null);
+
         }
 
         public override void Release()
