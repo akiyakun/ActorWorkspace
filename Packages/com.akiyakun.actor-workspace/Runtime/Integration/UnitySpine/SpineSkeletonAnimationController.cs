@@ -5,7 +5,7 @@ using Spine.Unity;
 
 namespace ActorWorkspace.UnitySpine
 {
-    public class SpineSkeletonAnimationController : IAWAnimationController
+    public class SpineSkeletonAnimationController : SpineAnimationController
     {
         public IReadOnlyList<IAWAnimation> AnimationList => animationList;
 

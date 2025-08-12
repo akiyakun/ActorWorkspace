@@ -10,7 +10,7 @@ using UnityEditor;
 
 namespace ActorWorkspace.UnitySpine
 {
-    // AssetDatabaseからSpineのアセットを生成
+    // AssetDatabaseからFakeSpineActorを生成
     public class SpineActorFactoryInAssetDatabase : IAWActorFactory
     {
         public event System.Action<IAWActor> OnCreated;
@@ -42,7 +42,7 @@ namespace ActorWorkspace.UnitySpine
             // var skeletonAnimation = SpineUtility.CreateSkeletonAnimationFromAssetDatabae(locator);
             var skeletonAnimation = CreateSkeletonAnimationFromAssetDatabae(locator);
 
-            var spineSkeletonActor = skeletonAnimation.gameObject.AddComponent<SpineSkeletonActor>();
+            var spineSkeletonActor = skeletonAnimation.gameObject.AddComponent<SpineActor>();
             IAWActor actor = spineSkeletonActor as IAWActor;
             Debug.Assert(actor != null);
 
