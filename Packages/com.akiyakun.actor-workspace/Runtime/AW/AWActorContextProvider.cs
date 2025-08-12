@@ -1,4 +1,4 @@
-#nullable enable
+// #nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
@@ -34,4 +34,4 @@ namespace ActorWorkspace
         }
     }
 }
-#nullable restore
+// #nullable restore

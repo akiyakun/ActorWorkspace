@@ -32,22 +32,27 @@ namespace ActorWorkspace
         public abstract TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
         public abstract IReadOnlyList<TSkin> SkinList { get; }
-        public virtual IAWActorBehaviourController ActorBehaviourController { get; protected set; } = null!;
+        public virtual IAWActorBehaviourController ActorBehaviourController { get; protected set; }
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
         public int ElementPriority { get; set; } = 0;
-        public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
-        public virtual void DoUpdate(float deltaTime) { }
-        public virtual void DoLateUpdate(float deltaTime) { }
-        public virtual void DoFixedUpdate() { }
+        public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.All;
         #endregion
+
 
         // AWActorContextProvider awActorContextProvider;
         // SkeletonAnimation skeletonAnimation;
         // IAWEventDecoder eventDecoder;
         // SpineSkeletonAnimationController spineSkeletonAnimationController;
         // List<SpineSkin> skinList;
+
+
+
+        public AWActorBase()
+        {
+            ActorBehaviourController = new AWActorBehaviourController(this);
+        }
 
         public async UniTask<int> InitializeAsync(
             AWActorContextProvider awActorContextProvider, int id, int category, CancellationToken cancellationToken)
@@ -73,6 +78,24 @@ namespace ActorWorkspace
         public virtual void Restore()
         {
             ActorParam?.Restore();
+        }
+
+        // From IUpdateElement
+        public virtual void DoUpdate(float deltaTime)
+        {
+            ActorBehaviourController.DoUpdate(deltaTime);
+        }
+
+        // From IUpdateElement
+        public virtual void DoLateUpdate(float deltaTime)
+        {
+            ActorBehaviourController.DoLateUpdate(deltaTime);
+        }
+
+        // From IUpdateElement
+        public virtual void DoFixedUpdate()
+        {
+            ActorBehaviourController.DoFixedUpdate();
         }
 
         public virtual void SetSkin(int skinIndex)

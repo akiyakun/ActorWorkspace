@@ -5,8 +5,12 @@ using afl;
 
 namespace ActorWorkspace
 {
-    public interface IAWActorBehaviour : IAsyncInitializable, IUpdateElement
+    // MEMO: インターフェースはいらんかも
+    public interface IAWActorBehaviour :
+        // IAsyncInitializable,
+        IUpdateElement
     {
+        public IAWActor Actor { get; }
         // public string Name { get; }
     }
 }
