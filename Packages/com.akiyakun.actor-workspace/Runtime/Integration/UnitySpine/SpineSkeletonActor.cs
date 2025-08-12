@@ -14,7 +14,7 @@ namespace ActorWorkspace.UnitySpine
         public virtual int ActorCategory { get; protected set; }
         public virtual GameObject GameObject => this.gameObject;
 
-        public virtual AWActorContextProvider ContextProvider => awActorContextProvider;
+        public virtual AWActorContextProvider ActorContextProvider => awActorContextProvider;
 
         public virtual IAWActorParam ActorParam { get; protected set; }
         public virtual IAWActorDisplay ActorDisplay { get; protected set; }

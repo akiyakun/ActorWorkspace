@@ -10,7 +10,7 @@ namespace ActorWorkspace
         public int ActorCategory { get; }
         public GameObject GameObject { get; }
 
-        public AWActorContextProvider ContextProvider { get; }
+        public AWActorContextProvider ActorContextProvider { get; }
 
         public IAWActorParam ActorParam { get; }
         public IAWActorDisplay ActorDisplay { get; }

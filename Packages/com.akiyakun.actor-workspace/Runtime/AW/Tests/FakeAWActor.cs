@@ -8,7 +8,7 @@ namespace ActorWorkspace.Tests
         public int ActorCategory { get; set; }
         public GameObject GameObject => null;
 
-        public AWActorContextProvider ContextProvider { get; set; }
+        public AWActorContextProvider ActorContextProvider { get; set; }
 
         public IAWActorParam ActorParam { get; set; }
         public IAWActorDisplay ActorDisplay { get; set; }
@@ -25,7 +25,7 @@ namespace ActorWorkspace.Tests
         {
             ActorCategory = category;
 
-            ContextProvider = awActorContextProvider;
+            ActorContextProvider = awActorContextProvider;
 
             ActorParam = new FakeAWActorParam();
             ActorDisplay = new FakeAWActorDisplay();
