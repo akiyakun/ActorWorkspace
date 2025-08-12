@@ -5,8 +5,9 @@ using afl;
 
 namespace ActorWorkspace
 {
-    public interface IAWActor
+    public interface IAWActor : IUpdateElement
     {
+        public int ActorId { get; }
         public int ActorCategory { get; }
         public GameObject GameObject { get; }
 

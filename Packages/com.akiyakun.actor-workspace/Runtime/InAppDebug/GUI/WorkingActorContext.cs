@@ -9,6 +9,8 @@ namespace ActorWorkspace.InAppDebug
         // public GameObject GameObject;
         public IAWActor Actor;
 
+        public bool IsValid => Actor != null;
+
         // public void Reset()
         // {
         //     Actor = null;
@@ -20,8 +22,9 @@ namespace ActorWorkspace.InAppDebug
             Actor = actor;
         }
 
-        // public void Release()
-        // {
+        public void Reset()
+        {
+            Actor = null;
         //     // FIXME:
         //     // if (GameObject != null)
         //     // {
@@ -33,6 +36,6 @@ namespace ActorWorkspace.InAppDebug
         //         Object.DestroyImmediate(Actor.GameObject);
         //         Actor = null;
         //     }
-        // }
+        }
     }
 }

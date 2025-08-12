@@ -11,6 +11,7 @@ namespace ActorWorkspace.UnitySpine
 {
     public class SpineSkeletonActor : MonoBehaviour, IAWActor
     {
+        public virtual int ActorId { get; protected set; }
         public virtual int ActorCategory { get; protected set; }
         public virtual GameObject GameObject => this.gameObject;
 
@@ -22,16 +23,29 @@ namespace ActorWorkspace.UnitySpine
         public virtual IReadOnlyList<IAWSkin> SkinList => skinList.Cast<IAWSkin>().ToList();
         public IAWActorBehaviourController ActorBehaviourController { get; protected set; }
 
+        #region IUpdateElement
+        public bool ElementActive { get; set; }
+        public int ElementPriority { get; set; } = 0;
+        public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
+        public void DoUpdate(float deltaTime) { }
+        public void DoLateUpdate(float deltaTime) { }
+        public void DoFixedUpdate() { }
+        #endregion
+
         AWActorContextProvider awActorContextProvider;
         SkeletonAnimation skeletonAnimation;
         IAWEventDecoder eventDecoder;
         SpineSkeletonAnimationController spineSkeletonAnimationController;
         List<SpineSkin> skinList;
 
-        public virtual async UniTask<int> InitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)
+        public virtual async UniTask<int> InitializeAsync(
+            AWActorContextProvider awActorContextProvider, int id, int category, CancellationToken cancellationToken)
         {
             this.awActorContextProvider = awActorContextProvider;
             Debug.Assert(awActorContextProvider != null);
+
+            ActorId = id;
+            ActorCategory = category;
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
@@ -40,6 +54,9 @@ namespace ActorWorkspace.UnitySpine
         // eventDecoder も受け取りたい
         protected virtual void Awake()
         {
+            Debug.Assert(ActorId > 0);
+            Debug.Assert(ActorCategory >= 0);
+
             skeletonAnimation = GetComponentInChildren<SkeletonAnimation>();
             Debug.Assert(skeletonAnimation != null, "SkeletonAnimation component not found in children.");
 

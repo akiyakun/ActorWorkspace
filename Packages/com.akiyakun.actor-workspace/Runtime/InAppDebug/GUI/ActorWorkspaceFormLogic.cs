@@ -27,6 +27,7 @@ namespace ActorWorkspace.InAppDebug
         // public Camera CurrentCamera => navigationCamera;
 
         public event System.Action<IAWActor> OnCreatedActor;
+        public event System.Action<IAWActor> OnRemoveActor;
 
         UIAnimationList uiAnimationList;
         UISkinControl uiSkinControl;
@@ -155,7 +156,7 @@ namespace ActorWorkspace.InAppDebug
             //             if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             // #endif
 
-            Debug.Log("ActorWorkspaceGUI initialized successfully.");
+            // Debug.Log("ActorWorkspaceGUI initialized successfully.");
 
             // IsInitialized = true;
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
@@ -252,6 +253,15 @@ namespace ActorWorkspace.InAppDebug
 
         public void LoadActorRequest(int id, int category)
         {
+            // FIXME: 削除処理ちゃんと書く
+            if (ContextProvider.CurrentWorkingActorContext.Actor is IAWActor actor)
+            {
+                OnRemoveActor?.Invoke(actor);
+                actor.ElementActive = false;
+                // ContextProvider.ActorManager.Remove(actor);
+                ContextProvider.CurrentWorkingActorContext.Reset();
+            }
+
             LoadActorAsync(id, category, destroyCancellationToken).Forget();
         }
 
@@ -265,7 +275,7 @@ namespace ActorWorkspace.InAppDebug
 
             loadActorRequesting = true;
 
-            if (ContextProvider.CurrentWorkingActorContext != null)
+            if (ContextProvider.CurrentWorkingActorContext.IsValid)
             {
                 ContextProvider.ActorFactory.Release(ContextProvider.CurrentWorkingActorContext.Actor);
                 // ContextProvider.CurrentWorkingActorContext.Reset();
@@ -279,11 +289,15 @@ namespace ActorWorkspace.InAppDebug
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
             if (cancellationToken.IsCancellationRequested) return;
             Debug.Assert(actor != null);
+            actor.GameObject.SetActive(true);
+
+            // マネージャーに追加
+            // ContextProvider.ActorManager.Add(actor);
 
             // コールバック呼び出し
             OnCreatedActor?.Invoke(actor);
 
-            ContextProvider.CurrentWorkingActorContext = new();
+            // ContextProvider.CurrentWorkingActorContext = new();
             // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
             ContextProvider.CurrentWorkingActorContext.Set(actor);
 
@@ -429,7 +443,7 @@ namespace ActorWorkspace.InAppDebug
         public void OnActiveTrackChanged(int index)
         {
             // Debug.Log($"OnActiveTrackChanged: index={index}");
-            if (ContextProvider.CurrentWorkingActorContext == null) return;
+            if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
 
             currentTrackIndex = index;
 

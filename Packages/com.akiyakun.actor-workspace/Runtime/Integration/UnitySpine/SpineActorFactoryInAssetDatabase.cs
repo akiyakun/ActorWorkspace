@@ -66,8 +66,9 @@ namespace ActorWorkspace.UnitySpine
             return skeletonAnimation;
         }
 
-        public void Release(IAWActor actor)
+        public bool Release(IAWActor actor)
         {
+            return true;
         }
 
     }

@@ -9,36 +9,36 @@ namespace ActorWorkspace.InAppDebug
     {
         public AssetRepositoryCategorize AssetRepositories { get; private set; }
 
-        public IAWActorManager ActorManager { get; private set; }
         public AWActorContextProvider ActorContextProvider { get; private set; }
         public IAWActorFactory ActorFactory { get; private set; }
+        public IAWActorManager ActorManager { get; private set; }
 
-        public WorkingActorContext? CurrentWorkingActorContext { get; set; }
+        public WorkingActorContext CurrentWorkingActorContext { get; set; } = new();
 
         public ActorWorkspaceFormContextProvider()
         {
             AssetRepositories = new();
             AssetRepositories.AddCategory(0, new afl.MasterData.Tests.DummyAssetRepository());
 
-            ActorManager = new AWActorManager();
-            ActorContextProvider = new AWActorContextProvider(ActorManager);
+            ActorContextProvider = new AWActorContextProvider(AssetRepositories);
             ActorFactory = new Tests.FakeAWActorFactory(ActorContextProvider);
+            ActorManager = new AWActorManager(ActorFactory);
         }
 
         public ActorWorkspaceFormContextProvider(AssetRepositoryCategorize assetRepositories,
-            IAWActorManager actorManager, AWActorContextProvider actorContextProvider, IAWActorFactory actorFactory)
+            AWActorContextProvider actorContextProvider, IAWActorFactory actorFactory, IAWActorManager actorManager)
         {
             AssetRepositories = assetRepositories;
             Debug.Assert(assetRepositories != null);
-
-            ActorManager = actorManager;
-            Debug.Assert(actorManager != null);
 
             ActorContextProvider = actorContextProvider;
             Debug.Assert(actorContextProvider != null);
 
             ActorFactory = actorFactory;
             Debug.Assert(actorFactory != null);
+
+            ActorManager = actorManager;
+            Debug.Assert(actorManager != null);
 
         }
 

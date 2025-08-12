@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using afl;
 
 namespace ActorWorkspace.Tests
 {
     public class FakeAWActor : IAWActor
     {
+        public int ActorId { get; set; }
         public int ActorCategory { get; set; }
         public GameObject GameObject => null;
 
@@ -17,12 +19,22 @@ namespace ActorWorkspace.Tests
         public IReadOnlyList<IAWSkin> SkinList { get; set; }
         public IAWActorBehaviourController ActorBehaviourController { get; set; }
 
+        #region IUpdateElement
+        public bool ElementActive { get; set; }
+        public int ElementPriority { get; set; } = 0;
+        public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
+        public void DoUpdate(float deltaTime) { }
+        public void DoLateUpdate(float deltaTime) { }
+        public void DoFixedUpdate() { }
+        #endregion
+
         private FakeAWActor()
         {
         }
 
-        public FakeAWActor(AWActorContextProvider awActorContextProvider, int category)
+        public FakeAWActor(AWActorContextProvider awActorContextProvider, int id, int category)
         {
+            ActorId = id;
             ActorCategory = category;
 
             ActorContextProvider = awActorContextProvider;

@@ -1,3 +1,4 @@
+#nullable enable
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using System.Threading;
@@ -7,12 +8,12 @@ namespace ActorWorkspace
 {
     public interface IAWActorFactory
     {
-        public event System.Action<IAWActor> OnCreated;
-        public event System.Action<IAWActor> OnRelease;
+        public event System.Action<IAWActor>? OnCreated;
+        public event System.Action<IAWActor>? OnRelease;
 
-        public UniTask<IAWActor> CreateAsync(int id, int category = 0, CancellationToken cancellationToken = default);
+        public UniTask<IAWActor?> CreateAsync(int id, int category = 0, CancellationToken cancellationToken = default);
 
-        public void Release(IAWActor actor);
+        public bool Release(IAWActor actor);
 
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // public static async UniTask<T> CreateAsync<T>(IAWActorFactory self, int id, int category = 0, CancellationToken cancellationToken = default)
@@ -28,3 +29,4 @@ namespace ActorWorkspace
         // }
     }
 }
+#nullable restore
