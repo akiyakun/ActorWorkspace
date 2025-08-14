@@ -7,8 +7,11 @@ namespace ActorWorkspace
 {
     public class AWActorBehaviourController : IAWActorBehaviourController
     {
+        public event System.Action<AWActorBehaviour>? OnBehaviourAdded;
+        public event System.Action<AWActorBehaviour>? OnBehaviourRemoved;
+
         IAWActor actor;
-        UpdateElementManager<AWActorBehaviourBase> updater;
+        UpdateElementManager<AWActorBehaviour> updater;
 
 #nullable disable
         private AWActorBehaviourController() { }
@@ -19,7 +22,7 @@ namespace ActorWorkspace
             actor = awActor;
             Debug.Assert(awActor != null);
 
-            updater = new(enablePrioritySort: true);
+            updater = new(enablePrioritySort: true, enforceUniqueType: true);
         }
 
         public virtual void DoUpdate(float deltaTime)
@@ -37,11 +40,21 @@ namespace ActorWorkspace
             updater.DoFixedUpdate(/*deltaTime*/);// FIXME
         }
 
-        public virtual T Add<T>()
-            where T : AWActorBehaviourBase, new()
+        public virtual T? Add<T>()
+            where T : AWActorBehaviour, new()
         {
-            var behaviour = AWActorBehaviourBase.Create<T>(actor);
-            updater.Add(behaviour);
+            var behaviour = AWActorBehaviour.Create<T>(actor);
+            if (updater.Add(behaviour) == false) return null;
+            OnBehaviourAdded?.Invoke(behaviour);
+            return behaviour;
+        }
+
+        public virtual T? Remove<T>()
+            where T : AWActorBehaviour
+        {
+            var behaviour = updater.Remove<T>();
+            if (behaviour == null) return null;
+            OnBehaviourRemoved?.Invoke(behaviour);
             return behaviour;
         }
 

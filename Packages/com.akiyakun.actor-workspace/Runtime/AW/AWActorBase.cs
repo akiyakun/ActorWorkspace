@@ -40,6 +40,11 @@ namespace ActorWorkspace
         public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.All;
         #endregion
 
+#if UNITY_EDITOR
+        // デバッグ確認用
+        [Disable] public List<string> debugActorBehaviours = new();
+#endif
+
 
         // AWActorContextProvider awActorContextProvider;
         // SkeletonAnimation skeletonAnimation;

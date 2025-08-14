@@ -468,7 +468,7 @@ namespace ActorWorkspace.InAppDebug
 
             // SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
             // for (int i = 0; i < skeletonData.Animations.Count; i++)
-            var animationList = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.AnimationList;
+            var animationList = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetAnimationList();
             for (int i = 0; i < animationList.Count; i++)
             {
                 var animation = animationList[i];

@@ -93,11 +93,11 @@ namespace ActorWorkspace.InAppDebug
         {
             Debug.Assert(actor != null);
             Debug.Assert(actor.AnimationController != null);
-            Debug.Assert(actor.AnimationController.AnimationList != null);
+            // Debug.Assert(actor.AnimationController.AnimationList != null);
 
             listView.Clear();
 
-            var animationList = actor.AnimationController.AnimationList;
+            var animationList = actor.AnimationController.GetAnimationList();
             for (int i = 0; i < animationList.Count; i++)
             {
                 var animation = animationList[i];

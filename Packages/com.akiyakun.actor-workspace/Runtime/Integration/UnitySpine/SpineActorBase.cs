@@ -21,9 +21,11 @@ namespace ActorWorkspace.UnitySpine
         public override SpineAnimationController AnimationController { get; protected set; } = null!;
         public override IReadOnlyList<SpineSkin> SkinList => skinList;
 
-        SkeletonAnimation skeletonAnimation = null!;
+        protected Spine.Skeleton Skeleton => skeletonAnimationInterface.Skeleton;
+
+        ISkeletonAnimation skeletonAnimationInterface = null!;
         IAWEventDecoder eventDecoder = null!;
-        SpineSkeletonAnimationController spineSkeletonAnimationController = null!;
+        // SpineSkeletonAnimationController spineSkeletonAnimationController = null!;
         List<SpineSkin> skinList = new();
 
         protected override async UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)
@@ -31,25 +33,29 @@ namespace ActorWorkspace.UnitySpine
             ActorContextProvider = (TActorContextProvider)awActorContextProvider;
             if (ActorContextProvider == null) return GeneralReturnCode.Failed;
 
-            skeletonAnimation = GetComponentInChildren<SkeletonAnimation>();
-            if (skeletonAnimation == null) return GeneralReturnCode.Failed;
-
-            eventDecoder = new SpineEventDecoder();
-            Debug.Assert(eventDecoder != null);
-
+            // SkeletonMecanim か SkeletonAnimation のどちらかを取得
+            if (GetComponentInChildren<SkeletonMecanim>(includeInactive: false) is SkeletonMecanim skeletonMecanim)
             {
-                // var skeletonMecanim = GetComponent<SkeletonMecanim>();
-                // var skeletonAnimation = GetComponent<SkeletonAnimation>();
-                ActorDisplay = new TActorDisplay();
-                int ret = await ActorDisplay.InitializeAsync(skeletonAnimation, cancellationToken: cancellationToken);
+                int ret = await InitializeSkeletonMecanimAsync(skeletonMecanim, cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
                 if (ret < 0) return ret;
             }
+            else if (GetComponentInChildren<SkeletonAnimation>(includeInactive: false) is SkeletonAnimation skeletonAnimation)
+            {
+                if (GetComponentInChildren<SkeletonAnimation>(includeInactive: false) is not null) { }
 
-            spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
-            AnimationController = spineSkeletonAnimationController as SpineAnimationController;
+                int ret = await InitializeSkeletonAnimationAsync(skeletonAnimation, cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (ret < 0) return ret;
+            }
+            else
+            {
+                Debug.Assert(false, "SkeletonMecanim or SkeletonAnimation not found");
+                return GeneralReturnCode.Failed;
+            }
 
-            var skins = skeletonAnimation.Skeleton.Data.Skins.Items;
+            // スキンの初期化
+            var skins = Skeleton.Data.Skins.Items;
             // skinList = new List<SpineSkin>(skins.Length);
             for (int i = 0; i < skins.Length; i++)
             {
@@ -57,7 +63,49 @@ namespace ActorWorkspace.UnitySpine
                 skinList.Add(skin);
             }
 
+            // ActorDisplayの初期化
+            {
+                ActorDisplay = new TActorDisplay();
+                int ret = await ActorDisplay.InitializeAsync(AnimationController, cancellationToken: cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (ret < 0) return ret;
+            }
+
             ActorBehaviourController = new AWActorBehaviourController(this);
+
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
+        }
+
+        protected virtual async UniTask<int> InitializeSkeletonMecanimAsync(SkeletonMecanim skeletonMecanim, CancellationToken cancellationToken)
+        {
+            skeletonAnimationInterface = skeletonMecanim;
+            Debug.Assert(skeletonAnimationInterface != null);
+
+            // FIXME: SkeletonMecanim用のが必要
+            eventDecoder = new SpineEventDecoder();
+            // Debug.Assert(eventDecoder != null);
+
+            var spineMecanimAnimationController = new SpineMecanimAnimationController(skeletonMecanim, eventDecoder);
+            AnimationController = spineMecanimAnimationController as SpineAnimationController;
+            Debug.Assert(AnimationController != null);
+
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
+        }
+
+        protected virtual async UniTask<int> InitializeSkeletonAnimationAsync(SkeletonAnimation skeletonAnimation, CancellationToken cancellationToken)
+        {
+            // skeletonAnimation = GetComponentInChildren<SkeletonAnimation>();
+            // if (skeletonAnimation == null) return GeneralReturnCode.Failed;
+
+            skeletonAnimationInterface = skeletonAnimation;
+            Debug.Assert(skeletonAnimationInterface != null);
+
+            eventDecoder = new SpineEventDecoder();
+            // Debug.Assert(eventDecoder != null);
+
+            var spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
+            AnimationController = spineSkeletonAnimationController as SpineAnimationController;
+            Debug.Assert(AnimationController != null);
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
@@ -79,9 +127,8 @@ namespace ActorWorkspace.UnitySpine
 
             var skin = skinList[skinIndex];
 
-            var skeleton = skeletonAnimation.Skeleton;
-            skeleton.SetSkin(skin.Skin);
-            skeleton.SetSlotsToSetupPose();
+            Skeleton.SetSkin(skin.Skin);
+            Skeleton.SetSlotsToSetupPose();
         }
     }
 }

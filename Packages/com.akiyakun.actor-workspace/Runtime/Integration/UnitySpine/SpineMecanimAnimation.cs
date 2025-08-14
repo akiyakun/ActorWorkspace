@@ -6,17 +6,17 @@ using System.Linq;
 
 namespace ActorWorkspace.UnitySpine
 {
-    public class SpineSkeletonAnimation : SpineAnimation
+    public class SpineMecanimAnimation : SpineAnimation
     {
-        SkeletonAnimation skeletonAnimation;
-        public SkeletonAnimation SkeletonAnimation => skeletonAnimation;
+        SkeletonMecanim skeletonMecanim;
+        public SkeletonMecanim SkeletonMecanim => skeletonMecanim;
 
         Spine.Animation spineAnimation;
 
-        public SpineSkeletonAnimation(SkeletonAnimation skeletonAnimation, Spine.Animation spineAnimation)
+        public SpineMecanimAnimation(SkeletonMecanim skeletonMecanim, Spine.Animation spineAnimation)
         {
-            this.skeletonAnimation = skeletonAnimation;
-            Debug.Assert(skeletonAnimation != null);
+            this.skeletonMecanim = skeletonMecanim;
+            Debug.Assert(skeletonMecanim != null);
 
             this.spineAnimation = spineAnimation;
             Debug.Assert(spineAnimation != null);

@@ -5,7 +5,7 @@ using afl;
 
 namespace ActorWorkspace
 {
-    public abstract class AWActorBehaviourBase : IAWActorBehaviour
+    public abstract class AWActorBehaviour : IAWActorBehaviour
     {
         public IAWActor Actor { get; private set; }
 
@@ -17,8 +17,9 @@ namespace ActorWorkspace
         public virtual void DoLateUpdate(float deltaTime) { }
         public virtual void DoFixedUpdate() { }
 
+        // Factory method
         public static T Create<T>(IAWActor actor)
-            where T : AWActorBehaviourBase, new()
+            where T : AWActorBehaviour, new()
         {
             var behaviour = new T();
             behaviour.Actor = actor;
@@ -26,10 +27,10 @@ namespace ActorWorkspace
         }
 
 #nullable disable
-        protected AWActorBehaviourBase() { }
+        protected AWActorBehaviour() { }
 #nullable enable
 
-        // public AWActorBehaviourBase(IAWActor actor)
+        // public AWActorBehaviour(IAWActor actor)
         // {
         //     Actor = actor;
         //     Debug.Assert(actor != null);

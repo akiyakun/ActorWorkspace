@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ActorWorkspace.Tests
@@ -7,10 +8,24 @@ namespace ActorWorkspace.Tests
     {
         IAWTrack track = default;
 
-        public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
+        // public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
 
         public event System.Action<IAWAnimation> OnAnimationComplate;
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
+
+        public IList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
+        public IAWAnimation? GetAnimation(string name) => animations.Find(a => a.Name == name);
+
+        List<FakeAWAnimation> animations = new List<FakeAWAnimation>
+        {
+            new FakeAWAnimation("TestAnimation1"),
+            new FakeAWAnimation("TestAnimation2"),
+            new FakeAWAnimation("TestAnimation3")
+        };
+
+        // public FakeAWAnimationController()
+        // {
+        // }
 
         // FIXME; spine
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)

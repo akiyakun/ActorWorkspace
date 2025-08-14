@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,3 +20,4 @@ namespace ActorWorkspace
 
     }
 }
+#nullable restore

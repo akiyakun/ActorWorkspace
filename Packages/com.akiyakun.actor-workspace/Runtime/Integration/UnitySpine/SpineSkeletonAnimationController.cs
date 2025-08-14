@@ -1,57 +1,45 @@
+#nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Spine;
 using Spine.Unity;
+using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
+    // SkeletonAnimation と対になるコントローラークラス
     public class SpineSkeletonAnimationController : SpineAnimationController
     {
-        public IReadOnlyList<IAWAnimation> AnimationList => animationList;
-
-        public event System.Action<IAWAnimation> OnAnimationComplate;
-        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
-
         SkeletonAnimation skeletonAnimation;
-        IAWEventDecoder eventDecoder;
 
-        List<SpineSkeletonAnimation> animationList = new();
-
-        List<SpineTrack> trackList = new(IAWTrack.MaxTrack);
-
+// #nullable disable
+//         private SpineSkeletonAnimationController() { }
+// #nullable enable
 
         public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation, IAWEventDecoder eventDecoder)
+            : base(skeletonAnimation, eventDecoder)
         {
             this.skeletonAnimation = skeletonAnimation;
             Debug.Assert(skeletonAnimation != null);
 
-            this.eventDecoder = eventDecoder;
-            Debug.Assert(eventDecoder != null);
-
             // IAWAnimationのリストを作成
+            if (skeletonAnimation != null)
             {
                 foreach (Spine.Animation animation in skeletonAnimation.Skeleton.Data.Animations)
                 {
                     // Debug.Log("Animation name: " + animation.Name);
-                    animationList.Add(new SpineSkeletonAnimation(skeletonAnimation, animation));
+                    animations.Add(animation.Name, new SpineSkeletonAnimation(skeletonAnimation, animation));
                 }
-            }
 
-            // トラックの初期化
-            {
-                for (int i = 0; i < IAWTrack.MaxTrack; i++)
-                {
-                    trackList.Add(new SpineTrack(i));
-                }
+                // コールバック
+                // FIXME: 終了処理
+                skeletonAnimation.AnimationState.Event += OnHandleEvent;
             }
-
-            // コールバック
-            // FIXME: 終了処理
-            skeletonAnimation.AnimationState.Event += OnHandleEvent;
         }
 
 
-        public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
+        public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {
             var track = trackList[trackIndex];
 
@@ -66,24 +54,29 @@ namespace ActorWorkspace.UnitySpine
             skeletonAnimation.state.SetEmptyAnimation(trackIndex, mixDuration);
             track.Set(null);
         }
-        public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
+        public override IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
             if (animation != null)
             {
                 TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackIndex, animation.Name, loop: loop);
                 // trackEntry.TimeScale = timeScale;
             }
+            else
+            {
+                Debug.Assert(false, $"SetAnimation: trackIndex={trackIndex}, animation={animation?.Name}, loop={loop}");
+                return null;
+            }
 
             var track = trackList[trackIndex];
             track.Set(animation as SpineSkeletonAnimation);
             return track;
         }
-        public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
+        public override void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
         {
             skeletonAnimation.state.AddAnimation(trackIndex, animation.Name, loop: false, delay: delay);
         }
 
-        public IAWTrack GetTrack(int trackIndex)
+        public override IAWTrack? GetTrack(int trackIndex)
         {
             // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(trackIndex);
             // if (cu == null) return null;
@@ -95,7 +88,8 @@ namespace ActorWorkspace.UnitySpine
         void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
         {
             var animation = trackList[trackEntry.TrackIndex].Animation;
-            OnAnimationEvent?.Invoke(animation, eventDecoder.Decode(spineEvent));
+            InvokeAnimationEvent(animation, eventDecoder.Decode(spineEvent));
         }
     }
 }
+#nullable restore

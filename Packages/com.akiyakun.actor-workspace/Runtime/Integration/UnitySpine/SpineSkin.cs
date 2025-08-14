@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 using Spine;
@@ -12,7 +13,10 @@ namespace ActorWorkspace.UnitySpine
         Spine.Skin skin;
         public Spine.Skin Skin => skin;
 
+#nullable disable
         private SpineSkin() { }
+#nullable enable
+
         public SpineSkin(Spine.Skin skin)
         {
             this.skin = skin;
@@ -20,3 +24,4 @@ namespace ActorWorkspace.UnitySpine
         }
     }
 }
+#nullable restore

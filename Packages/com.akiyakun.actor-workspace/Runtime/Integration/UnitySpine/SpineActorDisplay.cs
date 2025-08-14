@@ -9,14 +9,14 @@ namespace ActorWorkspace.UnitySpine
 {
     public class SpineActorDisplay : IAWActorDisplay
     {
-        ISkeletonAnimation skeletonAnimation;
-        public ISkeletonAnimation SkeletonAnimation => skeletonAnimation;
+        SpineAnimationController spineAnimationController;
+        // public ISkeletonAnimation SkeletonAnimation => skeletonAnimation;
 
         // From IAWActorDisplay
-        public virtual async UniTask<int> InitializeAsync(SkeletonAnimation skeletonAnimation, CancellationToken cancellationToken)
+        public virtual async UniTask<int> InitializeAsync(SpineAnimationController spineAnimationController, CancellationToken cancellationToken)
         {
-            this.skeletonAnimation = skeletonAnimation;
-            Debug.Assert(skeletonAnimation != null);
+            this.spineAnimationController = spineAnimationController;
+            Debug.Assert(spineAnimationController != null);
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
