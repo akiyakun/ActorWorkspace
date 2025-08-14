@@ -5,6 +5,8 @@ using afl;
 
 namespace ActorWorkspace
 {
+    // MEMO:
+    // MonoBehaviourぽく使いたいのでメソッド名も似せてあります
     public abstract class AWActorBehaviour : IAWActorBehaviour
     {
         public IAWActor Actor { get; private set; }
@@ -35,6 +37,11 @@ namespace ActorWorkspace
         //     Actor = actor;
         //     Debug.Assert(actor != null);
         // }
+
+        public virtual void Awake()
+        {
+        }
+
     }
 }
 #nullable restore

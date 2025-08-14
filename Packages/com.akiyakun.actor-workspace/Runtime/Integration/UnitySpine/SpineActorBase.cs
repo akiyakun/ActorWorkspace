@@ -71,8 +71,6 @@ namespace ActorWorkspace.UnitySpine
                 if (ret < 0) return ret;
             }
 
-            ActorBehaviourController = new AWActorBehaviourController(this);
-
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 

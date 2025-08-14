@@ -32,7 +32,7 @@ namespace ActorWorkspace
         public abstract TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
         public abstract IReadOnlyList<TSkin> SkinList { get; }
-        public virtual IAWActorBehaviourController ActorBehaviourController { get; protected set; }
+        public virtual IAWActorBehaviourController ActorBehaviourController { get; private set; }
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
@@ -45,19 +45,9 @@ namespace ActorWorkspace
         [Disable] public List<string> debugActorBehaviours = new();
 #endif
 
-
-        // AWActorContextProvider awActorContextProvider;
-        // SkeletonAnimation skeletonAnimation;
-        // IAWEventDecoder eventDecoder;
-        // SpineSkeletonAnimationController spineSkeletonAnimationController;
-        // List<SpineSkin> skinList;
-
-
-
-        public AWActorBase()
-        {
-            ActorBehaviourController = new AWActorBehaviourController(this);
-        }
+#nullable disable
+        protected AWActorBase() { }
+#nullable enable
 
         public async UniTask<int> InitializeAsync(
             AWActorContextProvider awActorContextProvider, int id, int category, CancellationToken cancellationToken)
@@ -71,6 +61,14 @@ namespace ActorWorkspace
             // Debug.Assert(awActorContextProvider != null);
 
             ActorBehaviourController = new AWActorBehaviourController(this);
+
+#if UNITY_EDITOR
+            // デバッグ用のイベント登録
+            ActorBehaviourController.OnBehaviourAdded += (behaviour) =>
+            {
+                debugActorBehaviours.Add(behaviour.GetType().Name);
+            };
+#endif
 
             return await InnerInitializeAsync(awActorContextProvider, cancellationToken);
         }

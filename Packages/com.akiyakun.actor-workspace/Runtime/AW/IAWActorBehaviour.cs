@@ -10,6 +10,9 @@ namespace ActorWorkspace
     {
         public IAWActor Actor { get; }
         // public string Name { get; }
+
+        public void Awake();
+
     }
 }
 #nullable restore
