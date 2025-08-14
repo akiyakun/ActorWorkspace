@@ -62,6 +62,11 @@ namespace ActorWorkspace.InAppDebug
             return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
         }
 
+        protected override void OnAwake()
+        {
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.ResetUI, (IAWActor actor) => ResetUI(actor));
+        }
+
         protected override void InnerTerminate()
         {
             // イベント解除
@@ -84,7 +89,7 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-        public void ResetUI(IAWActor actor)
+        void ResetUI(IAWActor actor)
         {
             ResetListView(actor);
         }

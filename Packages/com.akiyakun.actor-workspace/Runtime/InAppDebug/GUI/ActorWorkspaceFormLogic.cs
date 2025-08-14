@@ -302,10 +302,11 @@ namespace ActorWorkspace.InAppDebug
             ContextProvider.CurrentWorkingActorContext.Set(actor);
 
             // UIをリセット
-            uiAnimationList.ResetUI(actor);
-            uiAnimationControl.ResetUI(loop: uiAnimationControl.IsLoop);
-            uiSkinControl.ResetUI(actor);
-            uiPlayListControl.ResetUI(actor);
+            // uiAnimationList.ResetUI(actor);
+            // uiAnimationControl.ResetUI(loop: uiAnimationControl.IsLoop);
+            // uiSkinControl.ResetUI(actor);
+            // uiPlayListControl.ResetUI(actor);
+            FormBinding.Bus.Publish("ResetUI", actor);
 
             // Debug.Assert(Form != null);
             // Debug.Assert(Form.GameObject != null);
@@ -326,7 +327,8 @@ namespace ActorWorkspace.InAppDebug
             // Ctrlが押されている場合は再生リストに追加する
             if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
             {
-                uiPlayListControl.AddPlayList(animation);
+                // uiPlayListControl.AddPlayList(animation);
+                FormBinding.Bus.Publish(ActorWorkspaceFormBinding.Event.PlayList_Add, animation);
                 return;
             }
 

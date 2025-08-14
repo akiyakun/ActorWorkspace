@@ -56,6 +56,11 @@ namespace ActorWorkspace.InAppDebug
             return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
         }
 
+        protected override void OnAwake()
+        {
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.ResetUI, (IAWActor actor) => ResetUI(actor));
+        }
+
         protected override void InnerTerminate()
         {
             // イベント解除
@@ -75,11 +80,11 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-        public void ResetUI(bool loop)
+        void ResetUI(IAWActor actor)
         {
             OnSpeedReset();
             OnMixSliderValueChanged(0.25f);
-            OnLoopToggleChanged(loop);
+            OnLoopToggleChanged(IsLoop);
             ResetTrackControl();
         }
 

@@ -83,10 +83,19 @@ namespace ActorWorkspace.UnitySpine
         }
         public override IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
+            if (animation == null)
+            {
+                Debug.Assert(false, $"SetAnimation: trackIndex={trackIndex}, animation={animation?.Name}, loop={loop}");
+                return null;
+            }
+
             Animator animator = skeletonMecanim.GetComponent<Animator>();
             Debug.Log(animation.Name);
-            // animator.Play(stateName: animation.Name, layer: 0);
-            animator.Play(animation.Name);
+            animator.Play(stateName: animation.Name, layer: trackIndex);
+
+            var track = trackList[trackIndex];
+            // track.Set(animation as SpineSkeletonAnimation);
+            return track;
 
             // MEMO:
             // Animator.Play()が成功したかどうかを取得する手段が無い
@@ -98,7 +107,6 @@ namespace ActorWorkspace.UnitySpine
             //     Debug.LogWarning($"SetAnimation: trackIndex={trackIndex}, animation={animation?.Name}, loop={loop}");
             // }
 
-            return null;
             // if (animation != null)
             // {
             //     TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackIndex, animation.Name, loop: loop);

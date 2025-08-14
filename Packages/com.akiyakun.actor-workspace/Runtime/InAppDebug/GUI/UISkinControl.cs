@@ -20,12 +20,17 @@ namespace ActorWorkspace.InAppDebug
             return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
         }
 
+        protected override void OnAwake()
+        {
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.ResetUI, (IAWActor actor) => ResetUI(actor));
+        }
+
         protected override void InnerTerminate()
         {
             listView.OnClick.RemoveListener(OnClickFromListView);
         }
 
-        public void ResetUI(IAWActor actor)
+        void ResetUI(IAWActor actor)
         {
             // SkeletonData skeletonData =  skeletonAnimation.Skeleton.Data;
             // ExposedList<Skin> skins = skeletonData.Skins;

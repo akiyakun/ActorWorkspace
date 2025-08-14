@@ -20,7 +20,17 @@ namespace ActorWorkspace.InAppDebug
         IAWAnimationController animationController;
         IAWAnimation lastAnimation;
 
-        public void ResetUI(IAWActor actor)
+        protected override void OnAwake()
+        {
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.ResetUI, (IAWActor actor) => ResetUI(actor));
+            // FormBinding.Bus.Subscribe("ResetUI", (IAWActor actor) => ResetUI(actor));
+
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.PlayList_Clear, () => ClearPlayList());
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.PlayList_Add, (IAWAnimation animation) => AddPlayList(animation));
+        }
+
+        // public void ResetUI(IAWActor actor)
+        void ResetUI(IAWActor actor)
         {
             // this.skeletonAnimation = skeletonAnimation;
             // lastAnimation = null;
@@ -31,7 +41,7 @@ namespace ActorWorkspace.InAppDebug
             animationController.OnAnimationComplate += OnAnimationComplete;
         }
 
-        public void ClearPlayList()
+        void ClearPlayList()
         {
             listView.Clear();
             lastAnimation = null;
@@ -40,7 +50,7 @@ namespace ActorWorkspace.InAppDebug
             animationController.SetEmptyAnimation(trackIndex, 0.0f);
         }
 
-        public void AddPlayList(IAWAnimation animation)
+        void AddPlayList(IAWAnimation animation)
         {
             var entity = listView.AddEntity();
             entity.UserData = animation;
@@ -103,10 +113,10 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-        public void OnClearPlayList()
-        {
-            ClearPlayList();
-        }
+        // public void OnClearPlayList()
+        // {
+        //     ClearPlayList();
+        // }
 
     }
 }
