@@ -29,7 +29,7 @@ namespace ActorWorkspace.InAppDebug
             if (editorOnly != null)
             {
                 int ret = await editorOnly.InitializeAsync(cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
                 if (ret < 0) return ret;
             }
 #endif

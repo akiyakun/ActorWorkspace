@@ -37,7 +37,7 @@ namespace ActorWorkspace.UnitySpine
             if (GetComponentInChildren<SkeletonMecanim>(includeInactive: false) is SkeletonMecanim skeletonMecanim)
             {
                 int ret = await InitializeSkeletonMecanimAsync(skeletonMecanim, cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
                 if (ret < 0) return ret;
             }
             else if (GetComponentInChildren<SkeletonAnimation>(includeInactive: false) is SkeletonAnimation skeletonAnimation)
@@ -45,7 +45,7 @@ namespace ActorWorkspace.UnitySpine
                 if (GetComponentInChildren<SkeletonAnimation>(includeInactive: false) is not null) { }
 
                 int ret = await InitializeSkeletonAnimationAsync(skeletonAnimation, cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
                 if (ret < 0) return ret;
             }
             else
@@ -67,7 +67,7 @@ namespace ActorWorkspace.UnitySpine
             {
                 ActorDisplay = new TActorDisplay();
                 int ret = await ActorDisplay.InitializeAsync(AnimationController, cancellationToken: cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
                 if (ret < 0) return ret;
             }
 
