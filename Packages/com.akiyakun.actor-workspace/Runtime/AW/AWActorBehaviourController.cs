@@ -45,7 +45,7 @@ namespace ActorWorkspace
         {
             var behaviour = AWActorBehaviour.Create<T>(actor);
             if (updater.Add(behaviour) == false) return null;
-            behaviour.Awake();
+            behaviour.DoAwake();
             OnBehaviourAdded?.Invoke(behaviour);
             return behaviour;
         }

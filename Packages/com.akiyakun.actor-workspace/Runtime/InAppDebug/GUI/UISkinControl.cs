@@ -22,7 +22,7 @@ namespace ActorWorkspace.InAppDebug
 
         protected override void OnAwake()
         {
-            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.ResetUI, (IAWActor actor) => ResetUI(actor));
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Events.ResetUI, (IAWActor actor) => ResetUI(actor));
         }
 
         protected override void InnerTerminate()

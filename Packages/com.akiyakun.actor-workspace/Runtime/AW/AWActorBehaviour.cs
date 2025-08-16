@@ -38,7 +38,7 @@ namespace ActorWorkspace
         //     Debug.Assert(actor != null);
         // }
 
-        public virtual void Awake()
+        public virtual void DoAwake()
         {
         }
 

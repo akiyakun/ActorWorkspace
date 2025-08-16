@@ -306,7 +306,7 @@ namespace ActorWorkspace.InAppDebug
             // uiAnimationControl.ResetUI(loop: uiAnimationControl.IsLoop);
             // uiSkinControl.ResetUI(actor);
             // uiPlayListControl.ResetUI(actor);
-            FormBinding.Bus.Publish("ResetUI", actor);
+            FormBinding.Bus.Publish(ActorWorkspaceFormBinding.Events.ResetUI, actor);
 
             // Debug.Assert(Form != null);
             // Debug.Assert(Form.GameObject != null);
@@ -328,7 +328,7 @@ namespace ActorWorkspace.InAppDebug
             if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
             {
                 // uiPlayListControl.AddPlayList(animation);
-                FormBinding.Bus.Publish(ActorWorkspaceFormBinding.Event.PlayList_Add, animation);
+                FormBinding.Bus.Publish(ActorWorkspaceFormBinding.Events.PlayList_Add, animation);
                 return;
             }
 

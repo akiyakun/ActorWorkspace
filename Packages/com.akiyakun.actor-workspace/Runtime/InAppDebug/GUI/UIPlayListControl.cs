@@ -22,11 +22,11 @@ namespace ActorWorkspace.InAppDebug
 
         protected override void OnAwake()
         {
-            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.ResetUI, (IAWActor actor) => ResetUI(actor));
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Events.ResetUI, actor => ResetUI(actor));
             // FormBinding.Bus.Subscribe("ResetUI", (IAWActor actor) => ResetUI(actor));
 
-            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.PlayList_Clear, () => ClearPlayList());
-            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Event.PlayList_Add, (IAWAnimation animation) => AddPlayList(animation));
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Events.PlayList_Clear, () => ClearPlayList());
+            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Events.PlayList_Add, animation => AddPlayList(animation));
         }
 
         // public void ResetUI(IAWActor actor)
