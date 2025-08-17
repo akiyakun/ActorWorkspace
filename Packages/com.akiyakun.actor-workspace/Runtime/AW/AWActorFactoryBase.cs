@@ -31,16 +31,16 @@ namespace ActorWorkspace
             Debug.Assert(awActorContextProvider != null);
         }
 
-        public async UniTask<IAWActor?> CreateAsync(int id, int category, CancellationToken cancellationToken)
+        public async UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken)
         {
-            var actor = await InnerCreateAsync(id, category, cancellationToken);
+            var actor = await InnerCreateAsync(param, cancellationToken);
             if (actor == null) return null;
             OnCreated?.Invoke(actor);
             return actor;
         }
 
         // MEMO: 実装先でOnCreated()の呼び出しをする必要はありません
-        protected abstract UniTask<IAWActor?> InnerCreateAsync(int id, int category, CancellationToken cancellationToken);
+        protected abstract UniTask<IAWActor?> InnerCreateAsync(ActorCreateParam param, CancellationToken cancellationToken);
 
         public bool Release(IAWActor actor)
         {

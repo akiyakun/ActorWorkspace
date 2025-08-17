@@ -262,10 +262,10 @@ namespace ActorWorkspace.InAppDebug
                 ContextProvider.CurrentWorkingActorContext.Reset();
             }
 
-            LoadActorAsync(id, category, destroyCancellationToken).Forget();
+            LoadActorAsync(new ActorCreateParam(id, category), destroyCancellationToken).Forget();
         }
 
-        public async UniTask LoadActorAsync(int id, int category, CancellationToken cancellationToken)
+        public async UniTask LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
         {
             if (loadActorRequesting == true)
             {
@@ -285,7 +285,7 @@ namespace ActorWorkspace.InAppDebug
             // SkeletonAnimation skeletonAnimation = null;
 
             // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
-            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(id, category, cancellationToken: cancellationToken);
+            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(param, cancellationToken: cancellationToken);
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
             if (cancellationToken.IsCancellationRequested) return;
             Debug.Assert(actor != null);

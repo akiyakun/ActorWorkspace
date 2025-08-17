@@ -11,7 +11,7 @@ namespace ActorWorkspace
         public event System.Action<IAWActor>? OnCreated;
         public event System.Action<IAWActor>? OnRelease;
 
-        public UniTask<IAWActor?> CreateAsync(int id, int category = 0, CancellationToken cancellationToken = default);
+        public UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken = default);
 
         public bool Release(IAWActor actor);
 

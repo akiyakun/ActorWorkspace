@@ -19,9 +19,9 @@ namespace ActorWorkspace.Tests
             Debug.Assert(contextProvider != null);
         }
 
-        public UniTask<IAWActor> CreateAsync(int id, int category, CancellationToken cancellationToken = default)
+        public UniTask<IAWActor> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken = default)
         {
-            var actor = new FakeAWActor(contextProvider, id, category);
+            var actor = new FakeAWActor(contextProvider, param.Id, param.Category);
             OnCreated?.Invoke(actor);
             return UniTask.FromResult<IAWActor>(actor);
         }
