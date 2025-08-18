@@ -31,24 +31,24 @@ namespace ActorWorkspace.InAppDebug
 
         protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
-            speedInputField = speedControl.Find("InputField").GetComponent<TMP_InputField>();
+            speedInputField = speedControl.GetComponent<TMP_InputField>("InputField");
 
-            mixInputField = mixControl.Find("InputField").GetComponent<TMP_InputField>();
-            loopToggle = mixControl.Find("Loop").GetComponent<Toggle>();
+            mixInputField = mixControl.GetComponent<TMP_InputField>("InputField");
+            loopToggle = mixControl.GetComponent<Toggle>("Loop");
 
             // イベント登録
             {
-                speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnSpeedSliderValueChanged);
-                speedControl.Find("Reset").GetComponent<Button>().onClick.AddListener(OnSpeedReset);
+                speedControl.GetComponent<Slider>("Slider").onValueChanged.AddListener(OnSpeedSliderValueChanged);
+                speedControl.GetComponent<Button>("Reset").onClick.AddListener(OnSpeedReset);
 
-                mixControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnMixSliderValueChanged);
-                mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.AddListener(OnLoopToggleChanged);
+                mixControl.GetComponent<Slider>("Slider").onValueChanged.AddListener(OnMixSliderValueChanged);
+                mixControl.GetComponent<Toggle>("Loop").onValueChanged.AddListener(OnLoopToggleChanged);
 
-                trackControl.Find("Track0").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack0ToggleChanged);
-                trackControl.Find("Track1").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack1ToggleChanged);
-                trackControl.Find("Track2").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack2ToggleChanged);
-                trackControl.Find("Track3").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack3ToggleChanged);
-                // trackControl.Find("Track4").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack4ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track0").onValueChanged.AddListener(OnTrack0ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track1").onValueChanged.AddListener(OnTrack1ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track2").onValueChanged.AddListener(OnTrack2ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track3").onValueChanged.AddListener(OnTrack3ToggleChanged);
+                // trackControl.GetComponent<Toggle>("Track4").onValueChanged.AddListener(OnTrack4ToggleChanged);
 
                 // OnAnimationChanged += InnerOnAnimationChanged;
             }
@@ -65,16 +65,16 @@ namespace ActorWorkspace.InAppDebug
         {
             // イベント解除
             {
-                speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.RemoveListener(OnSpeedSliderValueChanged);
-                speedControl.Find("Reset").GetComponent<Button>().onClick.RemoveListener(OnSpeedReset);
+                speedControl.GetComponent<Slider>("Slider").onValueChanged.RemoveListener(OnSpeedSliderValueChanged);
+                speedControl.GetComponent<Button>("Reset").onClick.RemoveListener(OnSpeedReset);
 
-                mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.RemoveListener(OnLoopToggleChanged);
+                mixControl.GetComponent<Toggle>("Loop").onValueChanged.RemoveListener(OnLoopToggleChanged);
 
-                trackControl.Find("Track0").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack0ToggleChanged);
-                trackControl.Find("Track1").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack1ToggleChanged);
-                trackControl.Find("Track2").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack2ToggleChanged);
-                trackControl.Find("Track3").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack3ToggleChanged);
-                trackControl.Find("Track4").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack4ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track0").onValueChanged.RemoveListener(OnTrack0ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track1").onValueChanged.RemoveListener(OnTrack1ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track2").onValueChanged.RemoveListener(OnTrack2ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track3").onValueChanged.RemoveListener(OnTrack3ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track4").onValueChanged.RemoveListener(OnTrack4ToggleChanged);
 
                 // OnAnimationChanged -= InnerOnAnimationChanged;
             }
@@ -94,14 +94,14 @@ namespace ActorWorkspace.InAppDebug
         {
             for (int i = 0; i < 5; i++)
             {
-                var defaultText = trackControl.Find($"Track{i}/Background/Checkmark/DefaultText").GetComponent<TMP_Text>();
-                var playingText = trackControl.Find($"Track{i}/Background/Checkmark/PlayingText").GetComponent<TMP_Text>();
+                var defaultText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/DefaultText");
+                var playingText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/PlayingText");
 
                 defaultText.gameObject.SetActive(true);
                 playingText.gameObject.SetActive(false);
             }
 
-            trackControl.Find($"Track{0}").GetComponent<Toggle>().isOn = true;
+            trackControl.GetComponent<Toggle>($"Track{0}").isOn = true;
         }
 
         // 負の値は停止あつかい
@@ -110,8 +110,8 @@ namespace ActorWorkspace.InAppDebug
             // for (int i = 0; i < 5; i++)
             {
                 int i = trackIndex;
-                var defaultText = trackControl.Find($"Track{i}/Background/Checkmark/DefaultText").GetComponent<TMP_Text>();
-                var playingText = trackControl.Find($"Track{i}/Background/Checkmark/PlayingText").GetComponent<TMP_Text>();
+                var defaultText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/DefaultText");
+                var playingText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/PlayingText");
 
                 defaultText.gameObject.SetActive(!isPlaying);
                 playingText.text = defaultText.text;

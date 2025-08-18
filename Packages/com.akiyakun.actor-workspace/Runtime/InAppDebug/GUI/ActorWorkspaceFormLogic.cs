@@ -210,7 +210,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OpenAsset()
         {
-            var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
+            var listView = openAssetDialog.GetComponent<UIListView>("UIListView");
 
             // リストをクリア
             listView.Clear();
@@ -235,7 +235,7 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnLoadAsset()
         {
-            var listView = openAssetDialog.Find("UIListView").GetComponent<UIListView>();
+            var listView = openAssetDialog.GetComponent<UIListView>("UIListView");
             if (listView.SelectedEntity == null) return;
 
             var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
@@ -453,7 +453,7 @@ namespace ActorWorkspace.InAppDebug
             uiAnimationControl.ChangeTrack(
                 trackInfoList[currentTrackIndex].Speed, trackInfoList[currentTrackIndex].Mix);
 
-            var uiListView = uiAnimationList.gameObject.Find("UIListView").GetComponent<UIListView>();
+            var uiListView = uiAnimationList.gameObject.GetComponent<UIListView>("UIListView");
 
             // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
