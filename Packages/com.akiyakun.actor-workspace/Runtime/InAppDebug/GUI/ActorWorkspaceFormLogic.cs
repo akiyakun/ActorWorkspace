@@ -265,12 +265,12 @@ namespace ActorWorkspace.InAppDebug
             LoadActorAsync(new ActorCreateParam(id, category), destroyCancellationToken).Forget();
         }
 
-        public async UniTask LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
+        public async UniTask<int> LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
         {
             if (loadActorRequesting == true)
             {
                 Debug.Assert(loadActorRequesting == false);
-                return;
+                return GeneralReturnCode.Failed;
             }
 
             loadActorRequesting = true;
@@ -287,7 +287,7 @@ namespace ActorWorkspace.InAppDebug
             // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
             IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(param, cancellationToken: cancellationToken);
             // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
-            if (cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
             Debug.Assert(actor != null);
             actor.GameObject.SetActive(true);
 
@@ -313,6 +313,7 @@ namespace ActorWorkspace.InAppDebug
             // Form.GameObject.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
 
             loadActorRequesting = false;
+            return GeneralReturnCode.Succeeded;
         }
 
 
