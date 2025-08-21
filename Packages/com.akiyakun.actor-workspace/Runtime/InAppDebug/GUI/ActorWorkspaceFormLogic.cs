@@ -505,7 +505,7 @@ namespace ActorWorkspace.InAppDebug
             if (string.IsNullOrEmpty(ForceLoadAssetAtRunning)) return;
 
             // var path = AssetDatabase.GetAssetPath(ForceLoadAssetAtRunning);
-            var path = Utility.GetDirectoryPath(ForceLoadAssetAtRunning);
+            var path = Utility.GetDirectoryPathNormalization(ForceLoadAssetAtRunning);
             Debug.Log($"ForceLoadAssetAtRunning: {path}");
 
             // if (string.IsNullOrEmpty(ForceLoadAssetAtRunning) == false)
