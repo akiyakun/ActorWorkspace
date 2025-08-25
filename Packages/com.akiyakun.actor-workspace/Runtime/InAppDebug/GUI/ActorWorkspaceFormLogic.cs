@@ -197,7 +197,7 @@ namespace ActorWorkspace.InAppDebug
                     {
                         // info.Name = System.IO.Path.GetDirectoryName(info.AssetModel.AssetLocator).Replace(assetRootDirectory, "");
                         // info.Name = System.IO.Path.GetFileNameWithoutExtension(info.AssetModel.AssetLocator);
-                        info.Name = info.AssetModel.AssetLocator;
+                        info.Name = $"{model.Id:0000}: {info.AssetModel.AssetLocator}";
                     }
 
                     list.Add(info);

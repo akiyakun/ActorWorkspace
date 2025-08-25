@@ -8,8 +8,8 @@ namespace ActorWorkspace
 {
     public interface IAWActorFactory
     {
-        public event System.Action<IAWActor>? OnCreated;
-        public event System.Action<IAWActor>? OnRelease;
+        public event System.Action<IAWActor> OnCreated;
+        public event System.Action<IAWActor> OnRelease;
 
         public UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken = default);
 

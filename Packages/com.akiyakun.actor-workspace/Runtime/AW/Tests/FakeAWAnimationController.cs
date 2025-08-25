@@ -27,6 +27,15 @@ namespace ActorWorkspace.Tests
         // {
         // }
 
+        public void DoUpdate(float deltaTime)
+        {
+            // foreach (var track in trackList)
+            for (int i = 0; i < IAWTrack.MaxTrack; i++)
+            {
+                // GetTrack(i).Animation?.DoUpdate(deltaTime);
+            }
+        }
+
         // FIXME; spine
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {

@@ -11,9 +11,11 @@ namespace ActorWorkspace
         // public IReadOnlyList<IAWAnimation> AnimationList { get; }
 
         // public System.Action<AWAnimationData> OnAnimationComplate { get; }
-        public event System.Action<IAWAnimation>? OnAnimationComplate;
-        public event System.Action<IAWAnimation, AWEventData>? OnAnimationEvent;
+        public event System.Action<IAWAnimation> OnAnimationComplate;
+        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
         // public event System.Action<AWEventData> OnEvent;
+
+        public void DoUpdate(float deltaTime);
 
         public IList<IAWAnimation> GetAnimationList();
         public IAWAnimation? GetAnimation(string name);

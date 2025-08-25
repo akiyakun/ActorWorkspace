@@ -87,6 +87,7 @@ namespace ActorWorkspace
         public virtual void DoUpdate(float deltaTime)
         {
             ActorBehaviourController.DoUpdate(deltaTime);
+            AnimationController.DoUpdate(deltaTime);
         }
 
         // From IUpdateElement
