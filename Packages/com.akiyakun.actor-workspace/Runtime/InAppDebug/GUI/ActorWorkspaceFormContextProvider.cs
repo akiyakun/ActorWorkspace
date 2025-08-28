@@ -42,9 +42,6 @@ namespace ActorWorkspace.InAppDebug
 
         }
 
-        public override void Release()
-        {
-        }
     }
 }
 #nullable restore

@@ -29,9 +29,6 @@ namespace ActorWorkspace
             // Debug.Assert(awActorManager != null);
         }
 
-        public override void Release()
-        {
-        }
     }
 }
 // #nullable restore

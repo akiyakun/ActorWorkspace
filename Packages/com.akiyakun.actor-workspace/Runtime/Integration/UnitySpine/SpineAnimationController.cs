@@ -47,6 +47,18 @@ namespace ActorWorkspace.UnitySpine
             }
         }
 
+        // FIXME:
+        public void DoUpdate(float deltaTime)
+        {
+            // SpineのUpdateは自動でやってくれるので特に何もしない
+            // skeletonAnimationInterface.Update(deltaTime);
+
+            // // Trackの更新
+            // foreach (var track in trackList)
+            // {
+            //     track.DoUpdate(deltaTime);
+            // }
+        }
 
         public IList<IAWAnimation> GetAnimationList()
         {
