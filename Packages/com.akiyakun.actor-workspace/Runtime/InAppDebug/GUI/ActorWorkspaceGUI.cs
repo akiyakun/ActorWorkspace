@@ -14,8 +14,8 @@ namespace ActorWorkspace.InAppDebug
         [SerializeField] IAsyncInitializable editorOnly;
 #endif
 
-        [SerializeField] ActorWorkspaceFormLogic actorWorkspaceFormLogic;
-        public ActorWorkspaceFormLogic Logic => actorWorkspaceFormLogic;
+        [SerializeField] ActorWorkspaceFormView actorWorkspaceFormView;
+        public ActorWorkspaceFormView View => actorWorkspaceFormView;
 
         // From IAsyncInitializable
         public bool IsInitialized { get; private set; }

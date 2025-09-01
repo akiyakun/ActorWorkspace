@@ -58,7 +58,7 @@ namespace ActorWorkspace.InAppDebug
 
         protected override void OnAwake()
         {
-            FormBinding.Bus.Subscribe(ActorWorkspaceFormBinding.Events.ResetUI, (IAWActor actor) => ResetUI(actor));
+            ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.ResetUI, (IAWActor actor) => ResetUI(actor));
         }
 
         protected override void InnerTerminate()

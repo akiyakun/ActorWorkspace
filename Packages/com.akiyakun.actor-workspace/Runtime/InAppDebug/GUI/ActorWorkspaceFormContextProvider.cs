@@ -1,11 +1,11 @@
 #nullable enable
 using UnityEngine;
-using afl;
+using afl.UI;
 using afl.MasterData;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class ActorWorkspaceFormContextProvider : UniversalContextProvider
+    public class ActorWorkspaceFormContextProvider : UIContextProvider
     {
         public AssetRepositoryCategorize AssetRepositories { get; private set; }
 

@@ -6,14 +6,13 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using afl;
 using afl.MasterData;
-using afl.UI.v1;
 using afl.UI;
 using TMPro;
 using ActorWorkspace.MasterData;
 
 namespace ActorWorkspace.InAppDebug
 {
-    public class ActorWorkspaceFormLogic : UIFormLogic<ActorWorkspaceFormContextProvider>
+    public class ActorWorkspaceFormView : UIFormViewBase<ActorWorkspaceFormContextProvider>
     {
         public const string AssetRootDirectory = "Assets/AssetBundleData/Actor";
         public const string AnimationListControlPath = "Root/AnimationListControl";
@@ -61,7 +60,7 @@ namespace ActorWorkspace.InAppDebug
         }
 
         // From UIFormLogic
-        protected override ActorWorkspaceFormContextProvider InnerCreateContextProvider()
+        protected override ActorWorkspaceFormContextProvider CreateContextProvider()
         {
             Debug.Assert(injectContextProvider != null);
             return injectContextProvider;
@@ -306,7 +305,7 @@ namespace ActorWorkspace.InAppDebug
             // uiAnimationControl.ResetUI(loop: uiAnimationControl.IsLoop);
             // uiSkinControl.ResetUI(actor);
             // uiPlayListControl.ResetUI(actor);
-            FormBinding.Bus.Publish(ActorWorkspaceFormBinding.Events.ResetUI, actor);
+            ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.ResetUI, actor);
 
             // Debug.Assert(Form != null);
             // Debug.Assert(Form.GameObject != null);
@@ -329,7 +328,7 @@ namespace ActorWorkspace.InAppDebug
             if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
             {
                 // uiPlayListControl.AddPlayList(animation);
-                FormBinding.Bus.Publish(ActorWorkspaceFormBinding.Events.PlayList_Add, animation);
+                ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.PlayList_Add, animation);
                 return;
             }
 
