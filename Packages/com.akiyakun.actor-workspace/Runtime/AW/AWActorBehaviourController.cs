@@ -7,8 +7,8 @@ namespace ActorWorkspace
 {
     public class AWActorBehaviourController : IAWActorBehaviourController
     {
-        public event System.Action<AWActorBehaviour>? OnBehaviourAdded;
-        public event System.Action<AWActorBehaviour>? OnBehaviourRemoved;
+        public event System.Action<AWActorBehaviour> OnBehaviourAdded = null!;
+        public event System.Action<AWActorBehaviour> OnBehaviourRemoved = null!;
 
         IAWActor actor;
         UpdateElementManager<AWActorBehaviour> updater;
@@ -57,6 +57,12 @@ namespace ActorWorkspace
             if (behaviour == null) return null;
             OnBehaviourRemoved?.Invoke(behaviour);
             return behaviour;
+        }
+
+        public virtual T? Get<T>()
+            where T : AWActorBehaviour
+        {
+            return updater.Get<T>();
         }
 
     }

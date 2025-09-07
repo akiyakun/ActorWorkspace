@@ -8,8 +8,8 @@ namespace ActorWorkspace
     // MEMO: MonoBehaviourにしたくなかったやつ
     public interface IAWActorBehaviourController
     {
-        public event System.Action<AWActorBehaviour>? OnBehaviourAdded;
-        public event System.Action<AWActorBehaviour>? OnBehaviourRemoved;
+        public event System.Action<AWActorBehaviour> OnBehaviourAdded;
+        public event System.Action<AWActorBehaviour> OnBehaviourRemoved;
 
         public void DoUpdate(float deltaTime);
         public void DoLateUpdate(float deltaTime);
@@ -19,6 +19,9 @@ namespace ActorWorkspace
             where T : AWActorBehaviour, new();
 
         public T? Remove<T>()
+            where T : AWActorBehaviour;
+
+        public T? Get<T>()
             where T : AWActorBehaviour;
     }
 }
