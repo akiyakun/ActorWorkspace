@@ -17,9 +17,8 @@ namespace ActorWorkspace.InAppDebug
         public const string AssetRootDirectory = "Assets/AssetBundleData/Actor";
         public const string AnimationListControlPath = "Root/AnimationListControl";
 
-        [SerializeField] Camera actorCamera;
-        public Camera ActorCamera => actorCamera;
-
+        // [SerializeField] Camera actorCamera;
+        public Camera ActorCamera { get; private set; } = null!;
         // [SerializeField] Camera uiCamera;
         // public Camera UICamera => uiCamera;
 
@@ -59,7 +58,7 @@ namespace ActorWorkspace.InAppDebug
             injectContextProvider = contextProvider;
         }
 
-        // From UIFormLogic
+        // From UIFormViewBase
         protected override ActorWorkspaceFormContextProvider CreateContextProvider()
         {
             Debug.Assert(injectContextProvider != null);
@@ -73,6 +72,13 @@ namespace ActorWorkspace.InAppDebug
         {
             // ContextProvider = contextProvider;
             Debug.Assert(ContextProvider != null, "先に SetContextProvider() を呼び出してください。");
+
+            // VariableTable
+            {
+                ActorCamera = Form.VariableTable.Get("ActorCamera").GetComponent<Camera>();
+                Debug.Assert(ActorCamera != null, "ActorCamera is null");
+                openAssetDialog = Form.VariableTable.Get("OpenAssetDialog").GetGameObject();
+            }
 
             // アクターカメラの設定
             {
@@ -261,7 +267,8 @@ namespace ActorWorkspace.InAppDebug
                 ContextProvider.CurrentWorkingActorContext.Reset();
             }
 
-            LoadActorAsync(new ActorCreateParam(id, category), destroyCancellationToken).Forget();
+            // FIXME:
+            LoadActorAsync(new ActorCreateParam(id, category), ((UIForm)Form).destroyCancellationToken).Forget();
         }
 
         public async UniTask<int> LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)

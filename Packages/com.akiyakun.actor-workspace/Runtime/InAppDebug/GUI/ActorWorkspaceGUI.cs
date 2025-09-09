@@ -2,6 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using afl;
+using afl.UI;
 using afl.Service.Screen;
 
 namespace ActorWorkspace.InAppDebug
@@ -14,7 +15,8 @@ namespace ActorWorkspace.InAppDebug
         [SerializeField] IAsyncInitializable editorOnly;
 #endif
 
-        [SerializeField] ActorWorkspaceFormView actorWorkspaceFormView;
+        [SerializeField] UIForm actorWorkspaceForm;
+        ActorWorkspaceFormView actorWorkspaceFormView;
         public ActorWorkspaceFormView View => actorWorkspaceFormView;
 
         // From IAsyncInitializable

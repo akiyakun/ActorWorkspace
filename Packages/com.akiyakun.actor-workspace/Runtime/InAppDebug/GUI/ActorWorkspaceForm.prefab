@@ -2154,7 +2154,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9064520843997160985}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ActorWorkspace.InAppDebug.ActorWorkspaceGUI, com.akiyakun.actor-workspace.InAppDebug.Runtime
         m_MethodName: OnLoadAsset
         m_Mode: 1
@@ -4079,7 +4079,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9064520843997160985}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ActorWorkspace.InAppDebug.ActorWorkspaceGUI, com.akiyakun.actor-workspace.InAppDebug.Runtime
         m_MethodName: OpenAsset
         m_Mode: 1
@@ -5703,7 +5703,7 @@ GameObject:
   m_Component:
   - component: {fileID: 858047793466085833}
   - component: {fileID: 5085118301206817964}
-  - component: {fileID: 9064520843997160985}
+  - component: {fileID: 8183736657936073856}
   m_Layer: 5
   m_Name: ActorWorkspaceForm
   m_TagString: Untagged
@@ -5748,7 +5748,7 @@ MonoBehaviour:
   resourceLoadMode: 0
   playOnShow: 1
   spriteAtlasList: []
---- !u!114 &9064520843997160985
+--- !u!114 &8183736657936073856
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5757,12 +5757,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 8746466068035611826}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2793bb78296854711aa122a82576145e, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d8e56fd68bfd41ad874fb36cc419b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actorCamera: {fileID: 0}
-  openAssetDialog: {fileID: 7592060935622637340}
-  "\u5B9F\u884C\u6642\u306B\u8AAD\u307F\u8FBC\u3080\u30A2\u30BB\u30C3\u30C8\u30D5\u30A9\u30EB\u30C0\u30FC\u306E\u30D1\u30B9": 
+  variableTable:
+    raw:
+    - Key: ActorCamera
+      Variable:
+        Type: 6
+        StringValue: 
+        UnityObject: {fileID: 0}
+        Dword:
+          Int: 0
+          Float: 0
+          Bool: 0
+    - Key: OpenAssetDialog
+      Variable:
+        Type: 5
+        StringValue: 
+        UnityObject: {fileID: 7592060935622637340}
+        Dword:
+          Int: 0
+          Float: 0
+          Bool: 0
 --- !u!1 &8926110899537796706
 GameObject:
   m_ObjectHideFlags: 0
@@ -6193,11 +6210,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99999994
       objectReference: {fileID: 0}
     - target: {fileID: 7891902162039701993, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6530,7 +6547,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2738744352918865007, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2995991457717537214, guid: b5d3e2d55c88a4349ac6ea715aa79da5, type: 3}
       propertyPath: m_AnchorMax.x

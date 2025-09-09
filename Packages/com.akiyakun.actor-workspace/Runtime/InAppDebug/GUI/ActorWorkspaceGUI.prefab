@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   managedCanvas: {fileID: 190373905106730758}
-  actorWorkspaceFormLogic: {fileID: 7335456732796820987}
+  actorWorkspaceForm: {fileID: 6815804965757130574}
 --- !u!1 &6697252846211003538
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,6 +734,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8183736657936073856, guid: 04c37ff8b44f943be80126e2504debf1, type: 3}
+      propertyPath: variableTable.raw.Array.data[0].Variable.UnityObject
+      value: 
+      objectReference: {fileID: 3336118597027590799}
     - target: {fileID: 8187606616363311327, guid: 04c37ff8b44f943be80126e2504debf1, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -820,15 +824,15 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 858047793466085833, guid: 04c37ff8b44f943be80126e2504debf1, type: 3}
   m_PrefabInstance: {fileID: 1731461047153933282}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7335456732796820987 stripped
+--- !u!114 &6815804965757130574 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9064520843997160985, guid: 04c37ff8b44f943be80126e2504debf1, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5085118301206817964, guid: 04c37ff8b44f943be80126e2504debf1, type: 3}
   m_PrefabInstance: {fileID: 1731461047153933282}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2793bb78296854711aa122a82576145e, type: 3}
+  m_Script: {fileID: 11500000, guid: d1e4b79c90ae348d58b09a7f93cc703d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &4222991243050074873
