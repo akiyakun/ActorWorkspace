@@ -23,6 +23,12 @@ namespace ActorWorkspace
             Debug.Assert(awActor != null);
 
             updater = new(enablePrioritySort: true, enforceUniqueType: true);
+            updater.OnRemoveElement += OnRemoveBehaviour;
+        }
+
+        public void Dispose()
+        {
+            updater.OnRemoveElement -= OnRemoveBehaviour;
         }
 
         public virtual void DoUpdate(float deltaTime)
@@ -50,13 +56,17 @@ namespace ActorWorkspace
             return behaviour;
         }
 
-        public virtual T? Remove<T>()
+        public virtual bool Remove<T>()
             where T : AWActorBehaviour
         {
-            var behaviour = updater.Remove<T>();
-            if (behaviour == null) return null;
+            var ret = updater.RemoveImmediate<T>();
+            return ret;
+        }
+
+        void OnRemoveBehaviour(AWActorBehaviour behaviour)
+        {
             OnBehaviourRemoved?.Invoke(behaviour);
-            return behaviour;
+            behaviour.DoDestroy();
         }
 
         public virtual T? Get<T>()

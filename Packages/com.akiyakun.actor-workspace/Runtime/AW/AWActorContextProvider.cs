@@ -11,11 +11,12 @@ namespace ActorWorkspace
         public virtual AssetRepositoryCategorize AssetRepositoryCategorize { get; protected set; }
         // public virtual IAWActorManager ActorManager => awActorManager;
 
-// #nullable disable
-//         private AWActorContextProvider() { }
-// #nullable enable
+        // #nullable disable
+        //         private AWActorContextProvider() { }
+        // #nullable enable
 
         // IAWActorManager awActorManager;
+        public EventBus<string> EventBus { get; protected set; } = new();
 
         // public AWActorContextProvider(IAWActorManager awActorManager)
         public AWActorContextProvider(

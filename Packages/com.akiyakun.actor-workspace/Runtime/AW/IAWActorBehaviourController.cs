@@ -6,7 +6,7 @@ using afl;
 namespace ActorWorkspace
 {
     // MEMO: MonoBehaviourにしたくなかったやつ
-    public interface IAWActorBehaviourController
+    public interface IAWActorBehaviourController : System.IDisposable
     {
         public event System.Action<AWActorBehaviour> OnBehaviourAdded;
         public event System.Action<AWActorBehaviour> OnBehaviourRemoved;
@@ -18,7 +18,7 @@ namespace ActorWorkspace
         public T? Add<T>()
             where T : AWActorBehaviour, new();
 
-        public T? Remove<T>()
+        public bool Remove<T>()
             where T : AWActorBehaviour;
 
         public T? Get<T>()

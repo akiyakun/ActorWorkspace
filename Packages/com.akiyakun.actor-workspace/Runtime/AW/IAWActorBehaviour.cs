@@ -11,7 +11,11 @@ namespace ActorWorkspace
         public IAWActor Actor { get; }
         // public string Name { get; }
 
+        // 初期状態に戻す
+        public void Restore();
+
         public void DoAwake();
+        public void DoDestroy();
 
     }
 }

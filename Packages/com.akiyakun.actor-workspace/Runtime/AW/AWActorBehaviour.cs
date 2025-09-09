@@ -38,7 +38,13 @@ namespace ActorWorkspace
         //     Debug.Assert(actor != null);
         // }
 
+        public abstract void Restore();
+
         public virtual void DoAwake()
+        {
+        }
+
+        public virtual void DoDestroy()
         {
         }
 

@@ -78,6 +78,14 @@ namespace ActorWorkspace
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
+        public void Terminate()
+        {
+            ActorBehaviourController?.Dispose();
+            ActorBehaviourController = null!;
+
+            // InnerTerminate();
+        }
+
         public virtual void Restore()
         {
             ActorParam?.Restore();
