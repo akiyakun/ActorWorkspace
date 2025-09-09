@@ -27,6 +27,10 @@ namespace ActorWorkspace.Tests
         // {
         // }
 
+        public void Dispose()
+        {
+        }
+
         public void DoUpdate(float deltaTime)
         {
             // foreach (var track in trackList)

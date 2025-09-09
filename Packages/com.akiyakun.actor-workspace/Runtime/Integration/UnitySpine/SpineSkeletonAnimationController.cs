@@ -38,6 +38,14 @@ namespace ActorWorkspace.UnitySpine
             }
         }
 
+        public override void Dispose()
+        {
+            if (skeletonAnimation != null)
+            {
+                skeletonAnimation.AnimationState.Event -= OnHandleEvent;
+            }
+        }
+
 
         public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {

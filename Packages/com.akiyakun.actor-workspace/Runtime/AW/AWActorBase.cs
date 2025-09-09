@@ -83,6 +83,9 @@ namespace ActorWorkspace
             ActorBehaviourController?.Dispose();
             ActorBehaviourController = null!;
 
+            AnimationController?.Dispose();
+            AnimationController = null!;
+
             // InnerTerminate();
         }
 
