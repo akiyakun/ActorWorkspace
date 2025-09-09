@@ -32,6 +32,9 @@ namespace ActorWorkspace.UnitySpine
                     {
                         Debug.Log($"State: {state.state.name}");
                         states.Add(state.state.name, state.state);
+
+                        // Mecanimのステート名をIAWAnimationとして登録
+                        animations.Add(state.state.name, new SpineMecanimAnimation(state.state.name, skeletonMecanim, null));
                     }
                 }
             }
@@ -42,8 +45,9 @@ namespace ActorWorkspace.UnitySpine
             {
                 foreach (Spine.Animation animation in skeletonMecanim.Skeleton.Data.Animations)
                 {
+                    // このanimationはSpineの元データでありMecanimのステートではない
                     // Debug.Log("Animation name: " + animation.Name);
-                    animations.Add(animation.Name, new SpineMecanimAnimation(skeletonMecanim, animation));
+                    // animations.Add(animation.Name, new SpineMecanimAnimation(skeletonMecanim, animation));
 
 // #if UNITY_EDITOR
 //                     // AnimatorControllerのステート存在チェック

@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 using Spine;
@@ -11,17 +12,18 @@ namespace ActorWorkspace.UnitySpine
         SkeletonMecanim skeletonMecanim;
         public SkeletonMecanim SkeletonMecanim => skeletonMecanim;
 
-        Spine.Animation spineAnimation;
+        Spine.Animation? spineAnimation;
 
-        public SpineMecanimAnimation(SkeletonMecanim skeletonMecanim, Spine.Animation spineAnimation)
+        public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation)
         {
             this.skeletonMecanim = skeletonMecanim;
             Debug.Assert(skeletonMecanim != null);
 
             this.spineAnimation = spineAnimation;
-            Debug.Assert(spineAnimation != null);
+            // Debug.Assert(spineAnimation != null);
 
-            Name = spineAnimation.Name;
+            // Name = spineAnimation.Name;
+            Name = stateName;
         }
 
         // From IAWAnimation
@@ -31,3 +33,4 @@ namespace ActorWorkspace.UnitySpine
         // }
     }
 }
+#nullable restore
