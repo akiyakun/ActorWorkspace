@@ -74,6 +74,7 @@ namespace ActorWorkspace.UnitySpine
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
+        // SkeletonMecanim用の初期化
         protected virtual async UniTask<int> InitializeSkeletonMecanimAsync(SkeletonMecanim skeletonMecanim, CancellationToken cancellationToken)
         {
             skeletonAnimationInterface = skeletonMecanim;
@@ -84,12 +85,15 @@ namespace ActorWorkspace.UnitySpine
             // Debug.Assert(eventDecoder != null);
 
             var spineMecanimAnimationController = new SpineMecanimAnimationController(skeletonMecanim, eventDecoder);
+            if (await spineMecanimAnimationController.InitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
+
             AnimationController = spineMecanimAnimationController as SpineAnimationController;
             Debug.Assert(AnimationController != null);
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
+        // SkeletonAnimation用の初期化
         protected virtual async UniTask<int> InitializeSkeletonAnimationAsync(SkeletonAnimation skeletonAnimation, CancellationToken cancellationToken)
         {
             // skeletonAnimation = GetComponentInChildren<SkeletonAnimation>();
@@ -102,6 +106,8 @@ namespace ActorWorkspace.UnitySpine
             // Debug.Assert(eventDecoder != null);
 
             var spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
+            if (await spineSkeletonAnimationController.InitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
+
             AnimationController = spineSkeletonAnimationController as SpineAnimationController;
             Debug.Assert(AnimationController != null);
 

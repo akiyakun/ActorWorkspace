@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Spine;
 using Spine.Unity;
@@ -36,6 +37,11 @@ namespace ActorWorkspace.UnitySpine
                 // FIXME: 終了処理
                 skeletonAnimation.AnimationState.Event += OnHandleEvent;
             }
+        }
+
+        public override async UniTask<int> InitializeAsync(CancellationToken cancellationToken)
+        {
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
         public override void Dispose()

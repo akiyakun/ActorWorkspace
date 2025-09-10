@@ -1,5 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Spine.Unity;
 using System.Linq;
@@ -37,8 +39,7 @@ namespace ActorWorkspace.UnitySpine
             this.eventDecoder = eventDecoder;
             Debug.Assert(eventDecoder != null);
 
-
-            // トラックの初期化
+            // トラックの生成
             {
                 for (int i = 0; i < IAWTrack.MaxTrack; i++)
                 {
@@ -46,6 +47,8 @@ namespace ActorWorkspace.UnitySpine
                 }
             }
         }
+
+        public abstract UniTask<int> InitializeAsync(CancellationToken cancellationToken);
 
         public abstract void Dispose();
 

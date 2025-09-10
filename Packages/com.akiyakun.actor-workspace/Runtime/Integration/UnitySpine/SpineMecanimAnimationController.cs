@@ -1,7 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-using Spine;
 using Spine.Unity;
 using afl;
 using UnityEngine.Playables;
@@ -99,6 +100,11 @@ namespace ActorWorkspace.UnitySpine
             {
                 // playableGraph.Play();
             }
+        }
+
+        public override async UniTask<int> InitializeAsync(CancellationToken cancellationToken)
+        {
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
         public override void Dispose()
