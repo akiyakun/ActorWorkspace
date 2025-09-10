@@ -14,8 +14,7 @@ namespace ActorWorkspace
         public AWActorContextProvider ActorContextProvider { get; }
 
         public IAWActorParam ActorParam { get; }
-        public IAWActorDisplay ActorDisplay { get; }
-        // public IAWAnimation Animation { get; }
+        public AWActorDisplay ActorDisplay { get; }
         public IAWAnimationController AnimationController { get; }
         public IReadOnlyList<IAWSkin> SkinList { get; }
         public IAWActorBehaviourController ActorBehaviourController { get; }

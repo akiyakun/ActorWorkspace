@@ -13,8 +13,8 @@ namespace ActorWorkspace.Tests
         public AWActorContextProvider ActorContextProvider { get; set; }
 
         public IAWActorParam ActorParam { get; set; }
-        public IAWActorDisplay ActorDisplay { get; set; }
-        // public IAWAnimation Animation => mockAWAnimation;
+        [SerializeField] public AWActorDisplay actorDisplay;
+        public AWActorDisplay ActorDisplay => actorDisplay;
         public IAWAnimationController AnimationController { get; set; }
         public IReadOnlyList<IAWSkin> SkinList { get; set; }
         public IAWActorBehaviourController ActorBehaviourController { get; set; }
@@ -40,7 +40,7 @@ namespace ActorWorkspace.Tests
             ActorContextProvider = awActorContextProvider;
 
             ActorParam = new FakeAWActorParam();
-            ActorDisplay = new FakeAWActorDisplay();
+            // ActorDisplay = new FakeAWActorDisplay();
             AnimationController = new FakeAWAnimationController();
             SkinList = new List<IAWSkin>();
             ActorBehaviourController = new AWActorBehaviourController(this);

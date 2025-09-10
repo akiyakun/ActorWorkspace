@@ -4,13 +4,24 @@ using UnityEngine;
 using Spine;
 using Spine.Unity;
 using afl;
+using UnityEngine.Playables;
+using UnityEngine.Animations;
 
 namespace ActorWorkspace.UnitySpine
 {
     // SkeletonMecanim と対になるコントローラークラス
+    //
+    // MEMO:
+    // MecanimのループはAnimationClipのLoppTimeを設定するのが前提で、基本的に実行中にループ設定することができない仕様。
+    // 今回はループあり・なしで別々のステートを用意し、名前で区別する運用とした。
+    // ループなし:run
+    // ループあり:run_loop
+    // 対象のステート名が無い場合エラーになります
     public class SpineMecanimAnimationController : SpineAnimationController
     {
         SkeletonMecanim skeletonMecanim;
+
+        Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
 
         public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim, IAWEventDecoder eventDecoder)
             : base(skeletonMecanim, eventDecoder)
@@ -21,9 +32,9 @@ namespace ActorWorkspace.UnitySpine
 
 #if UNITY_EDITOR
             // チェック用にAnimatorControllerの全ステートを取得
-            Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
             {
                 Animator animator = skeletonMecanim.GetComponent<Animator>();
+
                 var controller = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
                 foreach (var layer in controller!.layers)
                 {
@@ -31,10 +42,27 @@ namespace ActorWorkspace.UnitySpine
                     foreach (var state in layer.stateMachine.states)
                     {
                         Debug.Log($"State: {state.state.name}");
-                        states.Add(state.state.name, state.state);
 
-                        // Mecanimのステート名をIAWAnimationとして登録
-                        animations.Add(state.state.name, new SpineMecanimAnimation(state.state.name, skeletonMecanim, null));
+                        if (state.state.motion is AnimationClip animationClip)
+                        {
+                            states.Add(state.state.name, state.state);
+
+                            var playableGraph = PlayableGraph.Create();
+                            var output = AnimationPlayableOutput.Create(playableGraph, "SpineOutput", animator);
+
+                            AnimationClipPlayable clipPlayable = AnimationClipPlayable.Create(playableGraph, animationClip);
+                            output.SetSourcePlayable(clipPlayable);
+
+                            // Mecanimのステート名をIAWAnimationとして登録
+                            animations.Add(state.state.name,
+                                new SpineMecanimAnimation(state.state.name, skeletonMecanim, null, playableGraph, animationClip, clipPlayable));
+
+                            playableGraph.Play();
+                        }
+                        // else if (motion is BlendTree blendTree)
+                        // {
+                        //     GetClipsFromBlendTree(blendTree);
+                        // }
                     }
                 }
             }
@@ -49,13 +77,13 @@ namespace ActorWorkspace.UnitySpine
                     // Debug.Log("Animation name: " + animation.Name);
                     // animations.Add(animation.Name, new SpineMecanimAnimation(skeletonMecanim, animation));
 
-// #if UNITY_EDITOR
-//                     // AnimatorControllerのステート存在チェック
-//                     if (states.Get(animation.Name) == null)
-//                     {
-//                         Debug.LogWarning($"Animator: AnimationState not found. name={animation.Name}");
-//                     }
-// #endif
+                    // #if UNITY_EDITOR
+                    //                     // AnimatorControllerのステート存在チェック
+                    //                     if (states.Get(animation.Name) == null)
+                    //                     {
+                    //                         Debug.LogWarning($"Animator: AnimationState not found. name={animation.Name}");
+                    //                     }
+                    // #endif
                 }
 
                 // コールバック
@@ -67,6 +95,15 @@ namespace ActorWorkspace.UnitySpine
                     detector.Setup(this);
                 }
             }
+
+            {
+                // playableGraph.Play();
+            }
+        }
+
+        public override void Dispose()
+        {
+            // playableGraph.Destroy();
         }
 
 
@@ -95,7 +132,26 @@ namespace ActorWorkspace.UnitySpine
 
             Animator animator = skeletonMecanim.GetComponent<Animator>();
             Debug.Log(animation.Name);
-            animator.Play(stateName: animation.Name, layer: trackIndex);
+
+            // SpineMecanimAnimation spineMecanimAnimation = (SpineMecanimAnimation)animation;
+            // if (spineMecanimAnimation != null
+            //     && spineMecanimAnimation.animationClip != null)
+            // {
+            //     // MEMO: AnimationClipのLoop Timeはfalseになっている前提
+            //     double value = loop ? double.PositiveInfinity : (double)spineMecanimAnimation.animationClip.length;
+            //     Debug.Log($"SetAnimation: {animation.Name}, loop={loop}, duration={value}");
+            //     spineMecanimAnimation.animationClipPlayable.SetDuration(value);
+            //     // playableGraph.Play();
+            // }
+
+            // MEMO: stateNameが存在しない場合は警告ログが出だだけでPlay()メソッドでは検知できない
+            string stateName = animation.Name;
+            if (loop == true)
+            {
+                stateName = animation.Name + "_loop";
+            }
+            Debug.Assert(states.ContainsKey(stateName) == true, $"GetAnimation: Not found name={stateName}");
+            animator.Play(stateName: stateName, layer: trackIndex);
 
             var track = trackList[trackIndex];
             // track.Set(animation as SpineSkeletonAnimation);

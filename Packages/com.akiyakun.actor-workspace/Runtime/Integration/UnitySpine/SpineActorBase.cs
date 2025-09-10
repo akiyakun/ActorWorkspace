@@ -8,16 +8,16 @@ using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
-    public class SpineActorBase<TActorContextProvider, TActorParam, TActorDisplay>
-        : AWActorBase<TActorContextProvider, TActorParam, TActorDisplay, SpineAnimationController, SpineSkin>
+    public class SpineActorBase<TActorContextProvider, TActorParam>
+        : AWActorBase<TActorContextProvider, TActorParam, SpineAnimationController, SpineSkin>
         where TActorContextProvider : AWActorContextProvider
         where TActorParam : class, IAWActorParam, new()
-        where TActorDisplay : SpineActorDisplay, new()
+        // where TActorDisplay : SpineActorDisplay, new()
     {
         public override TActorContextProvider ActorContextProvider { get; protected set; } = null!;
 
         public override TActorParam ActorParam { get; protected set; } = new();
-        public override TActorDisplay ActorDisplay { get; protected set; } = null!;
+        // public override TActorDisplay ActorDisplay { get; protected set; } = null!;
         public override SpineAnimationController AnimationController { get; protected set; } = null!;
         public override IReadOnlyList<SpineSkin> SkinList => skinList;
 
@@ -64,12 +64,12 @@ namespace ActorWorkspace.UnitySpine
             }
 
             // ActorDisplayの初期化
-            {
-                ActorDisplay = new TActorDisplay();
-                int ret = await ActorDisplay.InitializeAsync(AnimationController, cancellationToken: cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
-                if (ret < 0) return ret;
-            }
+            // {
+            //     ActorDisplay = new TActorDisplay();
+            //     int ret = await ActorDisplay.InitializeAsync(this, AnimationController, cancellationToken: cancellationToken);
+            //     if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
+            //     if (ret < 0) return ret;
+            // }
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }

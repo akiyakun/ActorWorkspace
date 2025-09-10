@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Spine;
 using Spine.Unity;
-using System.Linq;
+using UnityEngine.Playables;
+using UnityEngine.Animations;
 
 namespace ActorWorkspace.UnitySpine
 {
@@ -13,14 +14,22 @@ namespace ActorWorkspace.UnitySpine
         public SkeletonMecanim SkeletonMecanim => skeletonMecanim;
 
         Spine.Animation? spineAnimation;
+        public PlayableGraph playableGraph;
+        public AnimationClip? animationClip;
+        public AnimationClipPlayable animationClipPlayable;
 
-        public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation)
+        public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation,
+            PlayableGraph playableGraph, AnimationClip animationClip, AnimationClipPlayable animationClipPlayable)
         {
             this.skeletonMecanim = skeletonMecanim;
             Debug.Assert(skeletonMecanim != null);
 
             this.spineAnimation = spineAnimation;
             // Debug.Assert(spineAnimation != null);
+
+            this.playableGraph = playableGraph;
+            this.animationClip = animationClip;
+            this.animationClipPlayable = animationClipPlayable;
 
             // Name = spineAnimation.Name;
             Name = stateName;
