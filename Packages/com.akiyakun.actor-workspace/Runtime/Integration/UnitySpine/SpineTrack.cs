@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 using Spine;
@@ -24,10 +25,10 @@ namespace ActorWorkspace.UnitySpine
         //     set => TrackEntry.DefaultMix = value;
         // }
 
-        public IAWAnimation Animation { get; protected set; }
-        public TrackEntry TrackEntry { get; set; }
+        public IAWAnimation? Animation { get; protected set; }
+        public TrackEntry? TrackEntry { get; set; }
 
-        SpineSkeletonAnimation spineSkeletonAnimation;
+        SpineSkeletonAnimation? spineSkeletonAnimation;
 
         private SpineTrack() { }
         public SpineTrack(int trackIndex)
@@ -35,7 +36,7 @@ namespace ActorWorkspace.UnitySpine
             TrackIndex = trackIndex;
         }
 
-        public void Set(SpineSkeletonAnimation spineSkeletonAnimation)
+        public void Set(SpineSkeletonAnimation? spineSkeletonAnimation)
         {
             this.spineSkeletonAnimation = spineSkeletonAnimation;
             Animation = spineSkeletonAnimation as IAWAnimation;
@@ -56,3 +57,4 @@ namespace ActorWorkspace.UnitySpine
 
     }
 }
+#nullable restore

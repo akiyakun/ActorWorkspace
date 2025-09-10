@@ -1,23 +1,24 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
 
 namespace ActorWorkspace.Tests
 {
-    public class FakeAWActor : IAWActor
+    public class StubAWActor : IAWActor
     {
         public int ActorId { get; set; }
         public int ActorCategory { get; set; }
-        public GameObject GameObject => null;
+        public GameObject GameObject => null!;
 
-        public AWActorContextProvider ActorContextProvider { get; set; }
+        public AWActorContextProvider ActorContextProvider { get; set; } = null!;
 
-        public IAWActorParam ActorParam { get; set; }
-        [SerializeField] public AWActorDisplay actorDisplay;
+        public IAWActorParam ActorParam { get; set; } = null!;
+        [SerializeField] public AWActorDisplay actorDisplay = null!;
         public AWActorDisplay ActorDisplay => actorDisplay;
-        public IAWAnimationController AnimationController { get; set; }
-        public IReadOnlyList<IAWSkin> SkinList { get; set; }
-        public IAWActorBehaviourController ActorBehaviourController { get; set; }
+        public IAWAnimationController AnimationController { get; set; } = null!;
+        public IReadOnlyList<IAWSkin> SkinList { get; set; } = null!;
+        public IAWActorBehaviourController ActorBehaviourController { get; set; } = null!;
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
@@ -28,20 +29,20 @@ namespace ActorWorkspace.Tests
         public void DoFixedUpdate() { }
         #endregion
 
-        private FakeAWActor()
+        private StubAWActor()
         {
         }
 
-        public FakeAWActor(AWActorContextProvider awActorContextProvider, int id, int category)
+        public StubAWActor(AWActorContextProvider awActorContextProvider, int id, int category)
         {
             ActorId = id;
             ActorCategory = category;
 
             ActorContextProvider = awActorContextProvider;
 
-            ActorParam = new FakeAWActorParam();
+            ActorParam = new StubAWActorParam();
             // ActorDisplay = new FakeAWActorDisplay();
-            AnimationController = new FakeAWAnimationController();
+            AnimationController = new StubAWAnimationController();
             SkinList = new List<IAWSkin>();
             ActorBehaviourController = new AWActorBehaviourController(this);
         }
@@ -61,3 +62,4 @@ namespace ActorWorkspace.Tests
         }
     }
 }
+#nullable restore

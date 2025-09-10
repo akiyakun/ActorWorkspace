@@ -96,6 +96,7 @@ namespace ActorWorkspace.UnitySpine
         void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
         {
             var animation = trackList[trackEntry.TrackIndex].Animation;
+            if (animation == null) return;
             InvokeAnimationEvent(animation, eventDecoder.Decode(spineEvent));
         }
     }

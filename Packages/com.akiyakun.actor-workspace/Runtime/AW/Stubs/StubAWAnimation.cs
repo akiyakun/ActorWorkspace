@@ -1,16 +1,18 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ActorWorkspace.Tests
 {
-    public class FakeAWAnimation : IAWAnimation
+    public class StubAWAnimation : IAWAnimation
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         // public IReadOnlyList<AWAnimationData> AnimationList => new List<AWAnimationData>();
-        public FakeAWAnimation(string name)
+        public StubAWAnimation(string name)
         {
             Name = name;
         }
     }
 }
+#nullable restore

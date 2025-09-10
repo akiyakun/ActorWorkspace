@@ -1,18 +1,19 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ActorWorkspace.Tests
 {
-    public class FakeAWTrack : IAWTrack
+    public class StubAWTrack : IAWTrack
     {
         public int TrackIndex { get; protected set; }
         public float TimeScale { get; set; }
         public float MixDuration { get; set; }
 
-        public IAWAnimation Animation { get; protected set; }
+        public IAWAnimation? Animation { get; protected set; }
 
-        protected FakeAWTrack() { }
-        public FakeAWTrack(int trackIndex)
+        protected StubAWTrack() { }
+        public StubAWTrack(int trackIndex)
         {
             TrackIndex = trackIndex;
         }
@@ -23,3 +24,4 @@ namespace ActorWorkspace.Tests
         // }
     }
 }
+#nullable restore

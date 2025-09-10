@@ -196,15 +196,18 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
-        {
-            var animation = trackList[trackEntry.TrackIndex].Animation;
-            InvokeAnimationEvent(animation, eventDecoder.Decode(spineEvent));
-        }
+        // void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
+        // {
+        //     var animation = trackList[trackEntry.TrackIndex].Animation;
+        //     InvokeAnimationEvent(animation, eventDecoder.Decode(spineEvent));
+        // }
+
         public void OnSpineEvent(string eventName, float eventTime, int intValue, float floatValue, string stringValue)
         {
             // FIXME:
             var animation = trackList[0].Animation;
+            if (animation == null) return;
+
             AWEventData eventData = new AWEventData
             {
                 Name = eventName,

@@ -21,7 +21,7 @@ namespace ActorWorkspace.InAppDebug
             AssetRepositories.AddCategory(0, new afl.MasterData.Tests.DummyAssetRepository());
 
             ActorContextProvider = new AWActorContextProvider(AssetRepositories);
-            ActorFactory = new Tests.FakeAWActorFactory(ActorContextProvider);
+            ActorFactory = new Tests.StubAWActorFactory(ActorContextProvider);
             ActorManager = new AWActorManager(ActorFactory);
         }
 

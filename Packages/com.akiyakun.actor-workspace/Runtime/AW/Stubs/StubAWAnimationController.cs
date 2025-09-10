@@ -1,26 +1,27 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace ActorWorkspace.Tests
 {
-    public class FakeAWAnimationController : IAWAnimationController
+    public class StubAWAnimationController : IAWAnimationController
     {
-        IAWTrack track = default;
+        IAWTrack? track = null;
 
         // public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
 
-        public event System.Action<IAWAnimation> OnAnimationComplate;
-        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
+        public event System.Action<IAWAnimation> OnAnimationComplate = null!;
+        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
 
         public IList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
         public IAWAnimation? GetAnimation(string name) => animations.Find(a => a.Name == name);
 
-        List<FakeAWAnimation> animations = new List<FakeAWAnimation>
+        List<StubAWAnimation> animations = new List<StubAWAnimation>
         {
-            new FakeAWAnimation("TestAnimation1"),
-            new FakeAWAnimation("TestAnimation2"),
-            new FakeAWAnimation("TestAnimation3")
+            new StubAWAnimation("TestAnimation1"),
+            new StubAWAnimation("TestAnimation2"),
+            new StubAWAnimation("TestAnimation3")
         };
 
         // public FakeAWAnimationController()
@@ -45,7 +46,7 @@ namespace ActorWorkspace.Tests
         {
 
         }
-        public IAWTrack SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
+        public IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
             return track;
         }
@@ -53,9 +54,10 @@ namespace ActorWorkspace.Tests
         {
         }
 
-        public IAWTrack GetTrack(int trackIndex)
+        public IAWTrack? GetTrack(int trackIndex)
         {
             return track;
         }
     }
 }
+#nullable restore

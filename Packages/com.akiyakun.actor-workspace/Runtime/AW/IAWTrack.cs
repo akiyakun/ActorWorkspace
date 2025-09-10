@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,8 @@ namespace ActorWorkspace
         public float TimeScale { get; set; }
         public float MixDuration { get; set; }
 
-        public IAWAnimation Animation { get; }
+        public IAWAnimation? Animation { get; }
 
     }
 }
+#nullable restore
