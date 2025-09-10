@@ -22,8 +22,6 @@ namespace ActorWorkspace.UnitySpine
     {
         SkeletonMecanim skeletonMecanim;
 
-        Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
-
         public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim, IAWEventDecoder eventDecoder)
             : base(skeletonMecanim, eventDecoder)
         {
@@ -33,6 +31,7 @@ namespace ActorWorkspace.UnitySpine
 
 #if UNITY_EDITOR
             // チェック用にAnimatorControllerの全ステートを取得
+            Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
             {
                 Animator animator = skeletonMecanim.GetComponent<Animator>();
 
@@ -156,7 +155,7 @@ namespace ActorWorkspace.UnitySpine
             {
                 stateName = animation.Name + "_loop";
             }
-            Debug.Assert(states.ContainsKey(stateName) == true, $"GetAnimation: Not found name={stateName}");
+            // Debug.Assert(states.ContainsKey(stateName) == true, $"GetAnimation: Not found name={stateName}");
             animator.Play(stateName: stateName, layer: trackIndex);
 
             var track = trackList[trackIndex];

@@ -42,10 +42,10 @@ namespace ActorWorkspace.InAppDebug
                             Vector3 pos = worldPos;
                             Gizmos.color = Color.yellow;
                             Gizmos.DrawWireSphere(pos, 0.15f);
-                            // #if UNITY_EDITOR
+#if UNITY_EDITOR
                             UnityEditor.Handles.color = Color.blue;
                             UnityEditor.Handles.Label(pos + (Vector3.up * 0.1f), $"{ed.Name} @ {time:F2}s");
-// #endif
+#endif
                         }
                     }
                 }
