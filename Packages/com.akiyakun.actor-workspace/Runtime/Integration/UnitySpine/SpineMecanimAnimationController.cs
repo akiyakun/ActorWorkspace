@@ -22,19 +22,22 @@ namespace ActorWorkspace.UnitySpine
     {
         SkeletonMecanim skeletonMecanim;
 
+#if UNITY_EDITOR
+        Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
+#endif
+
         public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim, IAWEventDecoder eventDecoder)
             : base(skeletonMecanim, eventDecoder)
         {
             this.skeletonMecanim = skeletonMecanim;
             // Debug.Assert(skeletonMecanim != null);
 
+            Animator animator = skeletonMecanim.GetComponent<Animator>();
+            if (animator == null) throw new System.Exception("Animator component not found");
 
 #if UNITY_EDITOR
             // チェック用にAnimatorControllerの全ステートを取得
-            Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
             {
-                Animator animator = skeletonMecanim.GetComponent<Animator>();
-
                 var controller = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
                 foreach (var layer in controller!.layers)
                 {
@@ -71,20 +74,20 @@ namespace ActorWorkspace.UnitySpine
             // IAWAnimationのリストを作成
             // if (skeletonMecanim != null)
             {
-                foreach (Spine.Animation animation in skeletonMecanim.Skeleton.Data.Animations)
-                {
-                    // このanimationはSpineの元データでありMecanimのステートではない
-                    // Debug.Log("Animation name: " + animation.Name);
-                    // animations.Add(animation.Name, new SpineMecanimAnimation(skeletonMecanim, animation));
+                // foreach (Spine.Animation animation in skeletonMecanim.Skeleton.Data.Animations)
+                // {
+                //     // このanimationはSpineの元データでありMecanimのステートではない
+                //     // Debug.Log("Animation name: " + animation.Name);
+                //     // animations.Add(animation.Name, new SpineMecanimAnimation(skeletonMecanim, animation));
 
-                    // #if UNITY_EDITOR
-                    //                     // AnimatorControllerのステート存在チェック
-                    //                     if (states.Get(animation.Name) == null)
-                    //                     {
-                    //                         Debug.LogWarning($"Animator: AnimationState not found. name={animation.Name}");
-                    //                     }
-                    // #endif
-                }
+                //     // #if UNITY_EDITOR
+                //     //                     // AnimatorControllerのステート存在チェック
+                //     //                     if (states.Get(animation.Name) == null)
+                //     //                     {
+                //     //                         Debug.LogWarning($"Animator: AnimationState not found. name={animation.Name}");
+                //     //                     }
+                //     // #endif
+                // }
 
                 // コールバック
                 // FIXME: 終了処理
@@ -103,6 +106,20 @@ namespace ActorWorkspace.UnitySpine
 
         public override async UniTask<int> InitializeAsync(CancellationToken cancellationToken)
         {
+            Debug.Assert(skeletonMecanim.gameObject.activeInHierarchy == true, "アクティブになっていません");
+
+            Animator animator = skeletonMecanim.GetComponent<Animator>();
+            if (animator == null) throw new System.Exception("Animator component not found");
+
+            // AnimatorHelper
+            // {
+            //     var animatorHelper = skeletonMecanim.gameObject.AddComponent<AnimatorHelper>();
+            //     if (animatorHelper == null) throw new System.Exception();
+            //     // Awake()を待つ
+            //     await UniTask.Yield(cancellationToken: cancellationToken);
+            //     if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
+            // }
+
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
@@ -151,11 +168,13 @@ namespace ActorWorkspace.UnitySpine
 
             // MEMO: stateNameが存在しない場合は警告ログが出だだけでPlay()メソッドでは検知できない
             string stateName = animation.Name;
-            if (loop == true)
-            {
-                stateName = animation.Name + "_loop";
-            }
-            // Debug.Assert(states.ContainsKey(stateName) == true, $"GetAnimation: Not found name={stateName}");
+            // if (loop == true)
+            // {
+            //     stateName = animation.Name + "_loop";
+            // }
+#if UNITY_EDITOR
+            Debug.Assert(states.ContainsKey(stateName) == true, $"GetAnimation: Not found name={stateName}");
+#endif
             animator.Play(stateName: stateName, layer: trackIndex);
 
             var track = trackList[trackIndex];
