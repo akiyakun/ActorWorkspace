@@ -4,13 +4,7 @@ using Spine.Unity;
 
 namespace ActorWorkspace.UnitySpine
 {
-    public static class ActorEventBuiltInName
-    {
-        public const string Emitter = "emitter";
-        // public const string Audio = "audio";
-    }
-
-    public static partial class SpineUtility
+    public static class SpineUtility
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ParseEventName(string value)
