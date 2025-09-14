@@ -11,6 +11,8 @@ namespace ActorWorkspace
     public interface AWActorEvents
     {
         #region Behaviour
+        public static readonly (string, bool) OnGround = ("OnGround", default);
+
         public static readonly string OnMoveBegin = "OnMoveBegin";
         public static readonly string OnMove = "OnMove";
         public static readonly string OnMoveEnd = "OnMoveEnd";
