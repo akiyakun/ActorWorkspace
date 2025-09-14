@@ -11,6 +11,8 @@ namespace ActorWorkspace
         public event System.Action<AWActorBehaviour> OnBehaviourAdded;
         public event System.Action<AWActorBehaviour> OnBehaviourRemoved;
 
+        public void Restore();
+
         public void DoUpdate(float deltaTime);
         public void DoLateUpdate(float deltaTime);
         public void DoFixedUpdate();

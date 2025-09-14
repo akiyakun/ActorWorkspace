@@ -13,6 +13,8 @@ namespace ActorWorkspace
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
         // public event System.Action<AWEventData> OnEvent;
 
+        public void Restore();
+
         public void DoUpdate(float deltaTime);
 
         public IList<IAWAnimation> GetAnimationList();

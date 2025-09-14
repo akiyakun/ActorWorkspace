@@ -31,6 +31,15 @@ namespace ActorWorkspace
             updater.OnRemoveElement -= OnRemoveBehaviour;
         }
 
+        public virtual void Restore()
+        {
+            var list = updater.ReadOnlyList;
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i].Restore();
+            }
+        }
+
         public virtual void DoUpdate(float deltaTime)
         {
             updater.DoUpdate(deltaTime);

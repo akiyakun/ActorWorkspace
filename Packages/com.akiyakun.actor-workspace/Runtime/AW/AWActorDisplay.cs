@@ -6,38 +6,76 @@ namespace ActorWorkspace
 {
     // アクターの表示のルート分
     // 全体をスケールしたり反転したりするよう
+    // MonoBehaviour前提
     public class AWActorDisplay : MonoBehaviour
     {
-        // public GameObject GameObject { get; protected set; } = null!;
+        public bool ForceUnitScale { get; set; } = true;
 
-        // IAWActor actor = null!;
-        // SpineAnimationController spineAnimationController = null!;
-        // // public ISkeletonAnimation SkeletonAnimation => skeletonAnimation;
+        public virtual void Awake()
+        {
+            if (ForceUnitScale == true)
+            {
+                Debug.Assert(transform.localScale == Vector3.one, "ForceUnitScale is true. Scale is forced to (1,1,1).");
+                transform.localScale = Vector3.one;
+            }
+        }
 
-        // // From IAWActorDisplay
         // public virtual async UniTask<int> InitializeAsync(IAWActor actor, SpineAnimationController spineAnimationController, CancellationToken cancellationToken)
         // {
         //     if (actor == null) return GeneralReturnCode.Failed;
-
-        //     this.spineAnimationController = spineAnimationController;
-        //     Debug.Assert(spineAnimationController != null);
-
-        //     if (actor.GameObject.transform.Find("ActorDisplay"))
-        //     {
-        //     }
-
-        //         return await UniTask.FromResult(GeneralReturnCode.Succeeded);
+        //     return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         // }
 
-        // // From IAWActorDisplay
-        // public virtual void Restore()
-        // {
-        // }
+        public virtual void Restore()
+        {
+            ResetScale();
+        }
 
         // // From IAWActorDisplay
         // public virtual void DoUpdate(float deltaTime)
         // {
         // }
+
+        public void ResetScale()
+        {
+            if (ForceUnitScale == true)
+            {
+                transform.localScale = Vector3.one;
+            }
+        }
+
+        public void SetScaleSign(ValueSignType valueSignType)
+        {
+            var scale = transform.localScale;
+
+            switch (valueSignType)
+            {
+                case ValueSignType.PositiveX:
+                    if (scale.x < 0.0f) scale.x = -scale.x;
+                    break;
+                case ValueSignType.NegativeX:
+                    if (scale.x >= 0.0f) scale.x = -scale.x;
+                    break;
+                case ValueSignType.PositiveY:
+                    if (scale.y < 0.0f) scale.y = -scale.y;
+                    break;
+                case ValueSignType.NegativeY:
+                    if (scale.y >= 0.0f) scale.y = -scale.y;
+                    break;
+                case ValueSignType.PositiveZ:
+                    if (scale.z < 0.0f) scale.z = -scale.z;
+                    break;
+                case ValueSignType.NegativeZ:
+                    if (scale.z >= 0.0f) scale.z = -scale.z;
+                    break;
+                default:
+                    Debug.Assert(false, "Unknown ValueSignType");
+                    break;
+            }
+
+            transform.localScale = scale;
+        }
+
     }
 }
 #nullable restore

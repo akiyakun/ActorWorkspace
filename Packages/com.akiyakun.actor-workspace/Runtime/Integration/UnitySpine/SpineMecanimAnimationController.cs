@@ -128,6 +128,9 @@ namespace ActorWorkspace.UnitySpine
             // playableGraph.Destroy();
         }
 
+        public override void Restore()
+        {
+        }
 
         public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {

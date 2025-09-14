@@ -97,6 +97,8 @@ namespace ActorWorkspace
         public virtual void Restore()
         {
             ActorParam?.Restore();
+            AnimationController?.Restore();
+            ActorBehaviourController?.Restore();
         }
 
         // From IUpdateElement

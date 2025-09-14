@@ -52,6 +52,8 @@ namespace ActorWorkspace.UnitySpine
 
         public abstract void Dispose();
 
+        public abstract void Restore();
+
         // FIXME:
         public void DoUpdate(float deltaTime)
         {

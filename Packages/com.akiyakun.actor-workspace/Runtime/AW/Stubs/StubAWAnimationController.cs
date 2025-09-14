@@ -32,6 +32,10 @@ namespace ActorWorkspace.Tests
         {
         }
 
+        public void Restore()
+        {
+        }
+
         public void DoUpdate(float deltaTime)
         {
             // foreach (var track in trackList)
