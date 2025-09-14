@@ -47,6 +47,15 @@ namespace ActorWorkspace.Tests
             ActorBehaviourController = new AWActorBehaviourController(this);
         }
 
+        public void Dispose()
+        {
+            ActorBehaviourController?.Dispose();
+            ActorBehaviourController = null!;
+
+            AnimationController?.Dispose();
+            AnimationController = null!;
+        }
+
         public void Restore()
         {
             ActorParam.Restore();

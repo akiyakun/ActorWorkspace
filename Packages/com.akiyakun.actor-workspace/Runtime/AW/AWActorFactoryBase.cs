@@ -13,8 +13,8 @@ namespace ActorWorkspace
     public abstract class ActorFactoryBase : IAWActorFactory
     {
         // From IAWActorFactory
-        public event System.Action<IAWActor>? OnCreated;
-        public event System.Action<IAWActor>? OnRelease;
+        public event System.Action<IAWActor> OnCreated = null!;
+        public event System.Action<IAWActor> OnRelease = null!;
 
         protected AssetLoader AssetLoader { get; set; }
         protected AWActorContextProvider ActorContextProvider { get; set; }

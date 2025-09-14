@@ -5,7 +5,7 @@ using afl;
 
 namespace ActorWorkspace
 {
-    public interface IAWActor : IUpdateElement
+    public interface IAWActor : IUpdateElement, System.IDisposable
     {
         public int ActorId { get; }
         public int ActorCategory { get; }
