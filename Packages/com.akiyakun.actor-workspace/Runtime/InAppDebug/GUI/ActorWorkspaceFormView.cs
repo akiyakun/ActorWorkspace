@@ -33,6 +33,7 @@ namespace ActorWorkspace.InAppDebug
         UIPlayListControl uiPlayListControl;
         public GameObject openAssetDialog;
 
+        EventBag eventBag = new();
         bool loadActorRequesting;
         int currentTrackIndex = 0;
 
@@ -76,8 +77,17 @@ namespace ActorWorkspace.InAppDebug
             // VariableTable
             {
                 ActorCamera = Form.VariableTable.Get("ActorCamera").GetComponent<Camera>();
-                Debug.Assert(ActorCamera != null, "ActorCamera is null");
                 openAssetDialog = Form.VariableTable.Get("OpenAssetDialog").GetGameObject();
+
+                var openButton = Form.VariableTable.Get("OpenButton").GetComponent<Button>();
+                eventBag.In(openButton,
+                    (entity) => entity.onClick.AddListener(OnOpenAsset),
+                    (entity) => entity.onClick.RemoveListener(OnOpenAsset));
+
+                var loadAssetButton = Form.VariableTable.Get("LoadAssetButton").GetComponent<Button>();
+                eventBag.In(loadAssetButton,
+                    (entity) => entity.onClick.AddListener(OnLoadAsset),
+                    (entity) => entity.onClick.RemoveListener(OnLoadAsset));
             }
 
             // アクターカメラの設定
@@ -174,6 +184,7 @@ namespace ActorWorkspace.InAppDebug
         // From UIFormLogic
         protected override void InnerTerminate()
         {
+            eventBag.Dispose();
         }
 
         // 全てのアセットのリストを生成して返します
@@ -212,8 +223,7 @@ namespace ActorWorkspace.InAppDebug
             return list;
         }
 
-
-        public void OpenAsset()
+        void OnOpenAsset()
         {
             var listView = openAssetDialog.GetComponent<UIListView>("UIListView");
 
@@ -238,7 +248,7 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-        public void OnLoadAsset()
+        void OnLoadAsset()
         {
             var listView = openAssetDialog.GetComponent<UIListView>("UIListView");
             if (listView.SelectedEntity == null) return;
