@@ -42,7 +42,7 @@ namespace ActorWorkspace.UnitySpine
             // var skeletonAnimation = SpineUtility.CreateSkeletonAnimationFromAssetDatabae(locator);
             var skeletonAnimation = CreateSkeletonAnimationFromAssetDatabae(locator);
 
-            var spineSkeletonActor = skeletonAnimation.gameObject.AddComponent<SpineActor>();
+            var spineSkeletonActor = skeletonAnimation.gameObject.AddComponent<RawSpineActor>();
             IAWActor actor = spineSkeletonActor as IAWActor;
             Debug.Assert(actor != null);
 

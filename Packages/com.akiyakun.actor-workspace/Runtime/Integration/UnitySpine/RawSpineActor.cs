@@ -2,7 +2,7 @@
 
 namespace ActorWorkspace.UnitySpine
 {
-    public sealed class SpineActor
+    public sealed class RawSpineActor
         : SpineActorBase<AWActorContextProvider, Tests.StubAWActorParam>
     {
     }
