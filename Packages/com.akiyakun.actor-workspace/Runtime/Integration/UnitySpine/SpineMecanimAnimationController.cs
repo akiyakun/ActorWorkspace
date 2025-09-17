@@ -156,7 +156,7 @@ namespace ActorWorkspace.UnitySpine
             }
 
             Animator animator = skeletonMecanim.GetComponent<Animator>();
-            Debug.Log(animation.Name);
+            // Debug.Log(animation.Name);
 
             // SpineMecanimAnimation spineMecanimAnimation = (SpineMecanimAnimation)animation;
             // if (spineMecanimAnimation != null

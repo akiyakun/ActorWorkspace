@@ -18,6 +18,7 @@ namespace ActorWorkspace
         public static readonly string OnMoveEnd = "OnMoveEnd";
 
         public static readonly string OnJump = "OnJump";
+        public static readonly string OnFastFall = "OnFastFall";
         #endregion
 
         #region Motion
