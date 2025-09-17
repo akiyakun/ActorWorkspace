@@ -9,6 +9,8 @@ namespace ActorWorkspace
     {
         // public GameObject GameObject { get; }
 
+        // public Vector3 Position { get; set; }
+
         public void Restore();
     }
 }

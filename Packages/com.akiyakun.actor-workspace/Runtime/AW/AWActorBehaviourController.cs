@@ -5,13 +5,13 @@ using afl;
 
 namespace ActorWorkspace
 {
-    public class AWActorBehaviourController : IAWActorBehaviourController
+    public class AWActorBehaviourController
     {
-        public event System.Action<AWActorBehaviour> OnBehaviourAdded = null!;
-        public event System.Action<AWActorBehaviour> OnBehaviourRemoved = null!;
+        public event System.Action<IAWActorBehaviour> OnBehaviourAdded = null!;
+        public event System.Action<IAWActorBehaviour> OnBehaviourRemoved = null!;
 
         IAWActor actor;
-        UpdateElementManager<AWActorBehaviour> updater;
+        UpdateElementManager<IAWActorBehaviour> updater;
 
 #nullable disable
         private AWActorBehaviourController() { }
@@ -56,9 +56,12 @@ namespace ActorWorkspace
         }
 
         public virtual T? Add<T>()
-            where T : AWActorBehaviour, new()
+            where T : class, IAWActorBehaviour, new()
         {
-            var behaviour = AWActorBehaviour.Create<T>(actor);
+            // var behaviour = IAWActorBehaviour.Create<T>(actor);
+            var behaviour = new T();
+            behaviour.Initialize(actor);
+
             if (updater.Add(behaviour) == false) return null;
             behaviour.DoAwake();
             OnBehaviourAdded?.Invoke(behaviour);
@@ -66,20 +69,20 @@ namespace ActorWorkspace
         }
 
         public virtual bool Remove<T>()
-            where T : AWActorBehaviour
+            where T : class, IAWActorBehaviour
         {
             var ret = updater.RemoveImmediate<T>();
             return ret;
         }
 
-        void OnRemoveBehaviour(AWActorBehaviour behaviour)
+        void OnRemoveBehaviour(IAWActorBehaviour behaviour)
         {
             OnBehaviourRemoved?.Invoke(behaviour);
             behaviour.DoDestroy();
         }
 
         public virtual T? Get<T>()
-            where T : AWActorBehaviour
+            where T : class, IAWActorBehaviour
         {
             return updater.Get<T>();
         }

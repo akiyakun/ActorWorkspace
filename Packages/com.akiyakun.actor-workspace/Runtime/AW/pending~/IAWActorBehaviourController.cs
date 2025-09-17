@@ -8,8 +8,8 @@ namespace ActorWorkspace
     // MEMO: MonoBehaviourにしたくなかったやつ
     public interface IAWActorBehaviourController : System.IDisposable
     {
-        public event System.Action<AWActorBehaviour> OnBehaviourAdded;
-        public event System.Action<AWActorBehaviour> OnBehaviourRemoved;
+        public event System.Action<IAWActorBehaviour> OnBehaviourAdded;
+        public event System.Action<IAWActorBehaviour> OnBehaviourRemoved;
 
         public void Restore();
 
@@ -18,13 +18,13 @@ namespace ActorWorkspace
         public void DoFixedUpdate();
 
         public T? Add<T>()
-            where T : AWActorBehaviour, new();
+            where T : IAWActorBehaviour, new();
 
         public bool Remove<T>()
-            where T : AWActorBehaviour;
+            where T : IAWActorBehaviour;
 
         public T? Get<T>()
-            where T : AWActorBehaviour;
+            where T : IAWActorBehaviour;
     }
 }
 #nullable restore

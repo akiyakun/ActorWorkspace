@@ -18,7 +18,7 @@ namespace ActorWorkspace.Tests
         public AWActorDisplay ActorDisplay => actorDisplay;
         public IAWAnimationController AnimationController { get; set; } = null!;
         public IReadOnlyList<IAWSkin> SkinList { get; set; } = null!;
-        public IAWActorBehaviourController ActorBehaviourController { get; set; } = null!;
+        public AWActorBehaviourController ActorBehaviourController { get; set; } = null!;
 
         #region IUpdateElement
         public bool ElementActive { get; set; }

@@ -7,9 +7,10 @@ namespace ActorWorkspace
 {
     // MEMO:
     // MonoBehaviourぽく使いたいのでメソッド名も似せてあります
-    public abstract class AWActorBehaviour : IAWActorBehaviour
+    public abstract class AWActorBehaviour<TActor> : IAWActorBehaviour
+        where TActor : IAWActor
     {
-        public IAWActor Actor { get; private set; }
+        public TActor Actor { get; private set; }
 
         public bool ElementActive { get; set; }
         public int ElementPriority { get; set; } = 0;
@@ -20,13 +21,13 @@ namespace ActorWorkspace
         public virtual void DoFixedUpdate() { }
 
         // Factory method
-        public static T Create<T>(IAWActor actor)
-            where T : AWActorBehaviour, new()
-        {
-            var behaviour = new T();
-            behaviour.Actor = actor;
-            return behaviour;
-        }
+        // public static T Create<T>(IAWActor actor)
+        //     where T : AWActorBehaviour<TActor>, new()
+        // {
+        //     var behaviour = new T();
+        //     behaviour.Actor = actor;
+        //     return behaviour;
+        // }
 
 #nullable disable
         protected AWActorBehaviour() { }
@@ -37,6 +38,14 @@ namespace ActorWorkspace
         //     Actor = actor;
         //     Debug.Assert(actor != null);
         // }
+
+        public void Initialize(IAWActor actor)
+        {
+            Debug.Assert(Actor == null);
+
+            Actor = (TActor)actor!;
+            Debug.Assert(Actor != null);
+        }
 
         public abstract void Restore();
 

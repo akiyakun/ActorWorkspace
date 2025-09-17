@@ -34,7 +34,7 @@ namespace ActorWorkspace
         public abstract TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
         public abstract IReadOnlyList<TSkin> SkinList { get; }
-        public virtual IAWActorBehaviourController ActorBehaviourController { get; private set; }
+        public virtual AWActorBehaviourController ActorBehaviourController { get; private set; }
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
