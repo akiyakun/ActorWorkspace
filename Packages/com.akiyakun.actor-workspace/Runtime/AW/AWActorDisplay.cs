@@ -44,6 +44,21 @@ namespace ActorWorkspace
             }
         }
 
+
+        public bool IsScaleSign(ValueSignType valueSignType)
+        {
+            return valueSignType switch
+            {
+                ValueSignType.PositiveX => transform.localScale.x > 0.0f,
+                ValueSignType.NegativeX => transform.localScale.x < 0.0f,
+                ValueSignType.PositiveY => transform.localScale.y > 0.0f,
+                ValueSignType.NegativeY => transform.localScale.y < 0.0f,
+                ValueSignType.PositiveZ => transform.localScale.z > 0.0f,
+                ValueSignType.NegativeZ => transform.localScale.z < 0.0f,
+                _ => throw new System.NotImplementedException(),
+            };
+        }
+
         public void SetScaleSign(ValueSignType valueSignType)
         {
             var scale = transform.localScale;
@@ -54,19 +69,19 @@ namespace ActorWorkspace
                     if (scale.x < 0.0f) scale.x = -scale.x;
                     break;
                 case ValueSignType.NegativeX:
-                    if (scale.x >= 0.0f) scale.x = -scale.x;
+                    if (scale.x > 0.0f) scale.x = -scale.x;
                     break;
                 case ValueSignType.PositiveY:
                     if (scale.y < 0.0f) scale.y = -scale.y;
                     break;
                 case ValueSignType.NegativeY:
-                    if (scale.y >= 0.0f) scale.y = -scale.y;
+                    if (scale.y > 0.0f) scale.y = -scale.y;
                     break;
                 case ValueSignType.PositiveZ:
                     if (scale.z < 0.0f) scale.z = -scale.z;
                     break;
                 case ValueSignType.NegativeZ:
-                    if (scale.z >= 0.0f) scale.z = -scale.z;
+                    if (scale.z > 0.0f) scale.z = -scale.z;
                     break;
                 default:
                     Debug.Assert(false, "Unknown ValueSignType");

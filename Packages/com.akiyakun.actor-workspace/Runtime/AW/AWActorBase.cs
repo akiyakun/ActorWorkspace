@@ -74,7 +74,10 @@ namespace ActorWorkspace
             };
 #endif
 
-            return await InnerInitializeAsync(awActorContextProvider, cancellationToken);
+            if (await InnerInitializeAsync(awActorContextProvider, cancellationToken) is int ret && ret < 0) return ret;
+            Restore();
+
+            return GeneralReturnCode.Succeeded;
         }
 
         protected virtual async UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)

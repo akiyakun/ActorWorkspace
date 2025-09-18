@@ -12,6 +12,7 @@ namespace ActorWorkspace
         // public string Name { get; }
 
         public void Initialize(IAWActor actor);
+        public void Terminate();
 
         // 初期状態に戻す
         public void Restore();

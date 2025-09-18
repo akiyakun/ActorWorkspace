@@ -39,12 +39,16 @@ namespace ActorWorkspace
         //     Debug.Assert(actor != null);
         // }
 
-        public void Initialize(IAWActor actor)
+        public virtual void Initialize(IAWActor actor)
         {
             Debug.Assert(Actor == null);
 
             Actor = (TActor)actor!;
             Debug.Assert(Actor != null);
+        }
+
+        public virtual void Terminate()
+        {
         }
 
         public abstract void Restore();

@@ -79,6 +79,7 @@ namespace ActorWorkspace
         {
             OnBehaviourRemoved?.Invoke(behaviour);
             behaviour.DoDestroy();
+            behaviour.Terminate();
         }
 
         public virtual T? Get<T>()
