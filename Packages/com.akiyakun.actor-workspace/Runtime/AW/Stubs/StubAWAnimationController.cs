@@ -14,6 +14,8 @@ namespace ActorWorkspace.Tests
         public event System.Action<IAWAnimation> OnAnimationComplate = null!;
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
 
+        public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();
+
         public IList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
         public IAWAnimation? GetAnimation(string name) => animations.Find(a => a.Name == name);
 

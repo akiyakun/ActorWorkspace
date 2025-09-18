@@ -12,6 +12,8 @@ namespace ActorWorkspace.UnitySpine
     // SkeletonAnimation と対になるコントローラークラス
     public class SpineSkeletonAnimationController : SpineAnimationController
     {
+        public override IAWAnimationParameter AnimationParameter { get; protected set; }
+
         SkeletonAnimation skeletonAnimation;
 
 // #nullable disable
@@ -23,6 +25,8 @@ namespace ActorWorkspace.UnitySpine
         {
             this.skeletonAnimation = skeletonAnimation;
             Debug.Assert(skeletonAnimation != null);
+
+            AnimationParameter = new AWAnimationParameter();
 
             // IAWAnimationのリストを作成
             if (skeletonAnimation != null)

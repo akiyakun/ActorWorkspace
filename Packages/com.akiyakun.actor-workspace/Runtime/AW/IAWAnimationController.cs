@@ -17,6 +17,8 @@ namespace ActorWorkspace
 
         public void DoUpdate(float deltaTime);
 
+        public IAWAnimationParameter AnimationParameter { get; }
+
         public IList<IAWAnimation> GetAnimationList();
         public IAWAnimation? GetAnimation(string name);
 

@@ -20,6 +20,8 @@ namespace ActorWorkspace.UnitySpine
     // 対象のステート名が無い場合エラーになります
     public class SpineMecanimAnimationController : SpineAnimationController
     {
+        public override IAWAnimationParameter AnimationParameter { get; protected set; }
+
         SkeletonMecanim skeletonMecanim;
 
 #if UNITY_EDITOR
@@ -34,6 +36,8 @@ namespace ActorWorkspace.UnitySpine
 
             Animator animator = skeletonMecanim.GetComponent<Animator>();
             if (animator == null) throw new System.Exception("Animator component not found");
+
+            AnimationParameter = new MecanimAnimationParameter(animator);
 
 #if UNITY_EDITOR
             // チェック用にAnimatorControllerの全ステートを取得
