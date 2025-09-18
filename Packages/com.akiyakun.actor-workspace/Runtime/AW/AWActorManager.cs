@@ -38,6 +38,12 @@ namespace ActorWorkspace
         }
 
         // From IAWActorManager
+		public virtual void DoLateUpdate(float deltaTime)
+        {
+            updateElementManager.DoLateUpdate(deltaTime);
+        }
+
+        // From IAWActorManager
         public virtual void DoFixedUpdate()
         {
             updateElementManager.DoFixedUpdate();
