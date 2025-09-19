@@ -11,7 +11,7 @@ namespace ActorWorkspace.UnitySpine
 {
     // 対になるSpineのクラスは SkeletonAnimation と SkeletonMecanim クラス。
     // 双方の基底抽象クラスとなります。
-    public abstract class SpineAnimationController : IAWAnimationController
+    public abstract class SpineAnimationControllerBase : IAWAnimationController
     {
         public event System.Action<IAWAnimation>? OnAnimationComplate;
         protected virtual void InvokeAnimationComplate(IAWAnimation animation) => OnAnimationComplate?.Invoke(animation);
@@ -29,10 +29,10 @@ namespace ActorWorkspace.UnitySpine
 
 
 #nullable disable
-        protected SpineAnimationController() { }
+        protected SpineAnimationControllerBase() { }
 #nullable enable
 
-        public SpineAnimationController(ISkeletonAnimation skeletonAnimationInterface, IAWEventDecoder eventDecoder)
+        public SpineAnimationControllerBase(ISkeletonAnimation skeletonAnimationInterface, IAWEventDecoder eventDecoder)
         {
             this.skeletonAnimationInterface = skeletonAnimationInterface;
             Debug.Assert(skeletonAnimationInterface != null);

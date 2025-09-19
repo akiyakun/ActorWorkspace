@@ -10,7 +10,7 @@ using afl;
 namespace ActorWorkspace.UnitySpine
 {
     // SkeletonAnimation と対になるコントローラークラス
-    public class SpineSkeletonAnimationController : SpineAnimationController
+    public class SpineSkeletonAnimationController : SpineAnimationControllerBase
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 

@@ -18,7 +18,7 @@ namespace ActorWorkspace.UnitySpine
     // ループなし:run
     // ループあり:run_loop
     // 対象のステート名が無い場合エラーになります
-    public class SpineMecanimAnimationController : SpineAnimationController
+    public class SpineMecanimAnimationController : SpineAnimationControllerBase
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 

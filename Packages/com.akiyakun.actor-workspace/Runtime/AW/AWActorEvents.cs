@@ -17,21 +17,6 @@ namespace ActorWorkspace
 
         #region Behaviour
         public static readonly (string, bool) OnGround = ("OnGround", default);
-
-        public static readonly string OnMoveBegin = "OnMoveBegin";
-        public static readonly string OnMove = "OnMove";
-        public static readonly string OnMoveEnd = "OnMoveEnd";
-
-        public static readonly string OnJump = "OnJump";
-        public static readonly string OnFastFall = "OnFastFall";
-
-        public static readonly string RequestDash = "RequestDash";
-        public static readonly string OnDash = "OnDash";
-        #endregion
-
-        #region Motion
-        // public static readonly string OpenMainMenu = "OpenMainMenu";
-        // public static readonly string CloseMainMenu = "CloseMainMenu";
         #endregion
     }
 }
