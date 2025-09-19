@@ -10,6 +10,11 @@ namespace ActorWorkspace
     // 本来static classだが継承して使いたいのでinterfaceになっています
     public interface AWActorEvents
     {
+        #region Controls
+        // public static readonly (string, bool) Exclusive = ("Exclusive", default);
+        public static readonly (string, bool) SetEnableInput = ("SetEnableInput", default);
+        #endregion
+
         #region Behaviour
         public static readonly (string, bool) OnGround = ("OnGround", default);
 
