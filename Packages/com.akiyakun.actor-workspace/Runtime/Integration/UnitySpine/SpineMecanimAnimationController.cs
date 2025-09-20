@@ -18,11 +18,12 @@ namespace ActorWorkspace.UnitySpine
     // ループなし:run
     // ループあり:run_loop
     // 対象のステート名が無い場合エラーになります
-    public class SpineMecanimAnimationController : SpineAnimationControllerBase
+    public class SpineMecanimAnimationController : SpineAnimationControllerBase<SpineMecanimAnimation>
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 
         SkeletonMecanim skeletonMecanim;
+        Animator animator;
 
 #if UNITY_EDITOR
         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
@@ -34,12 +35,13 @@ namespace ActorWorkspace.UnitySpine
             this.skeletonMecanim = skeletonMecanim;
             // Debug.Assert(skeletonMecanim != null);
 
-            Animator animator = skeletonMecanim.GetComponent<Animator>();
+            animator = skeletonMecanim.GetComponent<Animator>();
             if (animator == null) throw new System.Exception("Animator component not found");
 
             AnimationParameter = new MecanimAnimationParameter(animator);
 
-#if UNITY_EDITOR
+#if false
+// #if UNITY_EDITOR
             // チェック用にAnimatorControllerの全ステートを取得
             {
                 var controller = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
@@ -61,7 +63,7 @@ namespace ActorWorkspace.UnitySpine
                             output.SetSourcePlayable(clipPlayable);
 
                             // Mecanimのステート名をIAWAnimationとして登録
-                            animations.Add(state.state.name,
+                            animationHashMap.Add(Utility.StringToHashId(state.state.name),
                                 new SpineMecanimAnimation(state.state.name, skeletonMecanim, null, playableGraph, animationClip, clipPlayable));
 
                             playableGraph.Play();
@@ -78,6 +80,17 @@ namespace ActorWorkspace.UnitySpine
             // IAWAnimationのリストを作成
             // if (skeletonMecanim != null)
             {
+                var animatorStateEvent = AnimatorStateEvent.Get(animator, 0);
+                if (animatorStateEvent == null) throw new System.Exception("AnimatorStateEvent not found");
+
+                var states = animatorStateEvent.GetAllStateName();
+                for (int i = 0; i < states.Count; i++)
+                {
+                    Debug.Log($"State: {states[i]}");
+                    int hashId = Utility.StringToHashId(states[i]);
+                    animationHashMap.Add(hashId, new SpineMecanimAnimation(states[i], skeletonMecanim));
+                }
+
                 // foreach (Spine.Animation animation in skeletonMecanim.Skeleton.Data.Animations)
                 // {
                 //     // このanimationはSpineの元データでありMecanimのステートではない
@@ -112,8 +125,8 @@ namespace ActorWorkspace.UnitySpine
         {
             Debug.Assert(skeletonMecanim.gameObject.activeInHierarchy == true, "アクティブになっていません");
 
-            Animator animator = skeletonMecanim.GetComponent<Animator>();
-            if (animator == null) throw new System.Exception("Animator component not found");
+            // Animator animator = skeletonMecanim.GetComponent<Animator>();
+            // if (animator == null) throw new System.Exception("Animator component not found");
 
             // AnimatorHelper
             // {
@@ -135,6 +148,17 @@ namespace ActorWorkspace.UnitySpine
         public override void Restore()
         {
         }
+
+
+        public override IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0)
+        {
+            animator.Play(hashId, layer: trackNum);
+
+            var track = trackList[trackNum];
+            // track.Set(animation as SpineSkeletonAnimation);
+            return track;
+        }
+
 
         public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {
@@ -159,7 +183,7 @@ namespace ActorWorkspace.UnitySpine
                 return null;
             }
 
-            Animator animator = skeletonMecanim.GetComponent<Animator>();
+            // Animator animator = skeletonMecanim.GetComponent<Animator>();
             // Debug.Log(animation.Name);
 
             // SpineMecanimAnimation spineMecanimAnimation = (SpineMecanimAnimation)animation;

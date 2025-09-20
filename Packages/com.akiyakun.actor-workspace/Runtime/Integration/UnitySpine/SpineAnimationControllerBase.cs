@@ -11,11 +11,12 @@ namespace ActorWorkspace.UnitySpine
 {
     // 対になるSpineのクラスは SkeletonAnimation と SkeletonMecanim クラス。
     // 双方の基底抽象クラスとなります。
-    public abstract class SpineAnimationControllerBase : IAWAnimationController
+    public abstract class SpineAnimationControllerBase<TAnimation> : IAWAnimationController
+        where TAnimation : class, IAWAnimation
     {
-        public event System.Action<IAWAnimation>? OnAnimationComplate;
+        public event System.Action<IAWAnimation> OnAnimationComplate = null!;
         protected virtual void InvokeAnimationComplate(IAWAnimation animation) => OnAnimationComplate?.Invoke(animation);
-        public event System.Action<IAWAnimation, AWEventData>? OnAnimationEvent;
+        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
         protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
@@ -24,7 +25,8 @@ namespace ActorWorkspace.UnitySpine
         protected ISkeletonAnimation skeletonAnimationInterface;
 
         protected IAWEventDecoder eventDecoder;
-        protected Dictionary<string, SpineAnimation> animations = new();
+        // protected Dictionary<string, SpineAnimation> animations = new();
+        protected SortedDictionary<int, TAnimation> animationHashMap = new();
         protected List<SpineTrack> trackList = new(IAWTrack.MaxTrack);
 
 
@@ -68,26 +70,35 @@ namespace ActorWorkspace.UnitySpine
             // }
         }
 
-        public IList<IAWAnimation> GetAnimationList()
+
+        public IReadOnlyList<IAWAnimation> GetAnimationList()
         {
-            return animations.Values.ToList<IAWAnimation>();
+            return animationHashMap.Values.Cast<IAWAnimation>().ToList();
+        }
+
+        public IAWAnimation? GetAnimation(int hashId)
+        {
+            if (animationHashMap.TryGetValue(hashId, out TAnimation value)) return value;
+            Debug.LogWarning($"GetAnimation: Not found hashId={hashId}");
+            return null;
         }
 
         public IAWAnimation? GetAnimation(string name)
         {
-#if __DEBUG__
-            if (animations.Get(name) is IAWAnimation animation) return animation;
-            Debug.Assert(false, $"GetAnimation: Not found name={name}");
+            if (animationHashMap.TryGetValue(Utility.StringToHashId(name), out TAnimation value)) return value;
+            Debug.LogWarning($"GetAnimation: Not found name={name}");
             return null;
-#else
-            return animations.Get(name);
-#endif
-            // for (int i = 0; i < animations.Count; i++)
-            // {
-            //     if (animations[i].Name == name) return animations[i];
-            // }
-            // return null;
         }
+
+        protected TAnimation? GetAnimationImpl(int hashId)
+        {
+            if (animationHashMap.TryGetValue(hashId, out TAnimation value)) return value;
+            Debug.LogWarning($"GetAnimation: Not found hashId={hashId}");
+            return null;
+        }
+
+
+        public abstract IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0);
 
         // FIXME; spine
         public abstract void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);

@@ -11,15 +11,15 @@ namespace ActorWorkspace.UnitySpine
         SkeletonAnimation skeletonAnimation;
         public SkeletonAnimation SkeletonAnimation => skeletonAnimation;
 
-        Spine.Animation spineAnimation;
+        public Spine.Animation SpineAnimation { get; protected set; }
 
         public SpineSkeletonAnimation(SkeletonAnimation skeletonAnimation, Spine.Animation spineAnimation)
         {
             this.skeletonAnimation = skeletonAnimation;
             Debug.Assert(skeletonAnimation != null);
 
-            this.spineAnimation = spineAnimation;
-            Debug.Assert(spineAnimation != null);
+            SpineAnimation = spineAnimation;
+            Debug.Assert(SpineAnimation != null);
 
             Name = spineAnimation.Name;
         }

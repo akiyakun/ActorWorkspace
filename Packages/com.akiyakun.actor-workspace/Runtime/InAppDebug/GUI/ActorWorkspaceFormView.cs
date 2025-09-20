@@ -388,8 +388,8 @@ namespace ActorWorkspace.InAppDebug
                 // }
 
                 // TrackEntry trackEntry =
-                var track = animationController.SetAnimation(
-                    currentTrackIndex, animation: animation, loop: uiAnimationControl.IsLoop);
+                var track = animationController.SetAnimation(Utility.StringToHashId(animation.Name),
+                    loop: uiAnimationControl.IsLoop, trackNum: currentTrackIndex);
                 // MixDurationを0にしないとDefaultMixが適応されない?
                 // trackEntry.MixDuration = 3.0f;
 
@@ -454,7 +454,7 @@ namespace ActorWorkspace.InAppDebug
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
             if (track.Animation != null)
             {
-                animationController.SetAnimation(currentTrackIndex, animation: track.Animation, loop: value);
+                animationController.SetAnimation(Utility.StringToHashId(track.Animation.Name), loop: value, trackNum: currentTrackIndex);
             }
         }
 

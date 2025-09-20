@@ -85,7 +85,7 @@ namespace ActorWorkspace.InAppDebug
                 if (i == 0)
                 {
                     // skeletonAnimation.state.SetAnimation(trackIndex, animation, loop: false);
-                    animationController.SetAnimation(trackIndex, animation, loop: false);
+                    animationController.SetAnimation(Utility.StringToHashId(animation.Name), loop: false, trackNum: trackIndex);
                 }
                 else
                 {

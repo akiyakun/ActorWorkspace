@@ -19,12 +19,17 @@ namespace ActorWorkspace
 
         public IAWAnimationParameter AnimationParameter { get; }
 
-        public IList<IAWAnimation> GetAnimationList();
+        public IReadOnlyList<IAWAnimation> GetAnimationList();
+        public IAWAnimation? GetAnimation(int hashId);
         public IAWAnimation? GetAnimation(string name);
 
-        // FIXME; spine
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);
-        public IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop);
+        // public void SetDefaultAnimation(int hashId, bool loop, int trackNum = 0);
+
+        public IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0);
+
+        // FIXME; spine
+        // public IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop);
         public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
         // fixme: loop intにしたい
 

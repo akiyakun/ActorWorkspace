@@ -18,6 +18,14 @@ namespace ActorWorkspace.UnitySpine
         public AnimationClip? animationClip;
         public AnimationClipPlayable animationClipPlayable;
 
+        public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim)
+        {
+            this.skeletonMecanim = skeletonMecanim;
+            Debug.Assert(skeletonMecanim != null);
+
+            Name = stateName;
+        }
+
         public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation,
             PlayableGraph playableGraph, AnimationClip animationClip, AnimationClipPlayable animationClipPlayable)
         {

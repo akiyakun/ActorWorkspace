@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using afl;
 using UnityEngine;
 
 namespace ActorWorkspace.Tests
@@ -16,7 +17,8 @@ namespace ActorWorkspace.Tests
 
         public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();
 
-        public IList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
+        public IReadOnlyList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
+        public IAWAnimation? GetAnimation(int hashId) => animations.Find(a => Utility.StringToHashId(a.Name) == hashId);
         public IAWAnimation? GetAnimation(string name) => animations.Find(a => a.Name == name);
 
         List<StubAWAnimation> animations = new List<StubAWAnimation>
@@ -46,6 +48,13 @@ namespace ActorWorkspace.Tests
                 // GetTrack(i).Animation?.DoUpdate(deltaTime);
             }
         }
+
+
+        public IAWTrack? SetAnimation(int hashId, bool loop, int trackNum = 0)
+        {
+            return track;
+        }
+
 
         // FIXME; spine
         public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)

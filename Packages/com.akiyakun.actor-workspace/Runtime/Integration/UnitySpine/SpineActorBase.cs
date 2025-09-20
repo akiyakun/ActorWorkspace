@@ -9,7 +9,7 @@ using afl;
 namespace ActorWorkspace.UnitySpine
 {
     public class SpineActorBase<TActorContextProvider, TActorParam>
-        : AWActorBase<TActorContextProvider, TActorParam, SpineAnimationControllerBase, SpineSkin>
+        : AWActorBase<TActorContextProvider, TActorParam, IAWAnimationController, SpineSkin>
         where TActorContextProvider : AWActorContextProvider
         where TActorParam : class, IAWActorParam, new()
         // where TActorDisplay : SpineActorDisplay, new()
@@ -18,7 +18,7 @@ namespace ActorWorkspace.UnitySpine
 
         public override TActorParam ActorParam { get; protected set; } = new();
         // public override TActorDisplay ActorDisplay { get; protected set; } = null!;
-        public override SpineAnimationControllerBase AnimationController { get; protected set; } = null!;
+        public override IAWAnimationController AnimationController { get; protected set; } = null!;
         public override IReadOnlyList<SpineSkin> SkinList => skinList;
 
         protected Spine.Skeleton Skeleton => skeletonAnimationInterface.Skeleton;
@@ -87,7 +87,7 @@ namespace ActorWorkspace.UnitySpine
             var spineMecanimAnimationController = new SpineMecanimAnimationController(skeletonMecanim, eventDecoder);
             if (await spineMecanimAnimationController.InitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
 
-            AnimationController = spineMecanimAnimationController as SpineAnimationControllerBase;
+            AnimationController = spineMecanimAnimationController as IAWAnimationController;
             Debug.Assert(AnimationController != null);
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
@@ -108,7 +108,7 @@ namespace ActorWorkspace.UnitySpine
             var spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
             if (await spineSkeletonAnimationController.InitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
 
-            AnimationController = spineSkeletonAnimationController as SpineAnimationControllerBase;
+            AnimationController = spineSkeletonAnimationController as IAWAnimationController;
             Debug.Assert(AnimationController != null);
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);

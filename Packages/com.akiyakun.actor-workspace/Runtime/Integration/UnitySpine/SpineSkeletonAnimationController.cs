@@ -10,7 +10,7 @@ using afl;
 namespace ActorWorkspace.UnitySpine
 {
     // SkeletonAnimation と対になるコントローラークラス
-    public class SpineSkeletonAnimationController : SpineAnimationControllerBase
+    public class SpineSkeletonAnimationController : SpineAnimationControllerBase<SpineSkeletonAnimation>
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 
@@ -34,7 +34,7 @@ namespace ActorWorkspace.UnitySpine
                 foreach (Spine.Animation animation in skeletonAnimation.Skeleton.Data.Animations)
                 {
                     // Debug.Log("Animation name: " + animation.Name);
-                    animations.Add(animation.Name, new SpineSkeletonAnimation(skeletonAnimation, animation));
+                    animationHashMap.Add(Utility.StringToHashId(animation.Name), new SpineSkeletonAnimation(skeletonAnimation, animation));
                 }
 
                 // コールバック
@@ -59,6 +59,20 @@ namespace ActorWorkspace.UnitySpine
         public override void Restore()
         {
         }
+
+
+        public override IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0)
+        {
+            var animation = GetAnimationImpl(hashId);
+            if (animation == null) throw new System.Exception($"SetAnimation: Not found hashId={hashId}");
+
+            Spine.TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackNum, animation.SpineAnimation, loop: loop);
+
+            var track = trackList[trackNum];
+            // track.Set(animation as SpineSkeletonAnimation);
+            return track;
+        }
+
 
         public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {
