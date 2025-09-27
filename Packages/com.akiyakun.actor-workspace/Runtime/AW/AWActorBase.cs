@@ -74,13 +74,26 @@ namespace ActorWorkspace
             };
 #endif
 
-            if (await InnerInitializeAsync(awActorContextProvider, cancellationToken) is int ret && ret < 0) return ret;
+            {
+                if (await InnerInitializeAsync(awActorContextProvider, cancellationToken) is int ret && ret < 0) return ret;
+            }
+
+            {
+                if (await OnInitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
+            }
+
             Restore();
 
             return GeneralReturnCode.Succeeded;
         }
 
-        protected virtual async UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)
+        // protected virtual async UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)
+        // {
+        //     return await UniTask.FromResult(GeneralReturnCode.Succeeded);
+        // }
+        protected abstract UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken);
+
+        protected virtual async UniTask<int> OnInitializeAsync(CancellationToken cancellationToken)
         {
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
