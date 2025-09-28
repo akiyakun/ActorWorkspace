@@ -38,7 +38,7 @@ namespace ActorWorkspace.UnitySpine
                 }
 
                 // コールバック
-                // FIXME: 終了処理
+                skeletonAnimation.AnimationState.Complete += OnHandleComplete;
                 skeletonAnimation.AnimationState.Event += OnHandleEvent;
             }
         }
@@ -69,7 +69,7 @@ namespace ActorWorkspace.UnitySpine
             Spine.TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(trackNum, animation.SpineAnimation, loop: loop);
 
             var track = trackList[trackNum];
-            // track.Set(animation as SpineSkeletonAnimation);
+            track.Set(animation);
             return track;
         }
 
@@ -119,6 +119,15 @@ namespace ActorWorkspace.UnitySpine
             return trackList[trackIndex];
         }
 
+
+        void OnHandleComplete(TrackEntry trackEntry)
+        {
+            // Debug.Log($"OnHandleComplete: trackIndex={trackEntry.TrackIndex}, animation={trackEntry.Animation?.Name}");
+            if (trackEntry.Loop == true) return;
+            var animation = trackList[trackEntry.TrackIndex].Animation;
+            if (animation == null) return;
+            InvokeAnimationComplate(animation);
+        }
 
         void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
         {
