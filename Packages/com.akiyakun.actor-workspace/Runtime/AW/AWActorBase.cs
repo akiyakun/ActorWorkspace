@@ -72,6 +72,10 @@ namespace ActorWorkspace
             {
                 debugActorBehaviours.Add(behaviour.GetType().Name);
             };
+            ActorBehaviourController.OnBehaviourRemoved += (behaviour) =>
+            {
+                debugActorBehaviours.Remove(behaviour.GetType().Name);
+            };
 #endif
 
             {
