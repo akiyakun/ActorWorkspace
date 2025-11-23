@@ -4,15 +4,26 @@ using afl;
 
 namespace ActorWorkspace
 {
-    // アクターの表示のルート分
+    // アクターの表示のルート
     // 全体をスケールしたり反転したりするよう
     // MonoBehaviour前提
     public class AWActorDisplay : MonoBehaviour
     {
         public bool ForceUnitScale { get; set; } = true;
 
+        public bool IsVisibility
+        {
+            get => actor.AnimationController.IsVisibility;
+            set => actor.AnimationController.IsVisibility = value;
+        }
+
+        IAWActor actor = null!;
+
         public virtual void Awake()
         {
+            actor = gameObject.GetComponentInParent<IAWActor>();
+            Debug.Assert(actor != null);
+
             if (ForceUnitScale == true)
             {
                 Debug.Assert(transform.localScale == Vector3.one, "ForceUnitScale is true. Scale is forced to (1,1,1).");

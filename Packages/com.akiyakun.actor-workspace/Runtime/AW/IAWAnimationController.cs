@@ -34,6 +34,8 @@ namespace ActorWorkspace
         // fixme: loop intにしたい
 
         public IAWTrack? GetTrack(int trackIndex);
+
+        public bool IsVisibility { get; set; }
     }
 }
 #nullable restore

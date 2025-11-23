@@ -20,6 +20,7 @@ namespace ActorWorkspace.UnitySpine
         protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
+        public abstract bool IsVisibility { get; set; }
 
         // SkeletonAnimation と SkeletonMecanim 双方が継承しているインターフェース
         protected ISkeletonAnimation skeletonAnimationInterface;

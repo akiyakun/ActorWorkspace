@@ -18,6 +18,8 @@ namespace ActorWorkspace
         #region Behaviour
         public static readonly (string, bool) OnGround = ("OnGround", default);
         #endregion
+
+        public static readonly (string, bool) SetDisplayVisibility = ("SetDisplayVisibility", default);
     }
 }
 #nullable restore

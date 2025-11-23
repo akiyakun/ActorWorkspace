@@ -14,6 +14,13 @@ namespace ActorWorkspace.UnitySpine
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 
+        // FIXME:
+        public override bool IsVisibility
+        {
+            get => skeletonAnimation.GetComponent<Renderer>().enabled;
+            set => skeletonAnimation.GetComponent<Renderer>().enabled = value;
+        }
+
         SkeletonAnimation skeletonAnimation;
 
 // #nullable disable
