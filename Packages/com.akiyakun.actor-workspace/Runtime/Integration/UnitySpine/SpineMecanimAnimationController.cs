@@ -32,6 +32,7 @@ namespace ActorWorkspace.UnitySpine
         SkeletonMecanim skeletonMecanim;
         Animator animator;
         SkeletonMecanimRootMotion skeletonMecanimRootMotion;
+        AnimatorStateEvent animatorStateEvent;
 
 #if UNITY_EDITOR
         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
@@ -92,10 +93,12 @@ namespace ActorWorkspace.UnitySpine
             // if (skeletonMecanim != null)
             {
                 // FIXME: layer=0 しか対応してない
-                var animatorStateEvent = AnimatorStateEvent.Get(animator, 0);
+                animatorStateEvent = AnimatorStateEvent.Get(animator, 0);
                 if (animatorStateEvent == null) throw new System.Exception("AnimatorStateEvent not found");
 
-                var states = animatorStateEvent.StateInfoList;
+                animatorStateEvent.GenerateHashMap();
+
+                var states = animatorStateEvent.GetStateInfoList();
                 for (int i = 0; i < states.Count; i++)
                 {
                     var state = states[i];
@@ -120,7 +123,10 @@ namespace ActorWorkspace.UnitySpine
 
                 // コールバック
                 // FIXME: 終了処理
-                // skeletonMecanim.AnimationState.Event += OnHandleEvent;
+                // skeletonAnimation.AnimationState.Complete += OnHandleComplete;
+                animatorStateEvent.OnStateEntered += OnHandleEntered;
+                animatorStateEvent.OnStateExited += OnHandleComplete;
+
                 var detector = skeletonMecanim.gameObject.GetComponent<SpineMecanimAnimationEventDetector>();
                 if (detector != null)
                 {
@@ -385,6 +391,22 @@ namespace ActorWorkspace.UnitySpine
             return trackList[trackIndex];
         }
 
+
+        void OnHandleEntered(AnimatorStateOptionInfo info)
+        {
+            Debug.Log($"OnHandleEntered: State={info.StateName}, hash={info.StateNameHash}");
+            var animation = GetAnimation(info.StateNameHash);
+            if (animation == null) return;
+            InvokeAnimationEntered(animation);
+        }
+
+        void OnHandleComplete(AnimatorStateOptionInfo info)
+        {
+            Debug.Log($"OnHandleComplete: State={info.StateName}, hash={info.StateNameHash}");
+            var animation = GetAnimation(info.StateNameHash);
+            if (animation == null) return;
+            InvokeAnimationComplate(animation);
+        }
 
         // void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
         // {

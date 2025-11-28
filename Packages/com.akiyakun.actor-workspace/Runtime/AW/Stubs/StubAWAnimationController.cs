@@ -12,6 +12,7 @@ namespace ActorWorkspace.Tests
 
         // public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
 
+        public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         public event System.Action<IAWAnimation> OnAnimationComplate = null!;
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
 

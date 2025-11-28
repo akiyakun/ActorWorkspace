@@ -14,10 +14,14 @@ namespace ActorWorkspace.UnitySpine
     public abstract class SpineAnimationControllerBase<TAnimation> : IAWAnimationController
         where TAnimation : class, IAWAnimation
     {
+        #region Events
+        public event System.Action<IAWAnimation> OnAnimationEntered = null!;
+        protected virtual void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
         public event System.Action<IAWAnimation> OnAnimationComplate = null!;
         protected virtual void InvokeAnimationComplate(IAWAnimation animation) => OnAnimationComplate?.Invoke(animation);
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
         protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
+        #endregion
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
         public abstract bool IsVisibility { get; set; }

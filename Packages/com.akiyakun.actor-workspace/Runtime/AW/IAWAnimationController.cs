@@ -9,10 +9,16 @@ namespace ActorWorkspace
     {
         // public IReadOnlyList<IAWAnimation> AnimationList { get; }
 
-        // public System.Action<AWAnimationData> OnAnimationComplate { get; }
+        #region Events
+        // アニメーションが開始されたときにコールバックされます
+        public event System.Action<IAWAnimation> OnAnimationEntered;
+
+        // アニメーションが完了したときにコールバックされます
         public event System.Action<IAWAnimation> OnAnimationComplate;
+
+        // アニメーションのタイムラインに含まれるイベントが発生したときにコールバックされます
         public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
-        // public event System.Action<AWEventData> OnEvent;
+        #endregion
 
         public void Restore();
 
