@@ -1,4 +1,5 @@
 #nullable enable
+using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,37 +13,58 @@ namespace ActorWorkspace
         public MecanimAnimationParameter(Animator animator)
         {
             this.animator = animator;
+            Debug.Assert(animator != null);
         }
 
-        public float GetFloat(string name)
+        public void ResetAll()
         {
-            return animator.GetFloat(name);
+            foreach (var param in animator.parameters)
+            {
+                switch (param.type)
+                {
+                    case AnimatorControllerParameterType.Float:
+                        animator.SetFloat(param.nameHash, param.defaultFloat);
+                        break;
+                    case AnimatorControllerParameterType.Int:
+                        animator.SetInteger(param.nameHash, param.defaultInt);
+                        break;
+                    case AnimatorControllerParameterType.Bool:
+                        animator.SetBool(param.nameHash, param.defaultBool);
+                        break;
+                    case AnimatorControllerParameterType.Trigger:
+                        animator.ResetTrigger(param.nameHash);
+                        break;
+                }
+            }
         }
 
-        public void SetFloat(string name, float value)
-        {
-            animator.SetFloat(name, value);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetFloat(int nameHash) => animator.GetFloat(nameHash);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetFloat(string name) => animator.GetFloat(name);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetFloat(int nameHash, float value) => animator.SetFloat(nameHash, value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetFloat(string name, float value) => animator.SetFloat(name, value);
 
-        public int GetInt(string name)
-        {
-            return animator.GetInteger(name);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetInt(int nameHash) => animator.GetInteger(nameHash);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetInt(string name) => animator.GetInteger(name);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetInt(int nameHash, int value) => animator.SetInteger(nameHash, value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetInt(string name, int value) => animator.SetInteger(name, value);
 
-        public void SetInt(string name, int value)
-        {
-            animator.SetInteger(name, value);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool GetBool(int nameHash) => animator.GetBool(nameHash);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool GetBool(string name) => animator.GetBool(name);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBool(int nameHash, bool value) => animator.SetBool(nameHash, value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBool(string name, bool value) => animator.SetBool(name, value);
 
-        public bool GetBool(string name)
-        {
-            return animator.GetBool(name);
-        }
-
-        public void SetBool(string name, bool value)
-        {
-            animator.SetBool(name, value);
-        }
     }
 }
 #nullable restore

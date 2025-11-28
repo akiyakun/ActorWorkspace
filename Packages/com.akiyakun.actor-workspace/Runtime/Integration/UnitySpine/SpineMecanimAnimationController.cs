@@ -179,6 +179,12 @@ namespace ActorWorkspace.UnitySpine
         {
         }
 
+        /*
+            option.Immediate == true のとき
+                対象のステートを直接再生します。
+            option.Immediate == false のとき
+                ステートと同名のInt型パラメータを1に設定します。
+         */
         public override IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
         {
             SpineMecanimAnimation? animationImpl = GetAnimationImpl(hashId);
@@ -214,7 +220,16 @@ namespace ActorWorkspace.UnitySpine
                 // Debug.Log($"RootMotion: enable");
             }
 
-            animator.Play(hashId, layer: option.Track);
+            if (option.Parameter == true)
+            {
+                // ステートと同名のInt型パラメータを1に設定します
+                animator.SetInteger(animationImpl.stateOptionInfo.StateName, 1);
+                return trackList[option.Track];
+            }
+            else
+            {
+                animator.Play(hashId, layer: option.Track);
+            }
 
             var track = trackList[option.Track];
             // track.Set(animation as SpineSkeletonAnimation);
@@ -395,9 +410,14 @@ namespace ActorWorkspace.UnitySpine
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
             // Debug.Log($"OnHandleEntered: State={info.StateName}, hash={info.StateNameHash}");
-            var animation = GetAnimation(info.StateNameHash);
+            var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
+
+            // FIXME: パラメータリセットはどこのタイミングでやるべきか・・・
+            AnimationParameter.SetInt(info.StateName, 0);
+
             InvokeAnimationEntered(animation);
+
         }
 
         void OnHandleComplete(AnimatorStateOptionInfo info)

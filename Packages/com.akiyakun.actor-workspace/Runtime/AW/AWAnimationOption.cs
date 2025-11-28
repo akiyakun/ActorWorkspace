@@ -17,7 +17,8 @@ namespace ActorWorkspace
         public float Duration;
 
         public bool Loop => HasFlag(AWAnimationOptionFlag.Loop);
-        public bool Immediate => HasFlag(AWAnimationOptionFlag.Immediate);
+        // public bool Immediate => HasFlag(AWAnimationOptionFlag.Immediate);
+        public bool Parameter => HasFlag(AWAnimationOptionFlag.Parameter);
 
         // public AWAnimationOption()
         // {
