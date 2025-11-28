@@ -394,7 +394,7 @@ namespace ActorWorkspace.UnitySpine
 
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
-            Debug.Log($"OnHandleEntered: State={info.StateName}, hash={info.StateNameHash}");
+            // Debug.Log($"OnHandleEntered: State={info.StateName}, hash={info.StateNameHash}");
             var animation = GetAnimation(info.StateNameHash);
             if (animation == null) return;
             InvokeAnimationEntered(animation);
@@ -402,7 +402,7 @@ namespace ActorWorkspace.UnitySpine
 
         void OnHandleComplete(AnimatorStateOptionInfo info)
         {
-            Debug.Log($"OnHandleComplete: State={info.StateName}, hash={info.StateNameHash}");
+            // Debug.Log($"OnHandleComplete: State={info.StateName}, hash={info.StateNameHash}");
             var animation = GetAnimation(info.StateNameHash);
             if (animation == null) return;
             InvokeAnimationComplate(animation);

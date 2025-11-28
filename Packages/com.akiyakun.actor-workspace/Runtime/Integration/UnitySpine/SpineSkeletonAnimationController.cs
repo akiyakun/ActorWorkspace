@@ -45,6 +45,7 @@ namespace ActorWorkspace.UnitySpine
                 }
 
                 // コールバック
+                skeletonAnimation.AnimationState.Start += OnHandleEntered;
                 skeletonAnimation.AnimationState.Complete += OnHandleComplete;
                 skeletonAnimation.AnimationState.Event += OnHandleEvent;
             }
@@ -154,10 +155,19 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
+        void OnHandleEntered(TrackEntry trackEntry)
+        {
+            // Debug.Log($"OnHandleEntered: trackIndex={trackEntry.TrackIndex}, animation={trackEntry.Animation?.Name}");
+            // if (trackEntry.Loop == true) return;
+            var animation = trackList[trackEntry.TrackIndex].Animation;
+            if (animation == null) return;
+            InvokeAnimationEntered(animation);
+        }
+
         void OnHandleComplete(TrackEntry trackEntry)
         {
             // Debug.Log($"OnHandleComplete: trackIndex={trackEntry.TrackIndex}, animation={trackEntry.Animation?.Name}");
-            if (trackEntry.Loop == true) return;
+            // if (trackEntry.Loop == true) return;
             var animation = trackList[trackEntry.TrackIndex].Animation;
             if (animation == null) return;
             InvokeAnimationComplate(animation);
