@@ -31,6 +31,7 @@ namespace ActorWorkspace.UnitySpine
 
         SkeletonMecanim skeletonMecanim;
         Animator animator;
+        SkeletonMecanimRootMotion skeletonMecanimRootMotion;
 
 #if UNITY_EDITOR
         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
@@ -44,6 +45,9 @@ namespace ActorWorkspace.UnitySpine
 
             animator = skeletonMecanim.GetComponent<Animator>();
             if (animator == null) throw new System.Exception("Animator component not found");
+
+            skeletonMecanimRootMotion = skeletonMecanim.GetComponent<SkeletonMecanimRootMotion>();
+            if (skeletonMecanimRootMotion == null) throw new System.Exception("skeletonMecanimRootMotion component not found");
 
             AnimationParameter = new MecanimAnimationParameter(animator);
 
@@ -87,15 +91,16 @@ namespace ActorWorkspace.UnitySpine
             // IAWAnimationのリストを作成
             // if (skeletonMecanim != null)
             {
+                // FIXME: layer=0 しか対応してない
                 var animatorStateEvent = AnimatorStateEvent.Get(animator, 0);
                 if (animatorStateEvent == null) throw new System.Exception("AnimatorStateEvent not found");
 
-                var states = animatorStateEvent.GetAllStateName();
+                var states = animatorStateEvent.StateInfoList;
                 for (int i = 0; i < states.Count; i++)
                 {
-                    Debug.Log($"State: {states[i]}");
-                    int hashId = Utility.StringToHashId(states[i]);
-                    animationHashMap.Add(hashId, new SpineMecanimAnimation(states[i], skeletonMecanim));
+                    var state = states[i];
+                    Debug.Log($"State: StateFullPath={state.StateFullPath}, StateName={state.StateName}, StateNameHash={state.StateNameHash}");
+                    animationHashMap.Add(state.StateNameHash, new SpineMecanimAnimation(state, skeletonMecanim));
                 }
 
                 // foreach (Spine.Animation animation in skeletonMecanim.Skeleton.Data.Animations)
@@ -125,6 +130,13 @@ namespace ActorWorkspace.UnitySpine
 
             {
                 // playableGraph.Play();
+
+
+
+                skeletonMecanim.Translator.OnClipApplied += (spineAnim, layerIndex, weight, time, lastTime, backward) =>
+                {
+                    // spineAnim.Name が Animator 上の AnimationClip 名と対応
+                };
             }
         }
 
@@ -159,6 +171,39 @@ namespace ActorWorkspace.UnitySpine
 
         public override IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0)
         {
+            SpineMecanimAnimation? animationImpl = GetAnimationImpl(hashId);
+            if (animationImpl == null)
+            {
+                Debug.Assert(false, $"Cast error.");
+                return null;
+            }
+
+            if (animationImpl.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+            {
+                // if (animator.applyRootMotion == true)
+                // {
+                //     skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+                // }
+
+                // var before = skeletonMecanimRootMotion.rigidBody2D.transform.position;
+                Vector3 delta = animator.deltaPosition;
+
+                animator.applyRootMotion = false;
+                skeletonMecanimRootMotion.enabled = false;
+
+                // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
+                skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+
+                // Debug.Log($"RootMotion: disable");
+            }
+            else
+            {
+                // FIXME: とりま今は基本RootMotion有効で動かしている
+                animator.applyRootMotion = true;
+                skeletonMecanimRootMotion.enabled = true;
+                // Debug.Log($"RootMotion: enable");
+            }
+
             animator.Play(hashId, layer: trackNum);
 
             var track = trackList[trackNum];
@@ -193,7 +238,12 @@ namespace ActorWorkspace.UnitySpine
             // Animator animator = skeletonMecanim.GetComponent<Animator>();
             // Debug.Log(animation.Name);
 
-            // SpineMecanimAnimation spineMecanimAnimation = (SpineMecanimAnimation)animation;
+            SpineMecanimAnimation? spineMecanimAnimation = animation as SpineMecanimAnimation;
+            if (spineMecanimAnimation == null)
+            {
+                Debug.Assert(false, $"Cast error.");
+                return null;
+            }
             // if (spineMecanimAnimation != null
             //     && spineMecanimAnimation.animationClip != null)
             // {
@@ -203,6 +253,20 @@ namespace ActorWorkspace.UnitySpine
             //     spineMecanimAnimation.animationClipPlayable.SetDuration(value);
             //     // playableGraph.Play();
             // }
+
+            if (spineMecanimAnimation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+            {
+                animator.applyRootMotion = false;
+                skeletonMecanimRootMotion.enabled = false;
+                Debug.Log($"RootMotion: disable");
+            }
+            else
+            {
+                // FIXME: とりま今は基本RootMotion有効で動かしている
+                animator.applyRootMotion = true;
+                skeletonMecanimRootMotion.enabled = true;
+                Debug.Log($"RootMotion: enable");
+            }
 
             // MEMO: stateNameが存在しない場合は警告ログが出だだけでPlay()メソッドでは検知できない
             string stateName = animation.Name;
@@ -214,6 +278,31 @@ namespace ActorWorkspace.UnitySpine
             Debug.Assert(states.ContainsKey(stateName) == true, $"GetAnimation: Not found name={stateName}");
 #endif
             animator.Play(stateName: stateName, layer: trackIndex);
+
+            {
+                /*
+                var skel = GetComponent<SkeletonMecanim>();
+                var animator = skel.Translator.Animator;
+
+                int layer = 0;
+                var currentInfos = animator.GetCurrentAnimatorClipInfo(layer);   // 現在ステート
+                var nextInfos    = animator.GetNextAnimatorClipInfo(layer);      // 遷移先ステート（遷移中のみ）
+
+                foreach (var info in currentInfos) {
+                    AnimationClip clip = info.clip;
+                    // 使用中クリップ
+                }
+                foreach (var info in nextInfos) {
+                    AnimationClip clip = info.clip;
+                    // 遷移先クリップ
+                }
+                */
+
+                int layer = 0;
+                var animator = skeletonMecanim.Translator.Animator;
+                var currentInfos = animator.GetCurrentAnimatorClipInfo(layer);
+
+            }
 
             var track = trackList[trackIndex];
             // track.Set(animation as SpineSkeletonAnimation);

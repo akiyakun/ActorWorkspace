@@ -5,6 +5,7 @@ using Spine;
 using Spine.Unity;
 using UnityEngine.Playables;
 using UnityEngine.Animations;
+using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
@@ -18,15 +19,18 @@ namespace ActorWorkspace.UnitySpine
         public AnimationClip? animationClip;
         public AnimationClipPlayable animationClipPlayable;
 
-        public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim)
+        public AnimatorStateOptionInfo stateOptionInfo;
+
+        public SpineMecanimAnimation(AnimatorStateOptionInfo stateOptionInfo, SkeletonMecanim skeletonMecanim)
         {
             this.skeletonMecanim = skeletonMecanim;
             Debug.Assert(skeletonMecanim != null);
 
-            Name = stateName;
+            this.stateOptionInfo = stateOptionInfo;
+            Name = stateOptionInfo.StateName;
         }
 
-        public SpineMecanimAnimation(string stateName, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation,
+        public SpineMecanimAnimation(AnimatorStateOptionInfo stateOptionInfo, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation,
             PlayableGraph playableGraph, AnimationClip animationClip, AnimationClipPlayable animationClipPlayable)
         {
             this.skeletonMecanim = skeletonMecanim;
@@ -39,8 +43,8 @@ namespace ActorWorkspace.UnitySpine
             this.animationClip = animationClip;
             this.animationClipPlayable = animationClipPlayable;
 
-            // Name = spineAnimation.Name;
-            Name = stateName;
+            this.stateOptionInfo = stateOptionInfo;
+            Name = stateOptionInfo.StateName;
         }
 
         // From IAWAnimation
