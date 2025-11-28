@@ -110,6 +110,9 @@ namespace ActorWorkspace.UnitySpine
         // public abstract void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
         // fixme: loop intにしたい
 
+        public abstract IAWAnimation? GetCurrentAnimation(int track = 0);
+        public abstract bool IsPlayingAnimation(int hashId, int track = 0);
+
         public abstract IAWTrack? GetTrack(int trackIndex);
     }
 }

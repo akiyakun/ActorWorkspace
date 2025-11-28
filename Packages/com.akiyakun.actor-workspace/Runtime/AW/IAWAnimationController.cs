@@ -34,6 +34,9 @@ namespace ActorWorkspace
         // public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
         // fixme: loop intにしたい
 
+        public IAWAnimation? GetCurrentAnimation(int track = 0);
+        public bool IsPlayingAnimation(int hashId, int track = 0);
+
         public IAWTrack? GetTrack(int trackIndex);
 
         public bool IsVisibility { get; set; }

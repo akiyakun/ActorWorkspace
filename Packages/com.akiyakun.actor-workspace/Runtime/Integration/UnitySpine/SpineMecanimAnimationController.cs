@@ -347,6 +347,36 @@ namespace ActorWorkspace.UnitySpine
         //     // skeletonAnimation.state.AddAnimation(trackIndex, animation.Name, loop: false, delay: delay);
         // }
 
+        public override IAWAnimation? GetCurrentAnimation(int track = 0)
+        {
+            AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(track);
+            return GetAnimation(currentState.shortNameHash);
+        }
+
+        public override bool IsPlayingAnimation(int hashId, int track = 0)
+        {
+            AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(track);
+            return currentState.shortNameHash == hashId;
+        }
+
+        // public static bool IsPlayingState(Animator animator, string stateName, int layerIndex = 0)
+        // {
+        //     // 現在のステートをチェック
+        //     AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(layerIndex);
+        //     if (currentState.IsName(stateName))
+        //         return true;
+
+        //     // トランジション中の次のステートもチェック
+        //     if (animator.IsInTransition(layerIndex))
+        //     {
+        //         AnimatorStateInfo nextState = animator.GetNextAnimatorStateInfo(layerIndex);
+        //         if (nextState.IsName(stateName))
+        //             return true;
+        //     }
+
+        //     return false;
+        // }
+
         public override IAWTrack? GetTrack(int trackIndex)
         {
             // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(trackIndex);

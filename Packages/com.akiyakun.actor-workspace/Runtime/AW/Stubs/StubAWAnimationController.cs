@@ -74,6 +74,16 @@ namespace ActorWorkspace.Tests
         // {
         // }
 
+        public IAWAnimation? GetCurrentAnimation(int track = 0)
+        {
+            return null;
+        }
+
+        public bool IsPlayingAnimation(int hashId, int track = 0)
+        {
+            return false;
+        }
+
         public IAWTrack? GetTrack(int trackIndex)
         {
             return track;

@@ -133,6 +133,18 @@ namespace ActorWorkspace.UnitySpine
         }
 #endif
 
+        public override IAWAnimation? GetCurrentAnimation(int track = 0)
+        {
+            var currentEntry = skeletonAnimation.AnimationState.GetCurrent(track);
+            return currentEntry == null ? null : GetAnimation(currentEntry.Animation.Name);
+        }
+
+        public override bool IsPlayingAnimation(int hashId, int track = 0)
+        {
+            if (GetCurrentAnimation(track) is IAWAnimation anim) return anim.NameHash == hashId;
+            return false;
+        }
+
         public override IAWTrack? GetTrack(int trackIndex)
         {
             // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(trackIndex);

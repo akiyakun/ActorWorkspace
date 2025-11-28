@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Spine;
 using Spine.Unity;
+using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
@@ -10,8 +11,21 @@ namespace ActorWorkspace.UnitySpine
     // Spineの SkeletonAnimation と SkeletonMecanim 双方の基底抽象クラス
     public abstract class SpineAnimation : IAWAnimation
     {
+        string name;
+
         // From IAWAnimation
-        public string Name { get; protected set; } = string.Empty;
+        public string Name
+        {
+            get => name;
+            protected set
+            {
+                name = value;
+                NameHash = Utility.StringToHashId(name);
+            }
+        }
+
+        // From IAWAnimation
+        public int NameHash { get; private set; }
 
         // SkeletonAnimation と SkeletonMecanim 双方が継承しているインターフェース
         ISkeletonAnimation skeletonAnimationInterface;

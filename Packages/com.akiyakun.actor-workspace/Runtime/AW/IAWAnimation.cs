@@ -12,6 +12,7 @@ namespace ActorWorkspace
     public interface IAWAnimation
     {
         public string Name { get; }
+        public int NameHash { get; }
 
         // public IEnumerable<AWAnimationData> AnimationList { get; }
         // public IReadOnlyList<AWAnimationData> AnimationList { get; }
