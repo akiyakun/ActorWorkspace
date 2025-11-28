@@ -51,24 +51,28 @@ namespace ActorWorkspace.Tests
         }
 
 
-        public IAWTrack? SetAnimation(int hashId, bool loop, int trackNum = 0)
+        public void SetEmptyAnimation(AWAnimationOption option = default)
+        {
+        }
+
+        public IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
         {
             return track;
         }
 
+        // public IAWTrack? SetAnimation(int hashId, bool loop, int trackNum = 0)
+        // {
+        //     return track;
+        // }
 
-        // FIXME; spine
-        public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
-        {
-
-        }
-        public IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
-        {
-            return track;
-        }
-        public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
-        {
-        }
+        // // FIXME; spine
+        // public IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
+        // {
+        //     return track;
+        // }
+        // public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
+        // {
+        // }
 
         public IAWTrack? GetTrack(int trackIndex)
         {

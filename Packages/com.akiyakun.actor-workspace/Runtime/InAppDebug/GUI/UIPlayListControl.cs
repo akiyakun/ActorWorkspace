@@ -47,7 +47,7 @@ namespace ActorWorkspace.InAppDebug
             lastAnimation = null;
 
             // skeletonAnimation.state.SetEmptyAnimation(trackIndex, 0.0f);
-            animationController.SetEmptyAnimation(trackIndex, 0.0f);
+            animationController.SetEmptyAnimation(new AWAnimationOption { Track = trackIndex });
         }
 
         void AddPlayList(IAWAnimation animation)
@@ -85,12 +85,15 @@ namespace ActorWorkspace.InAppDebug
                 if (i == 0)
                 {
                     // skeletonAnimation.state.SetAnimation(trackIndex, animation, loop: false);
-                    animationController.SetAnimation(Utility.StringToHashId(animation.Name), loop: false, trackNum: trackIndex);
+                    // animationController.SetAnimation(Utility.StringToHashId(animation.Name), loop: false, trackNum: trackIndex);
+                    animationController.SetAnimation(Utility.StringToHashId(animation.Name),
+                        new AWAnimationOption { Track = trackIndex, Flags = (uint)AWAnimationOptionFlag.Loop });
                 }
                 else
                 {
                     // skeletonAnimation.state.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
-                    animationController.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
+                    // animationController.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
+                    Debug.Assert(false);
                 }
             }
         }

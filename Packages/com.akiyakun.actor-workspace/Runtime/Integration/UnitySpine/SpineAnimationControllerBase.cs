@@ -99,12 +99,15 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        public abstract IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0);
+        public abstract void SetEmptyAnimation(AWAnimationOption option = default);
+
+        // public abstract IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0);
+        public abstract IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default);
 
         // FIXME; spine
-        public abstract void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);
-        public abstract IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop);
-        public abstract void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
+        // public abstract void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);
+        // public abstract IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop);
+        // public abstract void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
         // fixme: loop intにしたい
 
         public abstract IAWTrack? GetTrack(int trackIndex);

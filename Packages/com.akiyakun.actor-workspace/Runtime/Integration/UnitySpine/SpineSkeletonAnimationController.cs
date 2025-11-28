@@ -68,6 +68,35 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
+        public override void SetEmptyAnimation(AWAnimationOption option = default)
+        {
+            var track = trackList[option.Track];
+
+            // デフォルト値のときは設定されたデフォルト時間を使う
+            if (option.Duration < 0.0f)
+            {
+                // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+                // mixDuration = stateData.DefaultMix;
+                option.Duration = track.MixDuration;
+            }
+
+            skeletonAnimation.state.SetEmptyAnimation(option.Track, option.Duration);
+            track.Set(null);
+        }
+
+        public override IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
+        {
+            var animation = GetAnimationImpl(hashId);
+            if (animation == null) throw new System.Exception($"SetAnimation: Not found hashId={hashId}");
+
+            Spine.TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(option.Track, animation.SpineAnimation, loop: option.Loop);
+
+            var track = trackList[option.Track];
+            track.Set(animation);
+            return track;
+        }
+
+#if false
         public override IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0)
         {
             var animation = GetAnimationImpl(hashId);
@@ -81,21 +110,6 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
-        {
-            var track = trackList[trackIndex];
-
-            // デフォルト(負の値)のときは設定されたデフォルト時間を使う
-            if (mixDuration < 0.0f)
-            {
-                // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-                // mixDuration = stateData.DefaultMix;
-                mixDuration = track.MixDuration;
-            }
-
-            skeletonAnimation.state.SetEmptyAnimation(trackIndex, mixDuration);
-            track.Set(null);
-        }
         public override IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
             if (animation != null)
@@ -117,6 +131,7 @@ namespace ActorWorkspace.UnitySpine
         {
             skeletonAnimation.state.AddAnimation(trackIndex, animation.Name, loop: false, delay: delay);
         }
+#endif
 
         public override IAWTrack? GetTrack(int trackIndex)
         {

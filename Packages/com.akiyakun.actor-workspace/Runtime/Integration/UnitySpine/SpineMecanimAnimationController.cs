@@ -169,7 +169,11 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        public override IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0)
+        public override void SetEmptyAnimation(AWAnimationOption option = default)
+        {
+        }
+
+        public override IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
         {
             SpineMecanimAnimation? animationImpl = GetAnimationImpl(hashId);
             if (animationImpl == null)
@@ -204,14 +208,14 @@ namespace ActorWorkspace.UnitySpine
                 // Debug.Log($"RootMotion: enable");
             }
 
-            animator.Play(hashId, layer: trackNum);
+            animator.Play(hashId, layer: option.Track);
 
-            var track = trackList[trackNum];
+            var track = trackList[option.Track];
             // track.Set(animation as SpineSkeletonAnimation);
             return track;
         }
 
-
+        /*
         public override void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f)
         {
             // var track = trackList[trackIndex];
@@ -227,6 +231,9 @@ namespace ActorWorkspace.UnitySpine
             // skeletonAnimation.state.SetEmptyAnimation(trackIndex, mixDuration);
             // track.Set(null);
         }
+        */
+
+#if false
         public override IAWTrack? SetAnimation(int trackIndex, IAWAnimation animation, bool loop)
         {
             if (animation == null)
@@ -333,10 +340,12 @@ namespace ActorWorkspace.UnitySpine
             // track.Set(animation as SpineSkeletonAnimation);
             // return track;
         }
-        public override void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
-        {
-            // skeletonAnimation.state.AddAnimation(trackIndex, animation.Name, loop: false, delay: delay);
-        }
+#endif
+
+        // public override void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f)
+        // {
+        //     // skeletonAnimation.state.AddAnimation(trackIndex, animation.Name, loop: false, delay: delay);
+        // }
 
         public override IAWTrack? GetTrack(int trackIndex)
         {
