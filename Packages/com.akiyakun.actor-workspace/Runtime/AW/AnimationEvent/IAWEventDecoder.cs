@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,3 +9,4 @@ namespace ActorWorkspace
         public AWAnimationEventData Decode(T rawData);
     }
 }
+#nullable restore
