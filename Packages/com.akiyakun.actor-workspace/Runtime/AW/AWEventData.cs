@@ -2,10 +2,8 @@ using UnityEngine;
 
 namespace ActorWorkspace
 {
-    public class AWEventData
+    public struct AWEventData
     {
-        public AWEventType EventType = AWEventType.Unknonwn;
-
         public string Name;
 
         public int Int;
