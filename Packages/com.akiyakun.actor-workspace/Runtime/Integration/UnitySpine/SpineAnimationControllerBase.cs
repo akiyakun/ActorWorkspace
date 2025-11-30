@@ -19,8 +19,8 @@ namespace ActorWorkspace.UnitySpine
         protected virtual void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
         public event System.Action<IAWAnimation> OnAnimationComplate = null!;
         protected virtual void InvokeAnimationComplate(IAWAnimation animation) => OnAnimationComplate?.Invoke(animation);
-        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
-        protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
+        public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
+        protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
         #endregion
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
@@ -29,7 +29,6 @@ namespace ActorWorkspace.UnitySpine
         // SkeletonAnimation と SkeletonMecanim 双方が継承しているインターフェース
         protected ISkeletonAnimation skeletonAnimationInterface;
 
-        protected IAWEventDecoder eventDecoder;
         // protected Dictionary<string, SpineAnimation> animations = new();
         protected SortedDictionary<int, TAnimation> animationHashMap = new();
         protected List<SpineTrack> trackList = new(IAWTrack.MaxTrack);
@@ -39,13 +38,10 @@ namespace ActorWorkspace.UnitySpine
         protected SpineAnimationControllerBase() { }
 #nullable enable
 
-        public SpineAnimationControllerBase(ISkeletonAnimation skeletonAnimationInterface, IAWEventDecoder eventDecoder)
+        public SpineAnimationControllerBase(ISkeletonAnimation skeletonAnimationInterface)
         {
             this.skeletonAnimationInterface = skeletonAnimationInterface;
             Debug.Assert(skeletonAnimationInterface != null);
-
-            this.eventDecoder = eventDecoder;
-            Debug.Assert(eventDecoder != null);
 
             // トラックの生成
             {

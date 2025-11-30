@@ -22,18 +22,20 @@ namespace ActorWorkspace.UnitySpine
         }
 
         SkeletonAnimation skeletonAnimation;
+        IAWAnimationEventDecoder<Spine.Event> animationEventDecoder;
 
 // #nullable disable
 //         private SpineSkeletonAnimationController() { }
 // #nullable enable
 
-        public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation, IAWEventDecoder eventDecoder)
-            : base(skeletonAnimation, eventDecoder)
+        public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation)
+            : base(skeletonAnimation)
         {
             this.skeletonAnimation = skeletonAnimation;
             Debug.Assert(skeletonAnimation != null);
 
             AnimationParameter = new AWAnimationParameter();
+            animationEventDecoder = new SpineAnimationEventDecoder();
 
             // IAWAnimationのリストを作成
             if (skeletonAnimation != null)
@@ -53,6 +55,7 @@ namespace ActorWorkspace.UnitySpine
 
         public override async UniTask<int> InitializeAsync(CancellationToken cancellationToken)
         {
+
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
@@ -173,11 +176,11 @@ namespace ActorWorkspace.UnitySpine
             InvokeAnimationComplate(animation);
         }
 
-        void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)
+        void OnHandleEvent(TrackEntry trackEntry, Spine.Event rawData)
         {
             var animation = trackList[trackEntry.TrackIndex].Animation;
             if (animation == null) return;
-            InvokeAnimationEvent(animation, eventDecoder.Decode(spineEvent));
+            InvokeAnimationEvent(animation, animationEventDecoder.Decode(rawData));
         }
     }
 }

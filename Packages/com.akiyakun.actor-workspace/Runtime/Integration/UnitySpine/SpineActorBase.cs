@@ -24,7 +24,6 @@ namespace ActorWorkspace.UnitySpine
         protected Spine.Skeleton Skeleton => skeletonAnimationInterface.Skeleton;
 
         ISkeletonAnimation skeletonAnimationInterface = null!;
-        IAWEventDecoder eventDecoder = null!;
         // SpineSkeletonAnimationController spineSkeletonAnimationController = null!;
         List<SpineSkin> skinList = new();
 
@@ -80,11 +79,7 @@ namespace ActorWorkspace.UnitySpine
             skeletonAnimationInterface = skeletonMecanim;
             Debug.Assert(skeletonAnimationInterface != null);
 
-            // FIXME: SkeletonMecanim用のが必要
-            eventDecoder = new SpineEventDecoder();
-            // Debug.Assert(eventDecoder != null);
-
-            var spineMecanimAnimationController = new SpineMecanimAnimationController(skeletonMecanim, eventDecoder);
+            var spineMecanimAnimationController = new SpineMecanimAnimationController(skeletonMecanim);
             if (await spineMecanimAnimationController.InitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
 
             AnimationController = spineMecanimAnimationController as IAWAnimationController;
@@ -102,10 +97,7 @@ namespace ActorWorkspace.UnitySpine
             skeletonAnimationInterface = skeletonAnimation;
             Debug.Assert(skeletonAnimationInterface != null);
 
-            eventDecoder = new SpineEventDecoder();
-            // Debug.Assert(eventDecoder != null);
-
-            var spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation, eventDecoder);
+            var spineSkeletonAnimationController = new SpineSkeletonAnimationController(skeletonAnimation);
             if (await spineSkeletonAnimationController.InitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
 
             AnimationController = spineSkeletonAnimationController as IAWAnimationController;

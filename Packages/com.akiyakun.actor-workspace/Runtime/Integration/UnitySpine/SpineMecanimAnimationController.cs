@@ -33,13 +33,14 @@ namespace ActorWorkspace.UnitySpine
         Animator animator;
         SkeletonMecanimRootMotion skeletonMecanimRootMotion;
         AnimatorStateEvent animatorStateEvent;
+        IAWAnimationEventDecoder<UnityEngine.AnimationEvent> animationEventDecoder;
 
 #if UNITY_EDITOR
         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
 #endif
 
-        public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim, IAWEventDecoder eventDecoder)
-            : base(skeletonMecanim, eventDecoder)
+        public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim)
+            : base(skeletonMecanim)
         {
             this.skeletonMecanim = skeletonMecanim;
             // Debug.Assert(skeletonMecanim != null);
@@ -51,6 +52,7 @@ namespace ActorWorkspace.UnitySpine
             if (skeletonMecanimRootMotion == null) throw new System.Exception("skeletonMecanimRootMotion component not found");
 
             AnimationParameter = new MecanimAnimationParameter(animator);
+            animationEventDecoder = new MecanimAnimationEventDecoder();
 
 #if false
 // #if UNITY_EDITOR
@@ -126,12 +128,6 @@ namespace ActorWorkspace.UnitySpine
                 // skeletonAnimation.AnimationState.Complete += OnHandleComplete;
                 animatorStateEvent.OnStateEntered += OnHandleEntered;
                 animatorStateEvent.OnStateExited += OnHandleComplete;
-
-                var detector = skeletonMecanim.gameObject.GetComponent<SpineMecanimAnimationEventDetector>();
-                if (detector != null)
-                {
-                    detector.Setup(this);
-                }
             }
 
             {
@@ -161,6 +157,21 @@ namespace ActorWorkspace.UnitySpine
             //     await UniTask.Yield(cancellationToken: cancellationToken);
             //     if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
             // }
+
+
+            // SpineMecanimAnimationEventDetector の追加
+            {
+                var detector = skeletonMecanim.gameObject.GetComponent<SpineMecanimAnimationEventDetector>();
+                if (detector == null)
+                {
+                    detector = skeletonMecanim.gameObject.AddComponent<SpineMecanimAnimationEventDetector>();
+                }
+                if (detector == null || detector.Initialize(this) ==  false)
+                {
+                    Debug.Assert(false, "SpineMecanimAnimationEventDetector Initialize failed");
+                    return GeneralReturnCode.Failed;
+                }
+            }
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
@@ -434,21 +445,29 @@ namespace ActorWorkspace.UnitySpine
         //     InvokeAnimationEvent(animation, eventDecoder.Decode(spineEvent));
         // }
 
-        public void OnSpineEvent(string eventName, float eventTime, int intValue, float floatValue, string stringValue)
+        // public void OnSpineEvent(string eventName, float eventTime, int intValue, float floatValue, string stringValue)
+        // {
+        //     // FIXME:
+        //     var animation = trackList[0].Animation;
+        //     if (animation == null) return;
+
+        //     AWEventData eventData = new AWEventData
+        //     {
+        //         Name = eventName,
+        //         Int = intValue,
+        //         Float = floatValue,
+        //         String = stringValue,
+        //     };
+        //     // InvokeAnimationEvent(animation, eventDecoder.Decode(eventName));
+        //     InvokeAnimationEvent(animation, eventData);
+        // }
+        public void OnSpineEvent(AnimationEvent rawData)
         {
             // FIXME:
             var animation = trackList[0].Animation;
             if (animation == null) return;
 
-            AWEventData eventData = new AWEventData
-            {
-                Name = eventName,
-                Int = intValue,
-                Float = floatValue,
-                String = stringValue,
-            };
-            // InvokeAnimationEvent(animation, eventDecoder.Decode(eventName));
-            InvokeAnimationEvent(animation, eventData);
+            InvokeAnimationEvent(animation, animationEventDecoder.Decode(rawData));
         }
     }
 }

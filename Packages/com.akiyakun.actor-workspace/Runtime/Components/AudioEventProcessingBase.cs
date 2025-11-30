@@ -31,13 +31,13 @@ namespace ActorWorkspace
             }
         }
 
-        void OnAnimationEvent(IAWAnimation animation, AWEventData eventData)
+        void OnAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData)
         {
-            if (eventData.EventType != AWEventType.Audio) return;
+            // if (eventData.EventType != AWEventType.Audio) return;
             PlayAudio(animation, eventData);
         }
 
-        public abstract void PlayAudio(IAWAnimation animation, AWEventData eventData);
+        public abstract void PlayAudio(IAWAnimation animation, AWAnimationEventData eventData);
 
     }
 }

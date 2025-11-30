@@ -7,7 +7,7 @@ namespace ActorWorkspace
     {
         static ResourcesAssetLoader<AudioClip> assetLoader = new("Audio");
 
-        public override void PlayAudio(IAWAnimation animation, AWEventData eventData)
+        public override void PlayAudio(IAWAnimation animation, AWAnimationEventData eventData)
         {
             string path = System.IO.Path.GetFileNameWithoutExtension(eventData.String);
             AudioClip clip = assetLoader.LoadAsset(path);

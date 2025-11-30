@@ -14,7 +14,7 @@ namespace ActorWorkspace.Tests
 
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         public event System.Action<IAWAnimation> OnAnimationComplate = null!;
-        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent = null!;
+        public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
 
         public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();
         public bool IsVisibility { get; set; } = true;

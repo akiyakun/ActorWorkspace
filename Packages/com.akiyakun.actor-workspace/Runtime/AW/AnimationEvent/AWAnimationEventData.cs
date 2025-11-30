@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ActorWorkspace
 {
-    public struct AWEventData
+    public struct AWAnimationEventData
     {
         public string Name;
 

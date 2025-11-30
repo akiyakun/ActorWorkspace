@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ActorWorkspace
 {
-    public interface IAWEventDecoder
+    public interface IAWAnimationEventDecoder<T>
     {
-        public AWEventData Decode(object rawData);
+        public AWAnimationEventData Decode(T rawData);
     }
 }

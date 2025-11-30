@@ -17,7 +17,7 @@ namespace ActorWorkspace
         public event System.Action<IAWAnimation> OnAnimationComplate;
 
         // アニメーションのタイムラインに含まれるイベントが発生したときにコールバックされます
-        public event System.Action<IAWAnimation, AWEventData> OnAnimationEvent;
+        public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent;
         #endregion
 
         public void Restore();
