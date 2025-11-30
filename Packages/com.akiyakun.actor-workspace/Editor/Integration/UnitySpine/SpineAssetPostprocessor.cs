@@ -219,17 +219,22 @@ namespace ActorWorkspace.Editor.UnitySpine
                                 // Spineイベントの全パラメータを設定
                                 intParameter = spineEvent.Int,
                                 floatParameter = spineEvent.Float,
-                                stringParameter = $"{spineEvent.Data.Name}:{spineEvent.String}",
+                                // stringParameter = $"{spineEvent.Data.Name}[{spineEvent.String}]",
 
                                 // 受診先なくてもよいに設定
                                 messageOptions = SendMessageOptions.DontRequireReceiver
                             };
 
-                            // stringParameterが空の場合は、イベント名を設定
-                            // if (string.IsNullOrEmpty(animEvent.stringParameter))
-                            // {
-                            //     animEvent.stringParameter = spineEvent.Data.Name;
-                            // }
+                            if (string.IsNullOrEmpty(spineEvent.String))
+                            {
+                                // "イベント名"
+                                animEvent.stringParameter = spineEvent.Data.Name;
+                            }
+                            else
+                            {
+                                // "イベント名[文字列パラメータ]"
+                                animEvent.stringParameter = $"{spineEvent.Data.Name}[{spineEvent.String}]";
+                            }
 
                             newEvents.Add(animEvent);
                         }

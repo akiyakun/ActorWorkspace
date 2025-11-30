@@ -18,7 +18,7 @@ namespace ActorWorkspace.UnitySpine
     // ループなし:run
     // ループあり:run_loop
     // 対象のステート名が無い場合エラーになります
-    public class SpineMecanimAnimationController : SpineAnimationControllerBase<SpineMecanimAnimation>
+    public class SpineMecanimAnimationController : SpineAnimationControllerBase<SpineMecanimAnimation, SpineMecanimTrack>
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 
@@ -52,7 +52,7 @@ namespace ActorWorkspace.UnitySpine
             if (skeletonMecanimRootMotion == null) throw new System.Exception("skeletonMecanimRootMotion component not found");
 
             AnimationParameter = new MecanimAnimationParameter(animator);
-            animationEventDecoder = new MecanimAnimationEventDecoder();
+            animationEventDecoder = new SpineMecanimAnimationEventDecoder();
 
 #if false
 // #if UNITY_EDITOR
@@ -139,6 +139,14 @@ namespace ActorWorkspace.UnitySpine
                 {
                     // spineAnim.Name が Animator 上の AnimationClip 名と対応
                 };
+            }
+        }
+
+        public override void CreateTrack()
+        {
+            for (int i = 0; i < IAWTrack.MaxTrack; i++)
+            {
+                trackList.Add(new SpineMecanimTrack(i));
             }
         }
 
@@ -243,7 +251,7 @@ namespace ActorWorkspace.UnitySpine
             }
 
             var track = trackList[option.Track];
-            // track.Set(animation as SpineSkeletonAnimation);
+            track.Set(animationImpl);
             return track;
         }
 
@@ -466,6 +474,11 @@ namespace ActorWorkspace.UnitySpine
             // FIXME:
             var animation = trackList[0].Animation;
             if (animation == null) return;
+
+            //*
+            var d = animationEventDecoder.Decode(rawData);
+            Debug.Log($"OnSpineEvent: name={d.Name} int={d.Int}, float={d.Float}, string={d.String}");
+            //*/
 
             InvokeAnimationEvent(animation, animationEventDecoder.Decode(rawData));
         }

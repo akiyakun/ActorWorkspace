@@ -8,7 +8,7 @@ namespace ActorWorkspace.UnitySpine
 {
     // SpineのTrackは同じインデックスのインスタンスがずっと保持されるわけではなさそう
     // だけど使用するときはそのトラックのスピード等は保存されていて欲しい
-    public class SpineTrack : IAWTrack
+    public class SpineSkeletonTrack : IAWTrack
     {
         public int TrackIndex { get; protected set; }
 
@@ -30,8 +30,8 @@ namespace ActorWorkspace.UnitySpine
 
         SpineSkeletonAnimation? spineSkeletonAnimation;
 
-        private SpineTrack() { }
-        public SpineTrack(int trackIndex)
+        private SpineSkeletonTrack() { }
+        public SpineSkeletonTrack(int trackIndex)
         {
             TrackIndex = trackIndex;
         }

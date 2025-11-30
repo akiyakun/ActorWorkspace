@@ -10,7 +10,7 @@ using afl;
 namespace ActorWorkspace.UnitySpine
 {
     // SkeletonAnimation と対になるコントローラークラス
-    public class SpineSkeletonAnimationController : SpineAnimationControllerBase<SpineSkeletonAnimation>
+    public class SpineSkeletonAnimationController : SpineAnimationControllerBase<SpineSkeletonAnimation, SpineSkeletonTrack>
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 
@@ -50,6 +50,14 @@ namespace ActorWorkspace.UnitySpine
                 skeletonAnimation.AnimationState.Start += OnHandleEntered;
                 skeletonAnimation.AnimationState.Complete += OnHandleComplete;
                 skeletonAnimation.AnimationState.Event += OnHandleEvent;
+            }
+        }
+
+        public override void CreateTrack()
+        {
+            for (int i = 0; i < IAWTrack.MaxTrack; i++)
+            {
+                trackList.Add(new SpineSkeletonTrack(i));
             }
         }
 

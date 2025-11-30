@@ -11,8 +11,9 @@ namespace ActorWorkspace.UnitySpine
 {
     // 対になるSpineのクラスは SkeletonAnimation と SkeletonMecanim クラス。
     // 双方の基底抽象クラスとなります。
-    public abstract class SpineAnimationControllerBase<TAnimation> : IAWAnimationController
+    public abstract class SpineAnimationControllerBase<TAnimation, TTrack> : IAWAnimationController
         where TAnimation : class, IAWAnimation
+        where TTrack : class, IAWTrack
     {
         #region Events
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
@@ -31,7 +32,7 @@ namespace ActorWorkspace.UnitySpine
 
         // protected Dictionary<string, SpineAnimation> animations = new();
         protected SortedDictionary<int, TAnimation> animationHashMap = new();
-        protected List<SpineTrack> trackList = new(IAWTrack.MaxTrack);
+        protected List<TTrack> trackList = new(IAWTrack.MaxTrack);
 
 
 #nullable disable
@@ -44,13 +45,16 @@ namespace ActorWorkspace.UnitySpine
             Debug.Assert(skeletonAnimationInterface != null);
 
             // トラックの生成
-            {
-                for (int i = 0; i < IAWTrack.MaxTrack; i++)
-                {
-                    trackList.Add(new SpineTrack(i));
-                }
-            }
+            // {
+            //     for (int i = 0; i < IAWTrack.MaxTrack; i++)
+            //     {
+            //         trackList.Add(new TTrack(i));
+            //     }
+            // }
+            CreateTrack();
         }
+
+        public abstract void CreateTrack();
 
         public abstract UniTask<int> InitializeAsync(CancellationToken cancellationToken);
 
