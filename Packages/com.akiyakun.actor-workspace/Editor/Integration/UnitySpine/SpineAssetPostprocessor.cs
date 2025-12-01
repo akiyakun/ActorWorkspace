@@ -1,11 +1,12 @@
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Spine;
 using Spine.Unity;
 using Spine.Unity.Editor;
-using Unity.VisualScripting; // SkeletonBaker がある名前空間
 using System.Linq;
+using System;
 
 namespace ActorWorkspace.Editor.UnitySpine
 {
@@ -225,7 +226,18 @@ namespace ActorWorkspace.Editor.UnitySpine
                                 messageOptions = SendMessageOptions.DontRequireReceiver
                             };
 
-                            if (string.IsNullOrEmpty(spineEvent.String))
+                            if (string.IsNullOrEmpty(spineEvent.Data.AudioPath) == false)
+                            {
+                                // AudioPathが設定されている場合は優先的に設定
+                                // animEvent.stringParameter = spineEvent.Data.AudioPath;
+                                animEvent.stringParameter = "Audio";
+
+                                var filename = Path.GetFileNameWithoutExtension(spineEvent.Data.AudioPath);
+                                animEvent.intParameter = int.Parse(filename.AsSpan(0, 4));
+
+                                // MEMO: ボリュームとバランスのパラメータにまだ非対応
+                            }
+                            else if (string.IsNullOrEmpty(spineEvent.String))
                             {
                                 // "イベント名"
                                 animEvent.stringParameter = spineEvent.Data.Name;
