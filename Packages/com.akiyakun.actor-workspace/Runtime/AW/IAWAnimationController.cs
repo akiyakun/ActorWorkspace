@@ -65,6 +65,18 @@ namespace ActorWorkspace
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, int hashId, bool loop, bool immediate)
+        {
+            return self.SetAnimation(hashId, new AWAnimationOption
+            {
+                Flags = (uint)(
+                    (loop ? AWAnimationOptionFlag.Loop : 0)
+                    | (immediate ? AWAnimationOptionFlag.Immediate : 0)
+                )
+            });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IAWTrack? SetAnimation(this IAWAnimationController self, int hashId, bool loop, int track)
         {
             return self.SetAnimation(hashId, new AWAnimationOption { Track = track, Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });

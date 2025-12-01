@@ -239,15 +239,17 @@ namespace ActorWorkspace.UnitySpine
                 // Debug.Log($"RootMotion: enable");
             }
 
-            if (option.Parameter == true)
-            {
-                // ステートと同名のInt型パラメータを1に設定します
-                animator.SetInteger(animationImpl.stateOptionInfo.StateName, 1);
-                return trackList[option.Track];
-            }
-            else
+            if (option.Immediate == true)
             {
                 animator.Play(hashId, layer: option.Track);
+            }
+            // if (option.Parameter == true)
+            else
+            {
+                // ステートと同名のInt型パラメータを1に設定します
+                // animator.SetInteger(animationImpl.stateOptionInfo.StateNameHash, 1);
+                AnimationParameter.SetInt(animationImpl.stateOptionInfo.StateNameHash, 1);
+                // return trackList[option.Track];
             }
 
             var track = trackList[option.Track];
@@ -433,6 +435,7 @@ namespace ActorWorkspace.UnitySpine
             if (animation == null) return;
 
             // FIXME: パラメータリセットはどこのタイミングでやるべきか・・・
+            // とりあえず自身のパラメータは遷移したらすぐにリセットが必要無きがする
             AnimationParameter.SetInt(info.StateName, 0);
 
             InvokeAnimationEntered(animation);
@@ -475,7 +478,7 @@ namespace ActorWorkspace.UnitySpine
             var animation = trackList[0].Animation;
             if (animation == null) return;
 
-            //*
+            /*
             var d = animationEventDecoder.Decode(rawData);
             Debug.Log($"OnSpineEvent: name={d.Name} int={d.Int}, float={d.Float}, string={d.String}");
             //*/
