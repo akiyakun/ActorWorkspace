@@ -18,7 +18,7 @@ namespace ActorWorkspace.InAppDebug
         public ActorWorkspaceFormContextProvider()
         {
             AssetRepositories = new();
-            AssetRepositories.AddCategory(0, new afl.MasterData.Tests.DummyAssetRepository());
+            AssetRepositories.AddCategory(0, new afl.MasterData.Tests.StubAssetRepository());
 
             ActorContextProvider = new AWActorContextProvider(AssetRepositories);
             ActorFactory = new Tests.StubAWActorFactory(ActorContextProvider);
