@@ -83,6 +83,25 @@ namespace ActorWorkspace
             }
         }
         public void SetBool(string name, bool value) => SetBool(Utility.StringToHashId(name), value);
+
+        public void ResetTrigger(int nameHash) => _SetTrigger(nameHash, 0);
+        public void ResetTrigger(string name) => ResetTrigger(Utility.StringToHashId(name));
+        public void SetTrigger(int nameHash) => _SetTrigger(nameHash, 1);
+        public void SetTrigger(string name) => SetTrigger(Utility.StringToHashId(name));
+
+        void _SetTrigger(int nameHash, int value)
+        {
+            if (table.Get(nameHash) is Variable v)
+            {
+                v.SetInt(value);
+            }
+            else
+            {
+                v = new Variable();
+                v.SetInt(value);
+                table.Add(nameHash, v);
+            }
+        }
     }
 }
 #nullable restore

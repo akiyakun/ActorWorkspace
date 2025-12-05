@@ -65,6 +65,14 @@ namespace ActorWorkspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBool(string name, bool value) => animator.SetBool(name, value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ResetTrigger(int nameHash) => animator.ResetTrigger(nameHash);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ResetTrigger(string name) => animator.ResetTrigger(name);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetTrigger(int nameHash) => animator.SetTrigger(nameHash);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetTrigger(string name) => animator.SetTrigger(name);
     }
 }
 #nullable restore

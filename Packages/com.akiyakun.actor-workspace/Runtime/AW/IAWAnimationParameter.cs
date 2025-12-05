@@ -23,6 +23,11 @@ namespace ActorWorkspace
         public void SetBool(int nameHash, bool value);
         public void SetBool(string name, bool value);
 
+        // MEMO: Trigger はどこかに遷移したら必ず全てのTriggerがリセットされる想定
+        public void ResetTrigger(int nameHash);
+        public void ResetTrigger(string name);
+        public void SetTrigger(int nameHash);
+        public void SetTrigger(string name);
     }
 }
 #nullable restore
