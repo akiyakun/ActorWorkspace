@@ -174,7 +174,7 @@ namespace ActorWorkspace.UnitySpine
                 {
                     detector = skeletonMecanim.gameObject.AddComponent<SpineMecanimAnimationEventDetector>();
                 }
-                if (detector == null || detector.Initialize(this) ==  false)
+                if (detector == null || detector.Initialize(this) == false)
                 {
                     Debug.Assert(false, "SpineMecanimAnimationEventDetector Initialize failed");
                     return GeneralReturnCode.Failed;
@@ -213,31 +213,9 @@ namespace ActorWorkspace.UnitySpine
                 return null;
             }
 
-            if (animationImpl.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
-            {
-                // if (animator.applyRootMotion == true)
-                // {
-                //     skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
-                // }
+            Debug.Log($"SetAnimation: Name={animationImpl.Name}, Immediate={option.Immediate}, Track={option.Track}");
 
-                // var before = skeletonMecanimRootMotion.rigidBody2D.transform.position;
-                Vector3 delta = animator.deltaPosition;
-
-                animator.applyRootMotion = false;
-                skeletonMecanimRootMotion.enabled = false;
-
-                // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
-                skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
-
-                // Debug.Log($"RootMotion: disable");
-            }
-            else
-            {
-                // FIXME: とりま今は基本RootMotion有効で動かしている
-                animator.applyRootMotion = true;
-                skeletonMecanimRootMotion.enabled = true;
-                // Debug.Log($"RootMotion: enable");
-            }
+            // AnimationSetting(animationImpl);
 
             if (option.Immediate == true)
             {
@@ -428,9 +406,10 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
+        // Mecanimのステートに入ったときのコールバック
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
-            // Debug.Log($"OnHandleEntered: State={info.StateName}, hash={info.StateNameHash}");
+            Debug.Log($"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
             var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
 
@@ -438,15 +417,92 @@ namespace ActorWorkspace.UnitySpine
             // とりあえず自身のパラメータは遷移したらすぐにリセットが必要無きがする
             // AnimationParameter.SetInt(info.StateName, 0);
 
+            // AnimationSetting(animation);
+
+            if (animator.applyRootMotion == false
+                && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+            {
+                animator.applyRootMotion = true;
+                skeletonMecanimRootMotion.enabled = true;
+                Debug.Log($"RootMotion: Enable name={animation.Name}");
+            }
+
+            // // 遷移中でないとき
+            // if (animator.IsInTransition(0) == false)
+            // {
+            //     if (animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+            //     {
+            //         // if (animator.applyRootMotion == true)
+            //         // {
+            //         //     skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+            //         // }
+
+            //         // var before = skeletonMecanimRootMotion.rigidBody2D.transform.position;
+            //         Vector3 delta = animator.deltaPosition;
+
+            //         animator.applyRootMotion = false;
+            //         skeletonMecanimRootMotion.enabled = false;
+
+            //         // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
+            //         skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+
+            //         Debug.Log($"RootMotion: Disable name={animation.Name}, delta={delta}");
+            //     }
+            // }
+
             InvokeAnimationEntered(animation);
 
         }
 
+        // Mecanimのステートが完了したときのコールバック
         void OnHandleComplete(AnimatorStateOptionInfo info)
         {
-            // Debug.Log($"OnHandleComplete: State={info.StateName}, hash={info.StateNameHash}");
-            var animation = GetAnimation(info.StateNameHash);
+            Debug.Log($"OnHandleComplete: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
+            var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
+
+            // 遷移中のとき
+            // クロスフェード中のみ？
+            // if (animator.IsInTransition(0))
+            AnimatorStateInfo nextInfo = animator.GetNextAnimatorStateInfo(0);
+            // Debug.Log($"next name={nextInfo.shortNameHash}");
+
+            AnimatorStateInfo currentInfo = animator.GetCurrentAnimatorStateInfo(0);
+            Debug.Log($"current name={currentInfo.shortNameHash}");
+
+            // MEMO: Nextがあるときの判定はこれでいいのだろうか・・・
+            // if (nextInfo.shortNameHash != 0)
+            if (currentInfo.shortNameHash != 0)
+            {
+                nextInfo = currentInfo;
+                var nextAnimation = GetAnimationImpl(nextInfo.shortNameHash)!;
+
+                Debug.Log($"遷移中 next name={nextAnimation.Name}");
+
+                if (nextAnimation!.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+                {
+                    Vector3 delta = animator.deltaPosition;
+                    // Vector3 delta = accumulatedDeltaPosition;
+
+                    animator.applyRootMotion = false;
+                    skeletonMecanimRootMotion.enabled = false;
+
+                    // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
+                    skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+
+                    Debug.Log($"RootMotion: Disable name={animation.Name}, delta.x={delta.x}");
+
+                    // リセット
+                    // accumulatedDeltaPosition = Vector3.zero;
+                }
+            }
+            else
+            {
+                Debug.Log("遷移してない");
+                AnimationSetting(animation);
+            }
+
+
             InvokeAnimationComplate(animation);
         }
 
@@ -485,6 +541,49 @@ namespace ActorWorkspace.UnitySpine
 
             InvokeAnimationEvent(animation, animationEventDecoder.Decode(rawData));
         }
+
+        void AnimationSetting(SpineMecanimAnimation animation)
+        {
+            if (animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+            {
+                // if (animator.applyRootMotion == true)
+                // {
+                //     skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+                // }
+
+                // var before = skeletonMecanimRootMotion.rigidBody2D.transform.position;
+                Vector3 delta = animator.deltaPosition;
+                // Vector3 delta = accumulatedDeltaPosition;
+
+                animator.applyRootMotion = false;
+                skeletonMecanimRootMotion.enabled = false;
+
+                // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
+                skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+
+                Debug.Log($"RootMotion: Disable name={animation.Name}, delta.x={delta.x}");
+
+                // リセット
+                // accumulatedDeltaPosition = Vector3.zero;
+            }
+            else
+            {
+                // FIXME: とりま今は基本RootMotion有効で動かしている
+                animator.applyRootMotion = true;
+                skeletonMecanimRootMotion.enabled = true;
+                Debug.Log($"RootMotion: Enable name={animation.Name}");
+            }
+        }
+
+        // Vector3 accumulatedDeltaPosition = Vector3.zero;
+        // public override void DoUpdate(float deltaTime)
+        // {
+        //     // 毎フレーム deltaPosition を積算
+        //     Vector3 delta = animator.deltaPosition;
+        //     accumulatedDeltaPosition += delta;
+
+        //     Debug.Log($"DoUpdate: deltaPosition={delta.x}, accumulated={accumulatedDeltaPosition.x}");
+        // }
     }
 }
 #nullable restore

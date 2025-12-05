@@ -63,7 +63,7 @@ namespace ActorWorkspace.UnitySpine
         public abstract void Restore();
 
         // FIXME:
-        public void DoUpdate(float deltaTime)
+        public virtual void DoUpdate(float deltaTime)
         {
             // SpineのUpdateは自動でやってくれるので特に何もしない
             // skeletonAnimationInterface.Update(deltaTime);
