@@ -436,7 +436,7 @@ namespace ActorWorkspace.UnitySpine
 
             // FIXME: パラメータリセットはどこのタイミングでやるべきか・・・
             // とりあえず自身のパラメータは遷移したらすぐにリセットが必要無きがする
-            AnimationParameter.SetInt(info.StateName, 0);
+            // AnimationParameter.SetInt(info.StateName, 0);
 
             InvokeAnimationEntered(animation);
 
