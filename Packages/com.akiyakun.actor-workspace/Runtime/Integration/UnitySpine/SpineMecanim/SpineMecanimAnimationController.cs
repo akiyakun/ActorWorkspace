@@ -204,9 +204,9 @@ namespace ActorWorkspace.UnitySpine
             option.Immediate == false のとき
                 ステートと同名のInt型パラメータを1に設定します。
          */
-        public override IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
+        public override IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default)
         {
-            SpineMecanimAnimation? animationImpl = GetAnimationImpl(hashId);
+            SpineMecanimAnimation? animationImpl = GetAnimationImpl(nameHash);
             if (animationImpl == null)
             {
                 Debug.Assert(false, $"Cast error.");
@@ -219,7 +219,7 @@ namespace ActorWorkspace.UnitySpine
 
             if (option.Immediate == true)
             {
-                animator.Play(hashId, layer: option.Track);
+                animator.Play(nameHash, layer: option.Track);
             }
             // if (option.Parameter == true)
             else
@@ -373,10 +373,10 @@ namespace ActorWorkspace.UnitySpine
             return GetAnimation(currentState.shortNameHash);
         }
 
-        public override bool IsPlayingAnimation(int hashId, int track = 0)
+        public override bool IsPlayingAnimation(int nameHash, int track = 0)
         {
             AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(track);
-            return currentState.shortNameHash == hashId;
+            return currentState.shortNameHash == nameHash;
         }
 
         // public static bool IsPlayingState(Animator animator, string stateName, int layerIndex = 0)

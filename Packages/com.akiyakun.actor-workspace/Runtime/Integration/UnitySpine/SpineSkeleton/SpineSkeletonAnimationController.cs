@@ -96,10 +96,10 @@ namespace ActorWorkspace.UnitySpine
             track.Set(null);
         }
 
-        public override IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
+        public override IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default)
         {
-            var animation = GetAnimationImpl(hashId);
-            if (animation == null) throw new System.Exception($"SetAnimation: Not found hashId={hashId}");
+            var animation = GetAnimationImpl(nameHash);
+            if (animation == null) throw new System.Exception($"SetAnimation: Not found nameHash={nameHash}");
 
             Spine.TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(option.Track, animation.SpineAnimation, loop: option.Loop);
 
@@ -151,9 +151,9 @@ namespace ActorWorkspace.UnitySpine
             return currentEntry == null ? null : GetAnimation(currentEntry.Animation.Name);
         }
 
-        public override bool IsPlayingAnimation(int hashId, int track = 0)
+        public override bool IsPlayingAnimation(int nameHash, int track = 0)
         {
-            if (GetCurrentAnimation(track) is IAWAnimation anim) return anim.NameHash == hashId;
+            if (GetCurrentAnimation(track) is IAWAnimation anim) return anim.NameHash == nameHash;
             return false;
         }
 

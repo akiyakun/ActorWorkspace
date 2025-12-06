@@ -20,7 +20,7 @@ namespace ActorWorkspace.Tests
         public bool IsVisibility { get; set; } = true;
 
         public IReadOnlyList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
-        public IAWAnimation? GetAnimation(int hashId) => animations.Find(a => Utility.StringToHashId(a.Name) == hashId);
+        public IAWAnimation? GetAnimation(int nameHash) => animations.Find(a => Utility.StringToHashId(a.Name) == nameHash);
         public IAWAnimation? GetAnimation(string name) => animations.Find(a => a.Name == name);
 
         List<StubAWAnimation> animations = new List<StubAWAnimation>
@@ -56,7 +56,12 @@ namespace ActorWorkspace.Tests
         {
         }
 
-        public IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default)
+        public IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default)
+        {
+            return track;
+        }
+
+        public IAWTrack? SetAnimation(string name, AWAnimationOption option = default)
         {
             return track;
         }
@@ -80,7 +85,12 @@ namespace ActorWorkspace.Tests
             return null;
         }
 
-        public bool IsPlayingAnimation(int hashId, int track = 0)
+        public bool IsPlayingAnimation(int nameHash, int track = 0)
+        {
+            return false;
+        }
+
+        public bool IsPlayingAnimation(string name, int track = 0)
         {
             return false;
         }

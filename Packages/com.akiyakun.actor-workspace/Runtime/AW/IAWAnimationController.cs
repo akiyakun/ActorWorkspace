@@ -27,21 +27,24 @@ namespace ActorWorkspace
         public IAWAnimationParameter AnimationParameter { get; }
 
         public IReadOnlyList<IAWAnimation> GetAnimationList();
-        public IAWAnimation? GetAnimation(int hashId);
+        public IAWAnimation? GetAnimation(int nameHash);
         public IAWAnimation? GetAnimation(string name);
 
         public void SetEmptyAnimation(AWAnimationOption option = default);
         // public void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);
         // public void SetDefaultAnimation(int hashId, bool loop, int trackNum = 0);
 
-        public IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default);
+        public IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default);
+        public IAWTrack? SetAnimation(string name, AWAnimationOption option = default);
 
         // FIXME; spine
         // public void AddAnimation(int trackIndex, IAWAnimation animation, bool loop, float delay = 0.0f);
         // fixme: loop intにしたい
 
         public IAWAnimation? GetCurrentAnimation(int track = 0);
-        public bool IsPlayingAnimation(int hashId, int track = 0);
+
+        public bool IsPlayingAnimation(int nameHash, int track = 0);
+        public bool IsPlayingAnimation(string name, int track = 0);
 
         public IAWTrack? GetTrack(int trackIndex);
 
@@ -59,27 +62,39 @@ namespace ActorWorkspace
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IAWTrack? SetAnimation(this IAWAnimationController self, int hashId, bool loop)
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, int nameHash, bool loop)
         {
-            return self.SetAnimation(hashId, new AWAnimationOption { Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });
+            return self.SetAnimation(nameHash, new AWAnimationOption { Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IAWTrack? SetAnimation(this IAWAnimationController self, int hashId, bool loop, bool immediate)
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, string name, bool loop)
         {
-            return self.SetAnimation(hashId, new AWAnimationOption
-            {
-                Flags = (uint)(
-                    (loop ? AWAnimationOptionFlag.Loop : 0)
-                    | (immediate ? AWAnimationOptionFlag.Immediate : 0)
-                )
-            });
+            return self.SetAnimation(name, new AWAnimationOption { Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IAWTrack? SetAnimation(this IAWAnimationController self, int hashId, bool loop, int track)
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, int nameHash, bool loop, bool immediate)
         {
-            return self.SetAnimation(hashId, new AWAnimationOption { Track = track, Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });
+            return self.SetAnimation(nameHash, new AWAnimationOption { Flags = (uint)((loop ? AWAnimationOptionFlag.Loop : 0) | (immediate ? AWAnimationOptionFlag.Immediate : 0)) });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, string name, bool loop, bool immediate)
+        {
+            return self.SetAnimation(name, new AWAnimationOption { Flags = (uint)((loop ? AWAnimationOptionFlag.Loop : 0) | (immediate ? AWAnimationOptionFlag.Immediate : 0)) });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, int nameHash, bool loop, int track)
+        {
+            return self.SetAnimation(nameHash, new AWAnimationOption { Track = track, Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IAWTrack? SetAnimation(this IAWAnimationController self, string name, bool loop, int track)
+        {
+            return self.SetAnimation(name, new AWAnimationOption { Track = track, Flags = loop ? (uint)AWAnimationOptionFlag.Loop : 0 });
         }
 #endregion
     }

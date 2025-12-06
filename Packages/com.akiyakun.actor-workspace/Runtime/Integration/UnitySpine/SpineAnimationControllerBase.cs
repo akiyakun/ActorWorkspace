@@ -81,10 +81,10 @@ namespace ActorWorkspace.UnitySpine
             return animationHashMap.Values.Cast<IAWAnimation>().ToList();
         }
 
-        public IAWAnimation? GetAnimation(int hashId)
+        public IAWAnimation? GetAnimation(int nameHash)
         {
-            if (animationHashMap.TryGetValue(hashId, out TAnimation value)) return value;
-            Debug.LogWarning($"GetAnimation: Not found hashId={hashId}");
+            if (animationHashMap.TryGetValue(nameHash, out TAnimation value)) return value;
+            Debug.LogWarning($"GetAnimation: Not found nameHash={nameHash}");
             return null;
         }
 
@@ -95,18 +95,18 @@ namespace ActorWorkspace.UnitySpine
             return null;
         }
 
-        protected TAnimation? GetAnimationImpl(int hashId)
+        protected TAnimation? GetAnimationImpl(int nameHash)
         {
-            if (animationHashMap.TryGetValue(hashId, out TAnimation value)) return value;
-            Debug.LogWarning($"GetAnimation: Not found hashId={hashId}");
+            if (animationHashMap.TryGetValue(nameHash, out TAnimation value)) return value;
+            Debug.LogWarning($"GetAnimation: Not found nameHash={nameHash}");
             return null;
         }
 
 
         public abstract void SetEmptyAnimation(AWAnimationOption option = default);
 
-        // public abstract IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0);
-        public abstract IAWTrack? SetAnimation(int hashId, AWAnimationOption option = default);
+        public abstract IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default);
+        public IAWTrack? SetAnimation(string name, AWAnimationOption option = default) => SetAnimation(Utility.StringToHashId(name), option);
 
         // FIXME; spine
         // public abstract void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);
@@ -115,7 +115,9 @@ namespace ActorWorkspace.UnitySpine
         // fixme: loop intにしたい
 
         public abstract IAWAnimation? GetCurrentAnimation(int track = 0);
-        public abstract bool IsPlayingAnimation(int hashId, int track = 0);
+
+        public abstract bool IsPlayingAnimation(int nameHash, int track = 0);
+        public bool IsPlayingAnimation(string name, int track = 0) => IsPlayingAnimation(Utility.StringToHashId(name), track);
 
         public abstract IAWTrack? GetTrack(int trackIndex);
     }
