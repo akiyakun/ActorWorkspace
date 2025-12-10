@@ -536,7 +536,7 @@ namespace ActorWorkspace.UnitySpine
 
             /*
             var d = animationEventDecoder.Decode(rawData);
-            Debug.Log($"OnSpineEvent: name={d.Name} int={d.Int}, float={d.Float}, string={d.String}");
+            Debug.Log($"OnSpineEvent: name={d.Name}, int={d.Int}, float={d.Float}, string={d.String}");
             //*/
 
             InvokeAnimationEvent(animation, animationEventDecoder.Decode(rawData));
