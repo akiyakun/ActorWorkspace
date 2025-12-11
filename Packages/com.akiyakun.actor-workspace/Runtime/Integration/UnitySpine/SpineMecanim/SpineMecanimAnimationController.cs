@@ -231,7 +231,7 @@ namespace ActorWorkspace.UnitySpine
                 return null;
             }
 
-            Debug.Log($"SetAnimation: Name={animationImpl.Name}, Immediate={option.Immediate}, Track={option.Track}");
+            // Debug.Log($"SetAnimation: Name={animationImpl.Name}, Immediate={option.Immediate}, Track={option.Track}");
 
             // AnimationSetting(animationImpl);
 
@@ -427,7 +427,7 @@ namespace ActorWorkspace.UnitySpine
         // Mecanimのステートに入ったときのコールバック
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
-            Debug.Log($"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
+            // Debug.Log($"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
             var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
 
@@ -441,7 +441,7 @@ namespace ActorWorkspace.UnitySpine
                 && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
             {
                 EnableRootMotion = true;
-                Debug.Log($"RootMotion: Enable name={animation.Name}");
+                // Debug.Log($"RootMotion: Enable name={animation.Name}");
             }
 
             // // 遷移中でないとき
@@ -474,7 +474,7 @@ namespace ActorWorkspace.UnitySpine
         // Mecanimのステートが完了したときのコールバック
         void OnHandleComplete(AnimatorStateOptionInfo info)
         {
-            Debug.Log($"OnHandleComplete: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
+            // Debug.Log($"OnHandleComplete: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
             var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
 
@@ -485,7 +485,7 @@ namespace ActorWorkspace.UnitySpine
             // Debug.Log($"next name={nextInfo.shortNameHash}");
 
             AnimatorStateInfo currentInfo = animator.GetCurrentAnimatorStateInfo(0);
-            Debug.Log($"current name={currentInfo.shortNameHash}");
+            // Debug.Log($"current name={currentInfo.shortNameHash}");
 
             // MEMO: Nextがあるときの判定はこれでいいのだろうか・・・
             // if (nextInfo.shortNameHash != 0)
@@ -494,17 +494,17 @@ namespace ActorWorkspace.UnitySpine
                 nextInfo = currentInfo;
                 var nextAnimation = GetAnimationImpl(nextInfo.shortNameHash)!;
 
-                Debug.Log($"遷移中 next name={nextAnimation.Name}");
+                // Debug.Log($"遷移中 next name={nextAnimation.Name}");
 
                 if (nextAnimation!.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
                 {
                     EnableRootMotion = false;
-                    Debug.Log($"RootMotion: Disable name={animation.Name}");
+                    // Debug.Log($"RootMotion: Disable name={animation.Name}");
                 }
             }
             else
             {
-                Debug.Log("遷移してない");
+                // Debug.Log("遷移してない");
                 AnimationSetting(animation);
             }
 
@@ -571,7 +571,7 @@ namespace ActorWorkspace.UnitySpine
             {
                 animator.applyRootMotion = true;
                 skeletonMecanimRootMotion.enabled = true;
-                Debug.Log($"RootMotion: Enable");
+                // Debug.Log($"RootMotion: Enable");
             }
             else
             {
@@ -591,7 +591,7 @@ namespace ActorWorkspace.UnitySpine
                 // リセット
                 // accumulatedDeltaPosition = Vector3.zero;
 
-                Debug.Log($"RootMotion: Disable delta.x={animator.deltaPosition}");
+                // Debug.Log($"RootMotion: Disable delta.x={animator.deltaPosition}");
             }
         }
 
