@@ -35,6 +35,16 @@ namespace ActorWorkspace.UnitySpine
             get => enableRootMotion;
             set => SetEnableRootMotion(value);
         }
+        public override bool ApplyRootMotionPositionX
+        {
+            get => skeletonMecanimRootMotion.transformPositionX;
+            set => skeletonMecanimRootMotion.transformPositionX = value;
+        }
+        public override bool ApplyRootMotionPositionY
+        {
+            get => skeletonMecanimRootMotion.transformPositionY;
+            set => skeletonMecanimRootMotion.transformPositionY = value;
+        }
 
 
         SkeletonMecanim skeletonMecanim;
@@ -427,11 +437,10 @@ namespace ActorWorkspace.UnitySpine
 
             // AnimationSetting(animation);
 
-            if (animator.applyRootMotion == false
+            if (EnableRootMotion == false
                 && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
             {
-                animator.applyRootMotion = true;
-                skeletonMecanimRootMotion.enabled = true;
+                EnableRootMotion = true;
                 Debug.Log($"RootMotion: Enable name={animation.Name}");
             }
 
@@ -489,19 +498,8 @@ namespace ActorWorkspace.UnitySpine
 
                 if (nextAnimation!.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
                 {
-                    Vector3 delta = animator.deltaPosition;
-                    // Vector3 delta = accumulatedDeltaPosition;
-
-                    animator.applyRootMotion = false;
-                    skeletonMecanimRootMotion.enabled = false;
-
-                    // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
-                    skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
-
-                    Debug.Log($"RootMotion: Disable name={animation.Name}, delta.x={delta.x}");
-
-                    // リセット
-                    // accumulatedDeltaPosition = Vector3.zero;
+                    EnableRootMotion = false;
+                    Debug.Log($"RootMotion: Disable name={animation.Name}");
                 }
             }
             else

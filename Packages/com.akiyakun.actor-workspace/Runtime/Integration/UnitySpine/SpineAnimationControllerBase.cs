@@ -28,6 +28,8 @@ namespace ActorWorkspace.UnitySpine
         public abstract bool IsVisibility { get; set; }
 
         public virtual bool EnableRootMotion { get; set; }
+        public virtual bool ApplyRootMotionPositionX { get; set; }
+        public virtual bool ApplyRootMotionPositionY { get; set; }
 
 
         // SkeletonAnimation と SkeletonMecanim 双方が継承しているインターフェース

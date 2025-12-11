@@ -52,6 +52,8 @@ namespace ActorWorkspace
 
         #region RootMotion
         public bool EnableRootMotion { get; set; }
+        public bool ApplyRootMotionPositionX { get; set; }
+        public bool ApplyRootMotionPositionY { get; set; }
         #endregion
     }
 }
