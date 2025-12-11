@@ -29,6 +29,14 @@ namespace ActorWorkspace.UnitySpine
             set => skeletonMecanim.GetComponent<Renderer>().enabled = value;
         }
 
+        protected bool enableRootMotion;
+        public override bool EnableRootMotion
+        {
+            get => enableRootMotion;
+            set => SetEnableRootMotion(value);
+        }
+
+
         SkeletonMecanim skeletonMecanim;
         Animator animator;
         SkeletonMecanimRootMotion skeletonMecanimRootMotion;
@@ -546,10 +554,31 @@ namespace ActorWorkspace.UnitySpine
         {
             if (animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
             {
-                // if (animator.applyRootMotion == true)
-                // {
-                //     skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
-                // }
+                SetEnableRootMotion(false);
+                // Debug.Log($"RootMotion: Disable name={animation.Name}, delta.x={animator.deltaPosition}");
+            }
+            else
+            {
+                // FIXME: とりま今は基本RootMotion有効で動かしている
+                SetEnableRootMotion(true);
+                // Debug.Log($"RootMotion: Enable name={animation.Name}");
+            }
+        }
+
+        void SetEnableRootMotion(bool enable)
+        {
+            enableRootMotion = enable;
+
+            if (enableRootMotion == true)
+            {
+                animator.applyRootMotion = true;
+                skeletonMecanimRootMotion.enabled = true;
+                Debug.Log($"RootMotion: Enable");
+            }
+            else
+            {
+                animator.applyRootMotion = false;
+                skeletonMecanimRootMotion.enabled = false;
 
                 // var before = skeletonMecanimRootMotion.rigidBody2D.transform.position;
                 Vector3 delta = animator.deltaPosition;
@@ -561,17 +590,10 @@ namespace ActorWorkspace.UnitySpine
                 // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
                 skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
 
-                Debug.Log($"RootMotion: Disable name={animation.Name}, delta.x={delta.x}");
-
                 // リセット
                 // accumulatedDeltaPosition = Vector3.zero;
-            }
-            else
-            {
-                // FIXME: とりま今は基本RootMotion有効で動かしている
-                animator.applyRootMotion = true;
-                skeletonMecanimRootMotion.enabled = true;
-                Debug.Log($"RootMotion: Enable name={animation.Name}");
+
+                Debug.Log($"RootMotion: Disable delta.x={animator.deltaPosition}");
             }
         }
 

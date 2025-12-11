@@ -27,6 +27,9 @@ namespace ActorWorkspace.UnitySpine
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
         public abstract bool IsVisibility { get; set; }
 
+        public virtual bool EnableRootMotion { get; set; }
+
+
         // SkeletonAnimation と SkeletonMecanim 双方が継承しているインターフェース
         protected ISkeletonAnimation skeletonAnimationInterface;
 
