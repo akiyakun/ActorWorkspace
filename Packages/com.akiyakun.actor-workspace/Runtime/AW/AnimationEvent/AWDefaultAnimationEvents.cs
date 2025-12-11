@@ -7,9 +7,13 @@ namespace ActorWorkspace
     {
         public const string Audio = "Audio";
         public const string Effect = "Effect";
-        public const string InterruptBegin = "InterruptBegin";
-        public const string InterruptEnd = "InterruptEnd";
+        // public const string InterruptBegin = "InterruptBegin";
+        // public const string InterruptEnd = "InterruptEnd";
         public const string UninterruptBegin = "UninterruptBegin";
         public const string UninterruptEnd = "UninterruptEnd";
+        // public const string UseRootMotionXBegin = "RootMotionXBegin";
+        // public const string UseRootMotionXEnd = "RootMotionXEnd";
+        public const string RootMotionYBegin = "RootMotionYBegin";
+        public const string RootMotionYEnd = "RootMotionYEnd";
     }
 }
