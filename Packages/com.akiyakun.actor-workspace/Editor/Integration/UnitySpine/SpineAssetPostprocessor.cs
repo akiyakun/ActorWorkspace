@@ -7,6 +7,8 @@ using Spine.Unity;
 using Spine.Unity.Editor;
 using System.Linq;
 using System;
+using ActorWorkspace;
+using ActorWorkspace.UnitySpine;
 
 namespace ActorWorkspace.Editor.UnitySpine
 {
@@ -91,7 +93,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 targetList.Clear();
 
                 // AssetDatabase.Refresh();
-               AssetDatabase.SaveAssets();
+                AssetDatabase.SaveAssets();
 
             }
             finally
@@ -107,11 +109,41 @@ namespace ActorWorkspace.Editor.UnitySpine
                 var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
                 if (skeletonDataAsset == null || skeletonDataAsset.controller == null) continue;
 
+                // SpineExtraDataアセットを取得or作成
+                var spineExtraData = CreateSpineExtraDataAsset(path);
+                EditorUtility.SetDirty(spineExtraData);
+
+                // "_loop"サフィックスのAnimationClipをループ設定にする
                 SetLoopForLoopSuffix(skeletonDataAsset);
 
                 // SpineイベントのInt/Float/Stringすべてをインポート
-                ImportAllSpineEventParameters(skeletonDataAsset);
+                ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
             }
+        }
+
+        // 追加情報用ScriptableObjectを作成
+        public static SpineExtraDataScriptableObject CreateSpineExtraDataAsset(string skeletonDataAssetPath)
+        {
+            string name = Path.GetFileNameWithoutExtension(skeletonDataAssetPath).Replace("_SkeletonData", "");
+            string extraDataPath = $"{Path.GetDirectoryName(skeletonDataAssetPath)}/{name}_SpineExtraData.asset";
+
+            SpineExtraDataScriptableObject ret = null;
+
+            if (File.Exists(extraDataPath) == true)
+            {
+                ret = AssetDatabase.LoadAssetAtPath<SpineExtraDataScriptableObject>(extraDataPath);
+            }
+            else
+            {
+                ret = ScriptableObject.CreateInstance<SpineExtraDataScriptableObject>();
+                AssetDatabase.CreateAsset(ret, extraDataPath);
+                AssetDatabase.SaveAssets();
+            }
+
+            Debug.Assert(ret != null);
+            ret.Clear();
+
+            return ret;
         }
 
         // SkeletonDataAsset を指定して呼び出す
@@ -159,7 +191,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                         settings.loopTime = true;
                         AnimationUtility.SetAnimationClipSettings(clip, settings);
                         EditorUtility.SetDirty(clip);
-                        Debug.Log($"[SpineLoopClipSetter] Set loopTime = true for {clip.name}");
+                        // Debug.Log($"[SpineLoopClipSetter] Set loopTime = true for {clip.name}");
                     }
                 }
             }
@@ -171,19 +203,16 @@ namespace ActorWorkspace.Editor.UnitySpine
         /// SpineイベントのInt/Float/Stringすべてのパラメータを
         /// AnimationClipのAnimationEventに反映する
         /// </summary>
-        private static void ImportAllSpineEventParameters(SkeletonDataAsset sda)
+        private static void ImportAllSpineEventParameters(SkeletonDataAsset sda, SpineExtraDataScriptableObject spineExtraData)
         {
-            if (sda == null || sda.controller == null)
-                return;
+            if (sda == null || sda.controller == null) return;
 
             var animatorController = sda.controller as UnityEditor.Animations.AnimatorController;
-            if (animatorController == null)
-                return;
+            if (animatorController == null) return;
 
             // SkeletonDataからSpineアニメーションとイベントデータを取得
             var skeletonData = sda.GetSkeletonData(true);
-            if (skeletonData == null)
-                return;
+            if (skeletonData == null) return;
 
             // controllerAsset配下の全AnimationClipを取得
             var asset = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(animatorController));
@@ -193,8 +222,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             {
                 // Spineアニメーションを名前で検索
                 var spineAnim = skeletonData.Animations.Items.FirstOrDefault(a => a.Name == clip.name);
-                if (spineAnim == null)
-                    continue;
+                if (spineAnim == null) continue;
 
                 // 既存のイベントを取得
                 var existingEvents = AnimationUtility.GetAnimationEvents(clip);
@@ -215,7 +243,10 @@ namespace ActorWorkspace.Editor.UnitySpine
                             var animEvent = new AnimationEvent
                             {
                                 time = time,
-                                functionName = "OnSpineEvent", // 共通の受信メソッド名
+
+                                // MonoBehaviour に同名のメソッドを実装してイベントを受け取る仕様のため、
+                                // 共通の受信メソッド名を使い stringParameter にイベント名を入れています
+                                functionName = "OnSpineEvent",
 
                                 // Spineイベントの全パラメータを設定
                                 intParameter = spineEvent.Int,
@@ -230,18 +261,36 @@ namespace ActorWorkspace.Editor.UnitySpine
                             {
                                 // AudioPathが設定されている場合は優先的に設定
                                 // animEvent.stringParameter = spineEvent.Data.AudioPath;
-                                animEvent.stringParameter = "Audio";
+                                animEvent.stringParameter = AWDefaultAnimationEvents.Audio.ToString();
 
                                 var filename = Path.GetFileNameWithoutExtension(spineEvent.Data.AudioPath);
                                 animEvent.intParameter = int.Parse(filename.AsSpan(0, 4));
 
                                 // MEMO: ボリュームとバランスのパラメータにまだ非対応
                             }
+                            // Stringパラメータが空の場合は追加情報なしと判断
                             else if (string.IsNullOrEmpty(spineEvent.String))
                             {
                                 // "イベント名"
-                                animEvent.stringParameter = spineEvent.Data.Name;
+                                // MEMO: タイムラインでキーを打っていないイベントは除かれるようです
+
+                                // SpineEvent名をAnimationEventのStringパラメータにする
+                                string eventName = spineEvent.Data.Name;
+                                // Debug.Log($"SpineEvent Name: {eventName}");
+
+                                // 特殊記号の処理
+                                if (eventName.IndexOf('+') >= 0)
+                                {
+                                    spineExtraData.AddFollowBoneName(eventName);
+                                }
+                                else if (eventName.IndexOf('*') >= 0)
+                                {
+                                    spineExtraData.AddFollowPointName(eventName);
+                                }
+
+                                animEvent.stringParameter = eventName;
                             }
+                            // Stringパラメータがある場合
                             else
                             {
                                 // "イベント名[文字列パラメータ]"
@@ -258,7 +307,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 {
                     AnimationUtility.SetAnimationEvents(clip, newEvents.ToArray());
                     EditorUtility.SetDirty(clip);
-                    Debug.Log($"[SpineEventImporter] Updated {newEvents.Count} events for {clip.name}");
+                    // Debug.Log($"[SpineEventImporter] Updated {newEvents.Count} events for {clip.name}");
                 }
             }
 

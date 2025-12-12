@@ -6,7 +6,6 @@ namespace ActorWorkspace.UnitySpine
 {
     // SkeletonMecanim 用
     // AnimationClipからイベントを取得するにはMonoBehaviourが必要なため。
-    // SpineMecanimAnimationController 初期化時に自動的に追加されます。
     public class SpineMecanimAnimationEventDetector : MonoBehaviour
     {
         SpineMecanimAnimationController controller = null!;

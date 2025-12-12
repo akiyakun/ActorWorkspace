@@ -5,8 +5,6 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Spine.Unity;
 using afl;
-using UnityEngine.Playables;
-using UnityEngine.Animations;
 
 namespace ActorWorkspace.UnitySpine
 {
@@ -184,14 +182,58 @@ namespace ActorWorkspace.UnitySpine
             //     if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
             // }
 
+            // SpineMecanimの取得と初期化
+            {
+                var spineMecanim = skeletonMecanim.gameObject.GetComponent<SpineMecanim>();
+                if (spineMecanim == null)
+                {
+                    Debug.Assert(false, $"SpineMecanim コンポーネントがありません、追加してください。\nname={skeletonMecanim.gameObject.name}");
+                    return GeneralReturnCode.Failed;
+                }
 
-            // SpineMecanimAnimationEventDetector の追加
+                var extraData = spineMecanim.SpineExtraData;
+                if (extraData != null)
+                {
+                    foreach (var name in extraData.FollowBoneList)
+                    {
+                        var newObject = new GameObject($"BoneFollower_{name}");
+                        newObject.transform.SetParent(skeletonMecanim.transform, worldPositionStays: false);
+                        newObject.transform.ResetLocalTransform();
+
+                        var follower = newObject.AddComponent<BoneFollower>();
+                        follower.skeletonRenderer = skeletonMecanim;
+                        follower.Initialize();
+                        Debug.Log($"Add BoneFollower: boneName={name}");
+                        follower.SetBone(name);
+
+                        // MEMO: boneNameに設定だとうまく動かない
+                        // https://zenn.dev/happy_elements/articles/a9bbe3c99aefc5
+                        // follower.boneName = name;
+                    }
+
+                    foreach (var name in extraData.FollowPointList)
+                    {
+                        var newObject = new GameObject($"BoneFollower_{name}");
+                        newObject.transform.SetParent(skeletonMecanim.transform, worldPositionStays: false);
+                        newObject.transform.ResetLocalTransform();
+
+                        var follower = newObject.AddComponent<PointFollower>();
+                        follower.skeletonRenderer = skeletonMecanim;
+                        follower.Initialize();
+                        Debug.Log($"Add PointFollower: slotName={name}");
+                        follower.slotName = name;
+                    }
+                }
+
+            }
+
+            // SpineMecanimAnimationEventDetector の初期化
             {
                 var detector = skeletonMecanim.gameObject.GetComponent<SpineMecanimAnimationEventDetector>();
-                if (detector == null)
-                {
-                    detector = skeletonMecanim.gameObject.AddComponent<SpineMecanimAnimationEventDetector>();
-                }
+                // if (detector == null)
+                // {
+                //     detector = skeletonMecanim.gameObject.AddComponent<SpineMecanimAnimationEventDetector>();
+                // }
                 if (detector == null || detector.Initialize(this) == false)
                 {
                     Debug.Assert(false, "SpineMecanimAnimationEventDetector Initialize failed");
