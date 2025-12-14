@@ -35,6 +35,7 @@ namespace ActorWorkspace
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
         public abstract IReadOnlyList<TSkin> SkinList { get; }
         public virtual AWActorBehaviourController ActorBehaviourController { get; private set; }
+        public EventBus<string> EventBus { get; protected set; } = new();
 
         #region IUpdateElement
         public bool ElementActive { get; set; }

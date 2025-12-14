@@ -6,6 +6,7 @@ using afl.MasterData;
 
 namespace ActorWorkspace
 {
+    // 外側から与えられる物の入れ物
     public class AWActorContextProvider : UniversalContextProvider
     {
         public virtual AssetRepositoryCategorize AssetRepositoryCategorize { get; protected set; }
@@ -16,7 +17,7 @@ namespace ActorWorkspace
         // #nullable enable
 
         // IAWActorManager awActorManager;
-        public EventBus<string> EventBus { get; protected set; } = new();
+        // public EventBus<string> EventBus { get; protected set; } = new();
 
         // public AWActorContextProvider(IAWActorManager awActorManager)
         public AWActorContextProvider(

@@ -18,6 +18,7 @@ namespace ActorWorkspace
         public IAWAnimationController AnimationController { get; }
         public IReadOnlyList<IAWSkin> SkinList { get; }
         public AWActorBehaviourController ActorBehaviourController { get; }
+        public EventBus<string> EventBus { get; }
 
         // 初期状態に戻す
         public void Restore();
