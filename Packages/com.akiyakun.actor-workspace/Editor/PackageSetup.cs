@@ -12,7 +12,7 @@ namespace ActorWorkspace.Editor
         {
             // 起動時一回のみ処理する
             // MEMO: ファイル読み込み確認する時はここをコメントアウトしないとreturnされます
-            // if (EUtility.IsInitializeOnLoadTiming == false) return;
+            if (EUtility.IsInitializeOnLoadTiming == false) return;
 
             DoPackageSetup();
         }

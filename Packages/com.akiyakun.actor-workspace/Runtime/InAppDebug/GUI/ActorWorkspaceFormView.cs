@@ -278,7 +278,7 @@ namespace ActorWorkspace.InAppDebug
             }
 
             // FIXME:
-            LoadActorAsync(new ActorCreateParam(id, category), ((UIForm)Form).destroyCancellationToken).Forget();
+            LoadActorAsync(new ActorCreateParam(id, category, Vector3.zero), ((UIForm)Form).destroyCancellationToken).Forget();
         }
 
         public async UniTask<int> LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
