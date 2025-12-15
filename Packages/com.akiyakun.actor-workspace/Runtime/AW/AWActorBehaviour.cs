@@ -14,8 +14,8 @@ namespace ActorWorkspace
 
         public bool ElementActive { get; set; }
         public int ElementPriority { get; set; } = 0;
-        // public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Manual;
-        public abstract UpdateFlags UpdateFlags { get; set; }
+        public virtual UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Manual;
+        // public abstract UpdateFlags UpdateFlags { get; set; }
         public virtual void DoUpdate(float deltaTime) { }
         public virtual void DoLateUpdate(float deltaTime) { }
         public virtual void DoFixedUpdate() { }
