@@ -52,33 +52,33 @@ namespace ActorWorkspace
         // From IAWActorManager
         public virtual bool Add(IAWActor actor)
         {
-            Debug.Log($"AWActorManager.Add(): {actor.GetType().Name}");
+            D.Log(DefaultLogMask.Lifecycle, $"AWActorManager.Add(): {actor.GetType().Name}");
             return updateElementManager.Add(actor);
         }
 
         // From IAWActorManager
         public virtual bool Remove(IAWActor actor)
         {
-            Debug.Log($"AWActorManager.Remove(): {actor.GetType().Name}");
+            D.Log(DefaultLogMask.Lifecycle, $"AWActorManager.Remove(): {actor.GetType().Name}");
             return updateElementManager.Remove(actor);
         }
 
 
         protected virtual void OnCreatedFromFactory(IAWActor actor)
         {
-            Debug.Log($"AWActorManager.OnCreatedActor(): {actor.GetType().Name}");
+            D.Log(DefaultLogMask.Lifecycle, $"AWActorManager.OnCreatedActor(): {actor.GetType().Name}");
             updateElementManager.Add(actor);
         }
 
         protected virtual void OnReleaseFromFactory(IAWActor actor)
         {
-            Debug.Log($"AWActorManager.OnRelease(): {actor.GetType().Name}");
+            D.Log(DefaultLogMask.Lifecycle, $"AWActorManager.OnRelease(): {actor.GetType().Name}");
             // updateElementManager.Remove(actor);
         }
 
         protected virtual void OnRemoveElement(IAWActor element)
         {
-            Debug.Log($"AWActorManager.OnRemoveElement(): {element.GetType().Name}");
+            D.Log(DefaultLogMask.Lifecycle, $"AWActorManager.OnRemoveElement(): {element.GetType().Name}");
             element.GameObject.SetActive(false);
             actorFactory.Release(element);
         }
