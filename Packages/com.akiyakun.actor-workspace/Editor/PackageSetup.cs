@@ -7,6 +7,10 @@ namespace ActorWorkspace.Editor
 {
     public class PackageSetup
     {
+        // See also: Packages/cyou.sumomo.afl/Editor/Custom/AppMenu.cs
+        [MenuItem(AppMenu.Develop_afl + "ActorWorkspace Package Setup", false, MenuItems.Priority.Develop + 10002)]
+        static void MenuPackageSetup() => DoPackageSetup();
+
         [InitializeOnLoadMethod]
         static void InitializeOnLoadSetup()
         {
