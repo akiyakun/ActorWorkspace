@@ -11,8 +11,8 @@ namespace ActorWorkspace.UnitySpine
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
     public class SpineExtraDataScriptableObject : ScriptableObjectCustom
     {
-        [SerializeField] public List<string> FollowBoneList;
-        [SerializeField] public List<string> FollowPointList;
+        [SerializeField] public List<string> FollowBoneList = null!;
+        [SerializeField] public List<string> FollowPointList = null!;
 
         public void Clear()
         {

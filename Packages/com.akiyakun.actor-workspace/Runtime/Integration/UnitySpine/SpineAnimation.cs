@@ -11,7 +11,7 @@ namespace ActorWorkspace.UnitySpine
     // Spineの SkeletonAnimation と SkeletonMecanim 双方の基底抽象クラス
     public abstract class SpineAnimation : IAWAnimation
     {
-        string name;
+        string name = "";
 
         // From IAWAnimation
         public string Name
@@ -40,7 +40,7 @@ namespace ActorWorkspace.UnitySpine
         public SpineAnimation(ISkeletonAnimation skeletonAnimationInterface)
         {
             this.skeletonAnimationInterface = skeletonAnimationInterface;
-            Debug.Assert(skeletonAnimationInterface != null);
+            if (skeletonAnimationInterface == null) throw new System.ArgumentNullException(nameof(skeletonAnimationInterface));
 
             // this.animationStateComponent = animationStateComponent;
             // Debug.Assert(animationStateComponent != null);
