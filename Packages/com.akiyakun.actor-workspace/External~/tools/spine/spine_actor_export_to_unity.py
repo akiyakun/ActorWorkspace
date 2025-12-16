@@ -16,9 +16,9 @@ from tkinter import ttk
 from send2trash import send2trash
 
 msgbox_title = "spine_actor_export_to_unity"
-export_dir = "../../Assets/AssetBundleData/Actor/"
-spine_export_settings_file = "../spine/default_spine_export_setting.json"
-temp_export_settings_file = "./_temp_export_setting.json"
+export_dir = "../Assets/AssetBundleData/Actor/"
+spine_export_settings_file = "./spine/default_spine_export_setting.json"
+temp_export_settings_file = "./spine/_temp_export_setting.json"
 override_export_setting_filename = "override_export_setting.json"
 
 
@@ -86,7 +86,9 @@ def parse_args():
 
 
 # 例:
-# python3 spine_actor_export_to_unity.py --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs /Spine/Player/Player_0001@bundle/Player.spine
+# python3 spine_actor_export_to_unity.py --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs /Users/akiya/local/dev/ALunalia/onihime_origin_data/Spine/Player/Player_0001@bundle/Player.spine
+#
+# ./spine_actor_export_to_unity --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs /Users/akiya/local/dev/ALunalia/onihime_origin_data/Spine/Player/Player_0001@bundle/Player.spine
 if __name__ == '__main__':
   args = parse_args()
   export_dir = args.export_dir
@@ -107,8 +109,18 @@ if __name__ == '__main__':
   # time.sleep(1)
   # sys.exit(0)
 
-  # カレントディレクトリを設定
-  os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
+  # print(sys.argv[0])
+  # print(os.path.abspath(sys.argv[0]))
+  # print("dirname:")
+  # print(os.path.dirname(os.path.abspath(sys.argv[0])))
+  # print("dirname2:")
+  # print(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
+
+  # カレントディレクトリを設定(tools ディレクトリ)
+  os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
+  current_dir = os.getcwd()
+  print(current_dir)
+
 
   # フルパスにしておく
   export_dir = os.path.abspath(export_dir)
