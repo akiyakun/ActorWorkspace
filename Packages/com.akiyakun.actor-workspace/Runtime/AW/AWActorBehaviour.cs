@@ -8,10 +8,16 @@ namespace ActorWorkspace
     // MEMO:
     // MonoBehaviourぽく使いたいのでメソッド名も似せてあります
     public abstract class AWActorBehaviour<TActor> : IAWActorBehaviour
-        where TActor : IAWActor
+        where TActor : class, IAWActor
     {
-        public TActor Actor { get; private set; }
+        IAWActor IAWActorBehaviour.Actor => Actor as IAWActor;
+        public TActor Actor { get; private set; } = null!;
 
+        public EventBus<string> EventBus => Actor.EventBus;
+        public VariableTable Variables => Actor.Variables;
+        public EventBag EventBag { get; private set; } = new();
+
+        #region IUpdateElement
         public bool ElementActive { get; set; }
         public int ElementPriority { get; set; } = 0;
         public virtual UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Manual;
@@ -19,6 +25,7 @@ namespace ActorWorkspace
         public virtual void DoUpdate(float deltaTime) { }
         public virtual void DoLateUpdate(float deltaTime) { }
         public virtual void DoFixedUpdate() { }
+        #endregion
 
         // Factory method
         // public static T Create<T>(IAWActor actor)
@@ -41,10 +48,7 @@ namespace ActorWorkspace
 
         public virtual void Initialize(IAWActor actor)
         {
-            Debug.Assert(Actor == null);
-
-            Actor = (TActor)actor!;
-            Debug.Assert(Actor != null);
+            Actor = (TActor)actor;
         }
 
         public virtual void Terminate()

@@ -20,6 +20,7 @@ namespace ActorWorkspace.Tests
         public IReadOnlyList<IAWSkin> SkinList { get; set; } = null!;
         public AWActorBehaviourController ActorBehaviourController { get; set; } = null!;
         public EventBus<string> EventBus { get; set; } = new();
+        public VariableTable Variables { get; set; } = new();
 
         #region IUpdateElement
         public bool ElementActive { get; set; }

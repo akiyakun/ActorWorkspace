@@ -8,8 +8,12 @@ namespace ActorWorkspace
         // IAsyncInitializable,
         IUpdateElement
     {
-        // public IAWActor Actor { get; }
+        public IAWActor Actor { get; }
         // public string Name { get; }
+
+        public EventBus<string> EventBus { get; }
+        public VariableTable Variables { get; }
+        public EventBag EventBag { get; }
 
         public void Initialize(IAWActor actor);
         public void Terminate();

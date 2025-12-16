@@ -36,6 +36,7 @@ namespace ActorWorkspace
         public abstract IReadOnlyList<TSkin> SkinList { get; }
         public virtual AWActorBehaviourController ActorBehaviourController { get; private set; }
         public EventBus<string> EventBus { get; protected set; } = new();
+        public VariableTable Variables { get; protected set; } = null!;
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
@@ -66,6 +67,16 @@ namespace ActorWorkspace
             // Debug.Assert(awActorContextProvider != null);
 
             ActorBehaviourController = new AWActorBehaviourController(this);
+
+            // VariableTableの取得or生成
+            if (GameObject.TryGetComponent<VariableTableComponent>(out var variableTableComponent))
+            {
+                Variables = variableTableComponent.VariableTable;
+            }
+            else
+            {
+                Variables = new VariableTable();
+            }
 
 #if UNITY_EDITOR
             // デバッグ用のイベント登録
