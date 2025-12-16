@@ -20,6 +20,9 @@ namespace ActorWorkspace
         #endregion
 
         public static readonly (string, bool) SetDisplayVisibility = ("SetDisplayVisibility", default);
+
+
+        public static readonly (string, CollisionDetectorInfo) OnInteractHurtbox1 = ("OnInteractHurtbox1", default);
     }
 }
 #nullable restore

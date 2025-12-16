@@ -26,13 +26,14 @@ namespace ActorWorkspace.ActorBehaviour
                     (entity) => entity.OnCollision += OnHurtbox1Enter,
                     (entity) => entity.OnCollision -= OnHurtbox1Enter);
 
-                Debug.Log($"InteractEventPublisherBehaviour: Registered OnHurtbox1Enter");
+                // Debug.Log($"InteractEventPublisherBehaviour: Registered OnHurtbox1Enter");
             }
         }
 
         void OnHurtbox1Enter(CollisionDetectorInfo info)
         {
-            Debug.Log($"InteractEventPublisherBehaviour: OnHurtbox1Enter: other={info.Other?.name}");
+            // Debug.Log($"InteractEventPublisherBehaviour: OnHurtbox1Enter: other={info.Other?.name}");
+            EventBus.Publish(AWActorEvents.OnInteractHurtbox1, info);
         }
     }
 }
