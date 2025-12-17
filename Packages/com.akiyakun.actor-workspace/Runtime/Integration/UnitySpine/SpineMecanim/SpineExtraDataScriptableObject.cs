@@ -9,24 +9,25 @@ namespace ActorWorkspace.UnitySpine
 {
     // SkeletonDataAssetの追加情報
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
-    public class SpineExtraDataScriptableObject : ScriptableObjectCustom
+    public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData
     {
-        [SerializeField] public List<string> FollowBoneList = null!;
-        [SerializeField] public List<string> FollowPointList = null!;
+        [SerializeField] List<string> followBoneNameList = new();
+        public IReadOnlyList<string> FollowBoneNameList => followBoneNameList;
+
+        [SerializeField] public List<string> followPointNameList = new();
+        public IReadOnlyList<string> FollowPointNameList => followPointNameList;
 
         public void Clear()
         {
-            FollowBoneList?.Clear();
-            FollowPointList?.Clear();
+            followBoneNameList?.Clear();
+            followPointNameList?.Clear();
         }
 
         public void AddFollowBoneName(string name)
         {
-            FollowBoneList ??= new();
-
-            if (FollowBoneList.Contains(name) == false)
+            if (followBoneNameList.Contains(name) == false)
             {
-                FollowBoneList.Add(name);
+                followBoneNameList.Add(name);
             }
             else
             {
@@ -36,11 +37,9 @@ namespace ActorWorkspace.UnitySpine
 
         public void AddFollowPointName(string name)
         {
-            FollowPointList ??= new();
-
-            if (FollowPointList.Contains(name) == false)
+            if (followPointNameList.Contains(name) == false)
             {
-                FollowPointList.Add(name);
+                followPointNameList.Add(name);
             }
             else
             {

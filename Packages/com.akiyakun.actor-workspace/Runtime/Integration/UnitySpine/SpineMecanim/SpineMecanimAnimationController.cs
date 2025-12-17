@@ -191,38 +191,13 @@ namespace ActorWorkspace.UnitySpine
                     return GeneralReturnCode.Failed;
                 }
 
-                var extraData = spineMecanim.SpineExtraData;
-                if (extraData != null)
+                // ExtraDataの取得
+                ExtraData = spineMecanim.SpineExtraData;
+                if (ExtraData != null)
                 {
-                    foreach (var name in extraData.FollowBoneList)
-                    {
-                        var newObject = new GameObject($"BoneFollower_{name}");
-                        newObject.transform.SetParent(skeletonMecanim.transform, worldPositionStays: false);
-                        newObject.transform.ResetLocalTransform();
-
-                        var follower = newObject.AddComponent<BoneFollower>();
-                        follower.skeletonRenderer = skeletonMecanim;
-                        follower.Initialize();
-                        Debug.Log($"Add BoneFollower: boneName={name}");
-                        follower.SetBone(name);
-
-                        // MEMO: boneNameに設定だとうまく動かない
-                        // https://zenn.dev/happy_elements/articles/a9bbe3c99aefc5
-                        // follower.boneName = name;
-                    }
-
-                    foreach (var name in extraData.FollowPointList)
-                    {
-                        var newObject = new GameObject($"BoneFollower_{name}");
-                        newObject.transform.SetParent(skeletonMecanim.transform, worldPositionStays: false);
-                        newObject.transform.ResetLocalTransform();
-
-                        var follower = newObject.AddComponent<PointFollower>();
-                        follower.skeletonRenderer = skeletonMecanim;
-                        follower.Initialize();
-                        Debug.Log($"Add PointFollower: slotName={name}");
-                        follower.slotName = name;
-                    }
+                    // Followerオブジェクトの作成
+                    CreateBoneFollowers(skeletonMecanim.transform, skeletonMecanim);
+                    CreatePointFollowers(skeletonMecanim.transform, skeletonMecanim);
                 }
 
             }

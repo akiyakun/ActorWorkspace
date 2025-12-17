@@ -17,6 +17,7 @@ namespace ActorWorkspace.Tests
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
 
         public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();
+        public IAWExtraData? ExtraData { get; protected set; }
         public bool IsVisibility { get; set; } = true;
         public bool EnableRootMotion { get; set; } = false;
         public bool ApplyRootMotionPositionX { get; set; }

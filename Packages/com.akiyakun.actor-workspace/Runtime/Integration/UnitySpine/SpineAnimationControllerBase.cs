@@ -25,6 +25,8 @@ namespace ActorWorkspace.UnitySpine
         #endregion
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
+        IAWExtraData? IAWAnimationController.ExtraData => ExtraData;
+        public SpineExtraDataScriptableObject? ExtraData { get; protected set; }
         public abstract bool IsVisibility { get; set; }
 
         public virtual bool EnableRootMotion { get; set; }
@@ -38,7 +40,6 @@ namespace ActorWorkspace.UnitySpine
         // protected Dictionary<string, SpineAnimation> animations = new();
         protected SortedDictionary<int, TAnimation> animationHashMap = new();
         protected List<TTrack> trackList = new(IAWTrack.MaxTrack);
-
 
 #nullable disable
         protected SpineAnimationControllerBase() { }
@@ -125,6 +126,72 @@ namespace ActorWorkspace.UnitySpine
         public bool IsPlayingAnimation(string name, int track = 0) => IsPlayingAnimation(Utility.StringToHashId(name), track);
 
         public abstract IAWTrack? GetTrack(int trackIndex);
+
+
+        #region ExtraData
+        Dictionary<string, GameObject> followObjectDictionary = new();
+
+        protected void CreateBoneFollowers(Transform parent, SkeletonRenderer skeletonRenderer)
+        {
+            if (ExtraData == null) return;
+
+            foreach (var name in ExtraData.FollowBoneNameList)
+            {
+                // var newObject = new GameObject($"BoneFollower_{name}");
+                var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
+                newObject.transform.SetParent(parent, worldPositionStays: false);
+                newObject.transform.ResetLocalTransform();
+
+                var follower = newObject.AddComponent<BoneFollower>();
+                follower.skeletonRenderer = skeletonRenderer;
+                follower.Initialize();
+                // Debug.Log($"Add BoneFollower: boneName={name}");
+                follower.SetBone(name);
+
+                // MEMO: boneNameに設定だとうまく動かない
+                // https://zenn.dev/happy_elements/articles/a9bbe3c99aefc5
+                // follower.boneName = name;
+
+                AddFollowObject(name, newObject);
+            }
+        }
+
+        protected void CreatePointFollowers(Transform parent, SkeletonRenderer skeletonRenderer)
+        {
+            if (ExtraData == null) return;
+
+            foreach (var name in ExtraData.FollowPointNameList)
+            {
+                // var newObject = new GameObject($"BoneFollower_{name}");
+                var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
+                newObject.transform.SetParent(parent, worldPositionStays: false);
+                newObject.transform.ResetLocalTransform();
+
+                var follower = newObject.AddComponent<PointFollower>();
+                follower.skeletonRenderer = skeletonRenderer;
+                follower.Initialize();
+                // Debug.Log($"Add PointFollower: slotName={name}");
+                follower.slotName = name;
+
+                AddFollowObject(name, newObject);
+            }
+        }
+
+        public GameObject? GetFollowObject(string name)
+        {
+            if (followObjectDictionary.TryGetValue(name, out var obj))
+            {
+                return obj;
+            }
+
+            return null;
+        }
+
+        protected void AddFollowObject(string name, GameObject obj)
+        {
+            followObjectDictionary.Add(name, obj);
+        }
+        #endregion
     }
 }
 #nullable restore
