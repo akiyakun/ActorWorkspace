@@ -51,6 +51,8 @@ namespace ActorWorkspace.UnitySpine
         AnimatorStateEvent animatorStateEvent;
         IAWAnimationEventDecoder<UnityEngine.AnimationEvent> animationEventDecoder;
 
+        int currentStateNameHash = 0;
+
 #if UNITY_EDITOR
         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
 #endif
@@ -445,8 +447,14 @@ namespace ActorWorkspace.UnitySpine
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
             // Debug.Log($"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
+
+            // MEMO: 1Frame目のイベントが実行されている場合ここで抜けることになる
+            if (currentStateNameHash == info.StateNameHash) return;
+
             var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
+
+            currentStateNameHash = info.StateNameHash;
 
             // FIXME: パラメータリセットはどこのタイミングでやるべきか・・・
             // とりあえず自身のパラメータは遷移したらすぐにリセットが必要無きがする
@@ -556,6 +564,15 @@ namespace ActorWorkspace.UnitySpine
             // FIXME:
             var animation = trackList[0].Animation;
             if (animation == null) return;
+
+            // OnHandleEntered()より先にイベントが呼ばれた場合ここに来る
+            // イベント処理よりも先に OnHandleEntered() の処理をしたいので明示的に呼び出す
+            if (rawData.animatorStateInfo.shortNameHash != currentStateNameHash)
+            {
+                // D.Log($"OnSpineEvent: OnHandleEntered()より先にイベントが呼ばれた");
+                AnimatorStateOptionInfo info = animatorStateEvent.GetStateInfo(rawData.animatorStateInfo.fullPathHash);
+                OnHandleEntered(info);
+            }
 
             /*
             var d = animationEventDecoder.Decode(rawData);
