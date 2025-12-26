@@ -197,6 +197,33 @@ namespace ActorWorkspace.UnitySpine
         {
             followObjectDictionary.Add(name, obj);
         }
+
+
+        protected void CreateFolders(Transform parent, SkeletonRenderer skeletonRenderer, string key)
+        {
+            if (ExtraData == null) return;
+
+            var nameList = ExtraData.GetAttachmentNames(key);
+            if (nameList == null) return;
+
+            foreach (var name in nameList)
+            {
+                // var newObject = new GameObject($"BoneFollower_{name}");
+                var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
+                newObject.transform.SetParent(parent, worldPositionStays: false);
+                newObject.transform.ResetLocalTransform();
+
+                var follower = newObject.AddComponent<BoundingBoxFollower>();
+                follower.skeletonRenderer = skeletonRenderer;
+                follower.Initialize();
+                // Debug.Log($"Add PointFollower: slotName={name}");
+                follower.slotName = name;
+                follower.isTrigger = true;
+
+                AddFollowObject(name, newObject);
+            }
+        }
+
         #endregion
     }
 }

@@ -14,9 +14,10 @@ namespace ActorWorkspace.UnitySpine
         // FIXME: とりあえずここに書いてる
         public const string EffectBoneFollower = "EffectBoneFollower";
         public const string EffectPointFollower = "EffectPointFollower";
-        public const string CollisionBoxFollower = "CollisionBoxFollower";
-        public const string HurtBoxFollower = "HurtBoxFollower";
-        public const string HitBoxFollower = "HitBoxFollower";
+
+        public const string CollisionBoxFollower = "3_CollisionBoxFolder";
+        public const string HurtBoxFollower = "4_HurtBoxFolder";
+        public const string HitBoxFollower = "5_HitBoxFolder";
 
         // アタッチメントを取得しやすいようにするための入れ物
         [System.Serializable]
@@ -25,6 +26,7 @@ namespace ActorWorkspace.UnitySpine
             public string key = "";
             public string Key => key;
 
+            [SerializeField]
             List<string> attachmentNames = new();
             public IReadOnlyList<string> AttachmentNames => attachmentNames;
 

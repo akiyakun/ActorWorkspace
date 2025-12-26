@@ -135,21 +135,8 @@ namespace ActorWorkspace.Editor.UnitySpine
                     SetLoopForLoopSuffix(skeletonDataAsset);
                 }
 
-                {
-                    // SkeletonDataからSpineアニメーションとイベントデータを取得
-                    var skeletonData = skeletonDataAsset.GetSkeletonData(true);
-                    if (skeletonData == null) return;
+                ProcessFolders(skeletonDataAsset, spineExtraData);
 
-                    // 3_CollisionBoxFolder
-                    // 4_HurtBoxFolder
-                    // BoneData folder = skeletonData.FindBone("5_HitBoxFolder");
-                    var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, "5_HitBoxFolder");
-                    foreach (var slotData in slotDataList)
-                    {
-                        spineExtraData.AddAttachmentName(SpineExtraDataScriptableObject.HitBoxFollower, slotData.Name);
-                    }
-
-                }
             }
         }
 
@@ -346,6 +333,28 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
 
             // AssetDatabase.SaveAssets();
+        }
+
+        private static void ProcessFolders(SkeletonDataAsset sda, SpineExtraDataScriptableObject spineExtraData)
+        {
+            var skeletonData = sda.GetSkeletonData(true);
+            if (skeletonData == null) return;
+
+            var folderNames = new List<string>()
+            {
+                SpineExtraDataScriptableObject.CollisionBoxFollower,
+                SpineExtraDataScriptableObject.HurtBoxFollower,
+                SpineExtraDataScriptableObject.HitBoxFollower,
+            };
+
+            foreach (var name in folderNames)
+            {
+                var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, name);
+                foreach (var slotData in slotDataList)
+                {
+                    spineExtraData.AddAttachmentName(name, slotData.Name);
+                }
+            }
         }
     }
 }

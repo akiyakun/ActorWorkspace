@@ -72,43 +72,6 @@ namespace ActorWorkspace.UnitySpine
             AnimationParameter = new MecanimAnimationParameter(animator);
             animationEventDecoder = new SpineMecanimAnimationEventDecoder();
 
-#if false
-// #if UNITY_EDITOR
-            // チェック用にAnimatorControllerの全ステートを取得
-            {
-                var controller = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
-                foreach (var layer in controller!.layers)
-                {
-                    Debug.Log($"Layer: {layer.name}");
-                    foreach (var state in layer.stateMachine.states)
-                    {
-                        Debug.Log($"State: {state.state.name}");
-
-                        if (state.state.motion is AnimationClip animationClip)
-                        {
-                            states.Add(state.state.name, state.state);
-
-                            var playableGraph = PlayableGraph.Create();
-                            var output = AnimationPlayableOutput.Create(playableGraph, "SpineOutput", animator);
-
-                            AnimationClipPlayable clipPlayable = AnimationClipPlayable.Create(playableGraph, animationClip);
-                            output.SetSourcePlayable(clipPlayable);
-
-                            // Mecanimのステート名をIAWAnimationとして登録
-                            animationHashMap.Add(Utility.StringToHashId(state.state.name),
-                                new SpineMecanimAnimation(state.state.name, skeletonMecanim, null, playableGraph, animationClip, clipPlayable));
-
-                            playableGraph.Play();
-                        }
-                        // else if (motion is BlendTree blendTree)
-                        // {
-                        //     GetClipsFromBlendTree(blendTree);
-                        // }
-                    }
-                }
-            }
-#endif
-
             // IAWAnimationのリストを作成
             // if (skeletonMecanim != null)
             {
@@ -200,6 +163,11 @@ namespace ActorWorkspace.UnitySpine
                     // Followerオブジェクトの作成
                     CreateBoneFollowers(skeletonMecanim.transform, skeletonMecanim);
                     CreatePointFollowers(skeletonMecanim.transform, skeletonMecanim);
+
+                    // Folderの処理
+                    CreateFolders(skeletonMecanim.transform, skeletonMecanim, SpineExtraDataScriptableObject.CollisionBoxFollower);
+                    CreateFolders(skeletonMecanim.transform, skeletonMecanim, SpineExtraDataScriptableObject.HurtBoxFollower);
+                    CreateFolders(skeletonMecanim.transform, skeletonMecanim, SpineExtraDataScriptableObject.HitBoxFollower);
                 }
 
             }
