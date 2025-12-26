@@ -9,11 +9,21 @@ using System.Linq;
 using System;
 using ActorWorkspace;
 using ActorWorkspace.UnitySpine;
+using afl;
 
 namespace ActorWorkspace.Editor.UnitySpine
 {
     public class SpineAssetPostprocessor : AssetPostprocessor
     {
+        [MenuItem("CONTEXT/SkeletonDataAsset/AW再インポート", false, 0)]
+        static void ReImport(MenuCommand menuCommand)
+        {
+            reImportGard = true;
+            targetList = new List<string>();
+            targetList.Add(AssetDatabase.GetAssetPath(menuCommand.context));
+            ProcessPendingAssets();
+        }
+
         // 監視対象のフォルダ（プロジェクト相対パス）
         // static const string targetFolder = "Assets/AssetBundleData/Actor";
         const string targetFolder = "Assets";
@@ -66,8 +76,9 @@ namespace ActorWorkspace.Editor.UnitySpine
 
         }
 
-        // MEMO:
-        // https://ja.esotericsoftware.com/forum/d/14630-c-force-update-animationclips
+        // AnimationClipの再生成
+        // Spineデータに変更があった場合にAnimationClipを再生成する(確実にするため)
+        // See also: https://ja.esotericsoftware.com/forum/d/14630-c-force-update-animationclips
         static void GenerateMecanimAnimationClips(List<string> targets)
         {
             foreach (var path in targets)
@@ -75,7 +86,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
                 if (skeletonDataAsset == null || skeletonDataAsset.controller == null) continue;
 
-                Debug.Log($"[SpineMecanimPostprocessor] Updating Mecanim AnimationClips: {skeletonDataAsset.name}");
+                D.LogVerbose($"[SpineMecanimPostprocessor] Updating Mecanim AnimationClips: {skeletonDataAsset.name}");
 
                 // MEMO: GenerateMecanimAnimationClips()内でSaveAssetes()している
                 SkeletonBaker.GenerateMecanimAnimationClips(skeletonDataAsset);
@@ -84,7 +95,7 @@ namespace ActorWorkspace.Editor.UnitySpine
 
         static void ProcessPendingAssets()
         {
-            Debug.Log($"3 cout={targetList.Count}");
+            // Debug.Log($"3 cout={targetList.Count}");
 
             try
             {
@@ -106,22 +117,43 @@ namespace ActorWorkspace.Editor.UnitySpine
         {
             foreach (var path in targets)
             {
+                // Debug.Log($"[SpineAssetPostprocessor] Processing Spine Asset: {path}");
                 var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
-                if (skeletonDataAsset == null || skeletonDataAsset.controller == null) continue;
+                if (skeletonDataAsset == null) continue;
 
-                // SpineExtraDataアセットを取得or作成
-                var spineExtraData = CreateSpineExtraDataAsset(path);
+                // 追加情報用ScriptableObjectの作成・取得と内容クリア
+                SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(path);
                 EditorUtility.SetDirty(spineExtraData);
-
-                // "_loop"サフィックスのAnimationClipをループ設定にする
-                SetLoopForLoopSuffix(skeletonDataAsset);
 
                 // SpineイベントのInt/Float/Stringすべてをインポート
                 ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
+
+                // AnimationController が存在する場合
+                if (skeletonDataAsset.controller != null)
+                {
+                    // "_loop"サフィックスのAnimationClipをループ設定にする
+                    SetLoopForLoopSuffix(skeletonDataAsset);
+                }
+
+                {
+                    // SkeletonDataからSpineアニメーションとイベントデータを取得
+                    var skeletonData = skeletonDataAsset.GetSkeletonData(true);
+                    if (skeletonData == null) return;
+
+                    // 3_CollisionBoxFolder
+                    // 4_HurtBoxFolder
+                    // BoneData folder = skeletonData.FindBone("5_HitBoxFolder");
+                    var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, "5_HitBoxFolder");
+                    foreach (var slotData in slotDataList)
+                    {
+                        spineExtraData.AddAttachmentName(SpineExtraDataScriptableObject.HitBoxFollower, slotData.Name);
+                    }
+
+                }
             }
         }
 
-        // 追加情報用ScriptableObjectを作成
+        // 追加情報用ScriptableObjectの作成・取得と内容クリア
         public static SpineExtraDataScriptableObject CreateSpineExtraDataAsset(string skeletonDataAssetPath)
         {
             string name = Path.GetFileNameWithoutExtension(skeletonDataAssetPath).Replace("_SkeletonData", "");
@@ -276,16 +308,18 @@ namespace ActorWorkspace.Editor.UnitySpine
 
                                 // SpineEvent名をAnimationEventのStringパラメータにする
                                 string eventName = spineEvent.Data.Name;
-                                // Debug.Log($"SpineEvent Name: {eventName}");
+                                Debug.Log($"SpineEvent Name: {eventName}");
 
                                 // 特殊記号の処理
                                 if (eventName.IndexOf('+') >= 0)
                                 {
-                                    spineExtraData.AddFollowBoneName(eventName);
+                                    spineExtraData.AddAttachmentName(
+                                        SpineExtraDataScriptableObject.EffectBoneFollower, eventName, alertAlreadyExist: false);
                                 }
                                 else if (eventName.IndexOf('*') >= 0)
                                 {
-                                    spineExtraData.AddFollowPointName(eventName);
+                                    spineExtraData.AddAttachmentName(
+                                        SpineExtraDataScriptableObject.EffectPointFollower, eventName, alertAlreadyExist: false);
                                 }
 
                                 animEvent.stringParameter = eventName;

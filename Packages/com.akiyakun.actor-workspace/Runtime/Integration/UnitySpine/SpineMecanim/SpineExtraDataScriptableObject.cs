@@ -11,41 +11,81 @@ namespace ActorWorkspace.UnitySpine
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
     public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData
     {
-        [SerializeField] List<string> followBoneNameList = new();
-        public IReadOnlyList<string> FollowBoneNameList => followBoneNameList;
+        // FIXME: とりあえずここに書いてる
+        public const string EffectBoneFollower = "EffectBoneFollower";
+        public const string EffectPointFollower = "EffectPointFollower";
+        public const string CollisionBoxFollower = "CollisionBoxFollower";
+        public const string HurtBoxFollower = "HurtBoxFollower";
+        public const string HitBoxFollower = "HitBoxFollower";
 
-        [SerializeField] public List<string> followPointNameList = new();
-        public IReadOnlyList<string> FollowPointNameList => followPointNameList;
+        // アタッチメントを取得しやすいようにするための入れ物
+        [System.Serializable]
+        public class AttachmentInfo
+        {
+            public string key = "";
+            public string Key => key;
+
+            List<string> attachmentNames = new();
+            public IReadOnlyList<string> AttachmentNames => attachmentNames;
+
+            public void AddAttachmentName(string name, bool alertAlreadyExist = true)
+            {
+                if (attachmentNames.Contains(name) == false)
+                {
+                    attachmentNames.Add(name);
+                }
+                else if (alertAlreadyExist == true)
+                {
+                    Debug.LogError($"AttachmentNames already contains bone name={name}");
+                }
+            }
+        }
+        // public Dictionary<string, AttachmentInfo> AttachmentTable { get; private set; } = new();
+        [SerializeField]
+        public List<AttachmentInfo> attachments = new();
+        public IReadOnlyList<AttachmentInfo> Attachments => attachments;
 
         public void Clear()
         {
-            followBoneNameList?.Clear();
-            followPointNameList?.Clear();
+            attachments = new();
         }
 
-        public void AddFollowBoneName(string name)
+        public AttachmentInfo? GetAttachmentInfo(string key, bool createIfNotExist = false)
         {
-            if (followBoneNameList.Contains(name) == false)
+            // if (Attachments.TryGetValue(key, out var info))
+            // {
+            //     return info;
+            // }
+            foreach (var info in Attachments)
             {
-                followBoneNameList.Add(name);
+                if (info.Key == key) return info;
             }
-            else
+
+            if (createIfNotExist)
             {
-                Debug.LogWarning($"[SpineExtraData] FollowBoneList already contains bone name: {name}");
+                var info = new AttachmentInfo() { key = key };
+                // Attachments.Add(key, info);
+                attachments.Add(info);
+                return info;
             }
+
+            return null;
         }
 
-        public void AddFollowPointName(string name)
+        public IReadOnlyList<string>? GetAttachmentNames(string key)
         {
-            if (followPointNameList.Contains(name) == false)
-            {
-                followPointNameList.Add(name);
-            }
-            else
-            {
-                Debug.LogWarning($"[SpineExtraData] FollowPointList already contains point name: {name}");
-            }
+            var info = GetAttachmentInfo(key);
+            if (info == null) return null;
+            return info.AttachmentNames;
         }
+
+        public void AddAttachmentName(string key, string name, bool alertAlreadyExist = true)
+        {
+            var info = GetAttachmentInfo(key, createIfNotExist: true)
+                ?? throw new System.NullReferenceException();
+            info.AddAttachmentName(name, alertAlreadyExist);
+        }
+
     }
 }
 #nullable restore

@@ -135,7 +135,10 @@ namespace ActorWorkspace.UnitySpine
         {
             if (ExtraData == null) return;
 
-            foreach (var name in ExtraData.FollowBoneNameList)
+            var nameList = ExtraData.GetAttachmentNames(SpineExtraDataScriptableObject.EffectBoneFollower);
+            if (nameList == null) return;
+
+            foreach (var name in nameList)
             {
                 // var newObject = new GameObject($"BoneFollower_{name}");
                 var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
@@ -160,7 +163,10 @@ namespace ActorWorkspace.UnitySpine
         {
             if (ExtraData == null) return;
 
-            foreach (var name in ExtraData.FollowPointNameList)
+            var nameList = ExtraData.GetAttachmentNames(SpineExtraDataScriptableObject.EffectPointFollower);
+            if (nameList == null) return;
+
+            foreach (var name in nameList)
             {
                 // var newObject = new GameObject($"BoneFollower_{name}");
                 var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
+using Spine;
 using Spine.Unity;
 
 namespace ActorWorkspace.Editor.UnitySpine
@@ -93,6 +95,49 @@ namespace ActorWorkspace.Editor.UnitySpine
                     }
                 }
             }
+        }
+
+        // 特定の名前のボーン以下に存在するスロットを取得する方法
+        public static List<SlotData> GetSlotsUnderBone(SkeletonData skeletonData, string boneName)
+        {
+            var result = new List<SlotData>();
+
+            // ボーン名から BoneData を取得
+            BoneData targetBone = skeletonData.FindBone(boneName);
+            if (targetBone == null)
+            {
+                Debug.LogError($"Bone not found: {boneName}");
+                return result;
+            }
+
+            // スケルトンデータのすべてのスロットをチェック
+            foreach (SlotData slotData in skeletonData.Slots.Items)
+            {
+                // スロットが属するボーンを取得
+                if (slotData.BoneData != null && IsDescendantOf(slotData.BoneData, targetBone))
+                {
+                    // Debug.Log(slotData.Name);
+                    result.Add(slotData);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// ボーンが指定されたボーンの子孫かどうかを判定
+        /// </summary>
+        /// <param name="bone">確認したいボーン</param>
+        /// <param name="ancestor">親ボーン</param>
+        public static bool IsDescendantOf(BoneData bone, BoneData ancestor)
+        {
+            BoneData current = bone;
+            while (current != null)
+            {
+                if (current == ancestor) return true;
+                current = current.Parent;
+            }
+            return false;
         }
 
 
