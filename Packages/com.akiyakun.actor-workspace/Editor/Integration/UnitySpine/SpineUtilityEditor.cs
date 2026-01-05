@@ -106,7 +106,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             BoneData targetBone = skeletonData.FindBone(boneName);
             if (targetBone == null)
             {
-                Debug.LogError($"Bone not found: {boneName}");
+                Debug.LogError($"Bone not found: boneName={boneName}, skeletonData={skeletonData.Name}");
                 return result;
             }
 
