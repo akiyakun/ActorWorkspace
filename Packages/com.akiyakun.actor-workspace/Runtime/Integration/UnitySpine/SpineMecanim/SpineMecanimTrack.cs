@@ -44,7 +44,7 @@ namespace ActorWorkspace.UnitySpine
 
         public void SetTimeScale(float value)
         {
-            Debug.Assert(false);
+            Debug.LogWarning("SetTimeScale()は未実装です");
             // timeScale = value;
 
             // // SkeletonAnimationが存在するならそのトラックのTimeScaleにも反映させる

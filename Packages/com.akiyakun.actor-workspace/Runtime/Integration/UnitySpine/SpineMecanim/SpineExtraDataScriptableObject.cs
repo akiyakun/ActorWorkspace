@@ -49,6 +49,7 @@ namespace ActorWorkspace.UnitySpine
 
         public void Clear()
         {
+            attachments?.Clear();
             attachments = new();
         }
 

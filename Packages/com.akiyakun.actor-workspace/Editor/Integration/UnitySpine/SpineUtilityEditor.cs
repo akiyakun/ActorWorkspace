@@ -100,13 +100,15 @@ namespace ActorWorkspace.Editor.UnitySpine
         // 特定の名前のボーン以下に存在するスロットを取得する方法
         public static List<SlotData> GetSlotsUnderBone(SkeletonData skeletonData, string boneName)
         {
+            Debug.Assert(skeletonData != null);
+
             var result = new List<SlotData>();
 
             // ボーン名から BoneData を取得
             BoneData targetBone = skeletonData.FindBone(boneName);
             if (targetBone == null)
             {
-                Debug.LogError($"Bone not found: boneName={boneName}, skeletonData={skeletonData.Name}");
+                // Debug.LogError($"Bone not found: boneName={boneName}, skeletonData={skeletonData.Name}");
                 return result;
             }
 
