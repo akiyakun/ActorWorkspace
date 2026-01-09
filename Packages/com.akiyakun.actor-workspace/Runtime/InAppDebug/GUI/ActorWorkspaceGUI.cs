@@ -4,6 +4,7 @@ using UnityEngine;
 using afl;
 using afl.UI;
 using afl.Service.Screen;
+using afl.Service.Input;
 
 namespace ActorWorkspace.InAppDebug
 {
@@ -36,7 +37,12 @@ namespace ActorWorkspace.InAppDebug
             }
 #endif
 
-            return await managedCanvas.InitializeAsync(cancellationToken);
+            if (await managedCanvas.InitializeAsync(cancellationToken) < 0) return GeneralReturnCode.Failed;
+
+            // UIの入力を有効にする
+            InputService.Instance.FindActionMap("UI")?.Enable();
+
+            return GeneralReturnCode.Succeeded;
         }
 
         // From IAsyncInitializable
