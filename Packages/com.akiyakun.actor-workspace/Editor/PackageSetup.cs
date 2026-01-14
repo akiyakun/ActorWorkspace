@@ -30,14 +30,14 @@ namespace ActorWorkspace.Editor
             {
                 string src = Utility.PathCombine(externalPath, "tools/spine");
                 string dest = Utility.PathCombine(EUtility.GetRootPath(), "tools/spine");
-                Utility.DirectoryCopy(src, dest, true, checkTimeStamp: false);
+                Utility.CopyDirectory(src, dest, true, checkTimeStamp: false);
             }
 
             // bin
             {
                 string src = Utility.PathCombine(externalPath, "tools/bin");
                 string dest = Utility.PathCombine(EUtility.GetRootPath(), "tools/bin");
-                Utility.DirectoryCopy(src, dest, overwrite: true, checkTimeStamp: false);
+                Utility.CopyDirectory(src, dest, overwrite: true, checkTimeStamp: false);
             }
         }
     }
