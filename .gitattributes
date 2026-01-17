@@ -1,4 +1,4 @@
-# v1.1.2
+# v1.1.4
 
 # Text File
 *.txt text=auto eol=lf
@@ -15,6 +15,12 @@
 
 ## Windows
 *.bat text=auto working-tree-encoding=sjis eol=crlf
+
+## macOS
+"Automator Application Stub" filter=lfs diff=lfs merge=lfs -text
+*.icns filter=lfs diff=lfs merge=lfs -text
+*.car filter=lfs diff=lfs merge=lfs -text
+*.loctable filter=lfs diff=lfs merge=lfs -text
 
 # Unity
 *.mat merge=unityyamlmerg eol=lf
@@ -130,3 +136,4 @@ LightingData.asset filter=lfs diff=lfs merge=lfs -text
 *.7Z filter=lfs diff=lfs merge=lfs -text
 *.jar filter=lfs diff=lfs merge=lfs -text
 *.JAR filter=lfs diff=lfs merge=lfs -text
+*.xlsx filter=lfs diff=lfs merge=lfs -text
