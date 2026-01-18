@@ -2,6 +2,9 @@
     "name": "ActorWorkspace.Editor",
     "rootNamespace": "ActorWorkspace.Editor",
     "references": [
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:69448af7b92c7f342b298e06a37122aa",
         "GUID:98557ddb935f44ae59f5af2cce2426f6",
         "GUID:d1f443f62531b45de830682d1f1c296a",
         "GUID:878380d8c26584ae3ab741d0e3a254b5",

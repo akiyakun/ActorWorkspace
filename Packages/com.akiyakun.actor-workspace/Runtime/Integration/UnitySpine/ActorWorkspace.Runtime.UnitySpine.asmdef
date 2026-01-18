@@ -2,6 +2,8 @@
     "name": "ActorWorkspace.Runtime.UnitySpine",
     "rootNamespace": "ActorWorkspace.UnitySpine",
     "references": [
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
         "GUID:98557ddb935f44ae59f5af2cce2426f6",
         "GUID:dfff3b766ea0b44d4a4577604643770f",
