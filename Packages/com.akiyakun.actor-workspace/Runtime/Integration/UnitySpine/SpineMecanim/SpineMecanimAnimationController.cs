@@ -53,9 +53,9 @@ namespace ActorWorkspace.UnitySpine
 
         int currentStateNameHash = 0;
 
-#if UNITY_EDITOR
-        Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
-#endif
+// #if UNITY_EDITOR
+//         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
+// #endif
 
         public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim)
             : base(skeletonMecanim)
@@ -156,18 +156,11 @@ namespace ActorWorkspace.UnitySpine
                     return GeneralReturnCode.Failed;
                 }
 
-                // ExtraDataの取得
+                // ExtraDataのセットアップ
                 ExtraData = spineMecanim.SpineExtraData;
                 if (ExtraData != null)
                 {
-                    // Followerオブジェクトの作成
-                    CreateBoneFollowers(skeletonMecanim.transform, skeletonMecanim);
-                    CreatePointFollowers(skeletonMecanim.transform, skeletonMecanim);
-
-                    // Folderの処理
-                    CreateFolders(skeletonMecanim.transform, skeletonMecanim, SpineExtraDataScriptableObject.CollisionBoxFollower);
-                    CreateFolders(skeletonMecanim.transform, skeletonMecanim, SpineExtraDataScriptableObject.HurtBoxFollower);
-                    CreateFolders(skeletonMecanim.transform, skeletonMecanim, SpineExtraDataScriptableObject.HitBoxFollower);
+                    SetupForExtraData(skeletonMecanim.transform, skeletonMecanim);
                 }
 
             }
@@ -502,7 +495,7 @@ namespace ActorWorkspace.UnitySpine
             }
 
 
-            InvokeAnimationComplate(animation);
+            InvokeAnimationComplete(animation);
         }
 
         // void OnHandleEvent(TrackEntry trackEntry, Spine.Event spineEvent)

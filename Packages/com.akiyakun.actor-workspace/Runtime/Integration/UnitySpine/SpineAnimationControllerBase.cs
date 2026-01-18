@@ -131,31 +131,52 @@ namespace ActorWorkspace.UnitySpine
         #region ExtraData
         Dictionary<string, GameObject> followObjectDictionary = new();
 
+        // ExtraDataの基本的なセットアップ処理
+        protected void SetupForExtraData(Transform parent, SkeletonRenderer skeletonRenderer)
+        {
+            if (skeletonRenderer == null) throw new System.ArgumentNullException(nameof(skeletonRenderer));
+
+            // Followerオブジェクトの作成
+            CreateBoneFollowers(parent, skeletonRenderer);
+            CreatePointFollowers(parent, skeletonRenderer);
+
+            // Folderの処理
+            if (ExtraData != null)
+            {
+                foreach (var info in ExtraData.Folders)
+                {
+                    CreateFolders(parent, skeletonRenderer, info);
+                }
+            }
+        }
+
         protected void CreateBoneFollowers(Transform parent, SkeletonRenderer skeletonRenderer)
         {
             if (ExtraData == null) return;
 
-            var nameList = ExtraData.GetAttachmentNames(SpineExtraDataScriptableObject.EffectBoneFollower);
-            if (nameList == null) return;
+            var folderInfo = ExtraData.GetFolderInfo(UnitySpineSettings.Instance.EffectBoneFollower);
+            if (folderInfo == null) return;
 
-            foreach (var name in nameList)
+            foreach (var info in folderInfo.Attachments)
             {
                 // var newObject = new GameObject($"BoneFollower_{name}");
-                var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
+                var newObject = new GameObject(info.Name);// 取得したいときにイベント名と同名の方が都合が良い
                 newObject.transform.SetParent(parent, worldPositionStays: false);
                 newObject.transform.ResetLocalTransform();
+                newObject.SetLayerRecursively(parent.gameObject.layer);
 
                 var follower = newObject.AddComponent<BoneFollower>();
                 follower.skeletonRenderer = skeletonRenderer;
                 follower.Initialize();
-                // Debug.Log($"Add BoneFollower: boneName={name}");
-                follower.SetBone(name);
+                // Debug.Log($"Add BoneFollower: boneName={info.Name}");
+                follower.SetBone(info.Name);
 
                 // MEMO: boneNameに設定だとうまく動かない
                 // https://zenn.dev/happy_elements/articles/a9bbe3c99aefc5
                 // follower.boneName = name;
 
-                AddFollowObject(name, newObject);
+
+                AddFollowObject(info.Name, newObject);
             }
         }
 
@@ -163,23 +184,24 @@ namespace ActorWorkspace.UnitySpine
         {
             if (ExtraData == null) return;
 
-            var nameList = ExtraData.GetAttachmentNames(SpineExtraDataScriptableObject.EffectPointFollower);
-            if (nameList == null) return;
+            var folderInfo = ExtraData.GetFolderInfo(UnitySpineSettings.Instance.EffectPointFollower);
+            if (folderInfo == null) return;
 
-            foreach (var name in nameList)
+            foreach (var info in folderInfo.Attachments)
             {
                 // var newObject = new GameObject($"BoneFollower_{name}");
-                var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
+                var newObject = new GameObject(info.Name);// 取得したいときにイベント名と同名の方が都合が良い
                 newObject.transform.SetParent(parent, worldPositionStays: false);
                 newObject.transform.ResetLocalTransform();
+                newObject.SetLayerRecursively(parent.gameObject.layer);
 
                 var follower = newObject.AddComponent<PointFollower>();
                 follower.skeletonRenderer = skeletonRenderer;
                 follower.Initialize();
-                // Debug.Log($"Add PointFollower: slotName={name}");
-                follower.slotName = name;
+                // Debug.Log($"Add PointFollower: slotName={info.Name}");
+                follower.slotName = info.Name;
 
-                AddFollowObject(name, newObject);
+                AddFollowObject(info.Name, newObject);
             }
         }
 
@@ -199,28 +221,27 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        protected void CreateFolders(Transform parent, SkeletonRenderer skeletonRenderer, string key)
+        protected void CreateFolders(Transform parent, SkeletonRenderer skeletonRenderer,
+            SpineExtraDataScriptableObject.FolderInfo folderInfo)
         {
-            if (ExtraData == null) return;
-
-            var nameList = ExtraData.GetAttachmentNames(key);
-            if (nameList == null) return;
-
-            foreach (var name in nameList)
+            var folderSetting = UnitySpineSettings.Instance.GetFolderSetting(folderInfo.FolderName);
+            if (folderSetting == null)
             {
-                // var newObject = new GameObject($"BoneFollower_{name}");
-                var newObject = new GameObject(name);// 取得したいときにイベント名と同名の方が都合が良い
-                newObject.transform.SetParent(parent, worldPositionStays: false);
-                newObject.transform.ResetLocalTransform();
+                Debug.Assert(false, $"CreateFolders: Not found folderSetting for folder={folderInfo.FolderName}");
+                return;
+            }
 
-                var follower = newObject.AddComponent<BoundingBoxFollower>();
-                follower.skeletonRenderer = skeletonRenderer;
-                follower.Initialize();
-                // Debug.Log($"Add PointFollower: slotName={name}");
-                follower.slotName = name;
-                follower.isTrigger = true;
+            // Spineのアタッチメントボーン直下のノード名リストを回す
+            foreach (var info in folderInfo.Attachments)
+            {
+                // フォロワーオブジェクトの作成
+                GameObject followerObject = ExtraDataUtility.CreateFollowerObject(info, parent, skeletonRenderer, folderSetting);
+                if (followerObject == null) throw new System.Exception("followObject is null");
 
-                AddFollowObject(name, newObject);
+                // レイヤーの設定
+                ExtraDataUtility.ApplyLayerSetting(followerObject, folderSetting);
+
+                AddFollowObject(info.Name, followerObject);
             }
         }
 

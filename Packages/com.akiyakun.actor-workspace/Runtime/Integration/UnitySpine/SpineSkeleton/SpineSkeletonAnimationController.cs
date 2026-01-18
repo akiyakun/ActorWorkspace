@@ -6,6 +6,7 @@ using UnityEngine;
 using Spine;
 using Spine.Unity;
 using afl;
+using UnityEditorInternal;
 
 namespace ActorWorkspace.UnitySpine
 {
@@ -24,9 +25,9 @@ namespace ActorWorkspace.UnitySpine
         SkeletonAnimation skeletonAnimation;
         IAWAnimationEventDecoder<Spine.Event> animationEventDecoder;
 
-// #nullable disable
-//         private SpineSkeletonAnimationController() { }
-// #nullable enable
+        // #nullable disable
+        //         private SpineSkeletonAnimationController() { }
+        // #nullable enable
 
         public SpineSkeletonAnimationController(SkeletonAnimation skeletonAnimation)
             : base(skeletonAnimation)
@@ -63,6 +64,24 @@ namespace ActorWorkspace.UnitySpine
 
         public override async UniTask<int> InitializeAsync(CancellationToken cancellationToken)
         {
+            // SpineAnimationの取得と初期化
+            {
+                var spineSkeleton = skeletonAnimation.gameObject.GetComponent<SpineSkeleton>();
+                if (spineSkeleton == null)
+                {
+                    Debug.Assert(false, $"SpineSkeleton コンポーネントがありません、追加してください。\nname={skeletonAnimation.gameObject.name}");
+                    return GeneralReturnCode.Failed;
+                }
+
+                // ExtraDataのセットアップ
+                ExtraData = spineSkeleton.SpineExtraData;
+                if (ExtraData != null)
+                {
+                    SetupForExtraData(skeletonAnimation.transform, skeletonAnimation);
+                }
+
+            }
+
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
@@ -101,7 +120,13 @@ namespace ActorWorkspace.UnitySpine
             var animation = GetAnimationImpl(nameHash);
             if (animation == null) throw new System.Exception($"SetAnimation: Not found nameHash={nameHash}");
 
+            // DefaultMix
+            var stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
+            stateData.DefaultMix = 0.0f;
+            // stateData.SetMix(skeletonAnimation, animation, stateData.DefaultMix);
+
             Spine.TrackEntry trackEntry = skeletonAnimation.state.SetAnimation(option.Track, animation.SpineAnimation, loop: option.Loop);
+
 
             var track = trackList[option.Track];
             track.Set(animation);
@@ -181,7 +206,7 @@ namespace ActorWorkspace.UnitySpine
             // if (trackEntry.Loop == true) return;
             var animation = trackList[trackEntry.TrackIndex].Animation;
             if (animation == null) return;
-            InvokeAnimationComplate(animation);
+            InvokeAnimationComplete(animation);
         }
 
         void OnHandleEvent(TrackEntry trackEntry, Spine.Event rawData)

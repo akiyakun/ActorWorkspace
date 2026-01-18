@@ -322,13 +322,13 @@ namespace ActorWorkspace.Editor.UnitySpine
                                 // 特殊記号の処理
                                 if (eventName.IndexOf('+') >= 0)
                                 {
-                                    spineExtraData.AddAttachmentName(
-                                        UnitySpineSettings.Instance.EffectBoneFollower, eventName, alertAlreadyExist: false);
+                                    spineExtraData.AddAttachment(
+                                        UnitySpineSettings.Instance.EffectBoneFollower, SpineNodeType.Bone, eventName, alertAlreadyExist: false);
                                 }
                                 else if (eventName.IndexOf('*') >= 0)
                                 {
-                                    spineExtraData.AddAttachmentName(
-                                        UnitySpineSettings.Instance.EffectPointFollower, eventName, alertAlreadyExist: false);
+                                    spineExtraData.AddAttachment(
+                                        UnitySpineSettings.Instance.EffectPointFollower, SpineNodeType.Bone, eventName, alertAlreadyExist: false);
                                 }
 
                                 animEvent.stringParameter = eventName;
@@ -362,20 +362,29 @@ namespace ActorWorkspace.Editor.UnitySpine
             var skeletonData = sda.GetSkeletonData(true);
             if (skeletonData == null) return;
 
-            foreach (var folder in UnitySpineSettings.Instance.GetFolderList())
+            foreach (var folderSetting in UnitySpineSettings.Instance.FolderSettings)
             {
-                var boneDataList = SpineUtilityEditor.GetBonesUnderBone(skeletonData, folder, depth: 1);
-                foreach (var boneData in boneDataList)
+                // ボーンを使用しないといけないのは BoundingBoxFollower 以外のタイプ
+                // if (folderSetting.FollowerType != UnitySpineSettings.FollowerType.BoundingBoxFollower)
                 {
-                    spineExtraData.AddAttachmentName(folder, boneData.Name);
+                    var boneDataList = SpineUtilityEditor.GetBonesUnderBone(skeletonData, folderSetting.FolderName, depth: 1);
+                    foreach (var boneData in boneDataList)
+                    {
+                        spineExtraData.AddAttachment(folderSetting.FolderName, SpineNodeType.Bone, boneData.Name);
+                    }
                 }
 
-                var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, folder, depth: 1);
-                foreach (var slotData in slotDataList)
+                // スロットを使用できるのは BoundingBoxFollower タイプのみ
+                // if (folderSetting.FollowerType == UnitySpineSettings.FollowerType.BoundingBoxFollower)
                 {
-                    spineExtraData.AddAttachmentName(folder, slotData.Name);
+                    var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, folderSetting.FolderName, depth: 1);
+                    foreach (var slotData in slotDataList)
+                    {
+                        spineExtraData.AddAttachment(folderSetting.FolderName, SpineNodeType.Slot, slotData.Name);
+                    }
                 }
-            }
+
+            }// foreach folderSetting
         }
     }
 }

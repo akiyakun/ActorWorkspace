@@ -13,20 +13,24 @@ namespace ActorWorkspace.UnitySpine
     {
         // アタッチメントを取得しやすいようにするための入れ物
         [System.Serializable]
-        public class AttachmentInfo
+        public class FolderInfo
         {
-            public string key = "";
-            public string Key => key;
+            [SerializeField] string folderName = "";
+            public string FolderName => folderName;
 
-            [SerializeField]
-            List<string> attachmentNames = new();
-            public IReadOnlyList<string> AttachmentNames => attachmentNames;
+            [SerializeField] List<SpineNodeInfo> attachments = new();
+            public IReadOnlyList<SpineNodeInfo> Attachments => attachments;
 
-            public void AddAttachmentName(string name, bool alertAlreadyExist = true)
+            public FolderInfo(string folderName)
             {
-                if (attachmentNames.Contains(name) == false)
+                this.folderName = folderName;
+            }
+
+            public void AddAttachment(SpineNodeType nodeType, string name, bool alertAlreadyExist = true)
+            {
+                if (attachments.Contains(name, (t, n) => t.Name == n) == false)
                 {
-                    attachmentNames.Add(name);
+                    attachments.Add(new SpineNodeInfo() { NodeType = nodeType, Name = name });
                 }
                 else if (alertAlreadyExist == true)
                 {
@@ -34,51 +38,48 @@ namespace ActorWorkspace.UnitySpine
                 }
             }
         }
+
         // public Dictionary<string, AttachmentInfo> AttachmentTable { get; private set; } = new();
         [SerializeField]
-        public List<AttachmentInfo> attachments = new();
-        public IReadOnlyList<AttachmentInfo> Attachments => attachments;
+        public List<FolderInfo> folders = new();
+        public IReadOnlyList<FolderInfo> Folders => folders;
 
         public void Clear()
         {
-            attachments?.Clear();
-            attachments = new();
+            folders?.Clear();
+            folders = new();
         }
 
-        public AttachmentInfo? GetAttachmentInfo(string key, bool createIfNotExist = false)
+        public FolderInfo? GetFolderInfo(string key, bool createIfNotExist = false)
         {
-            // if (Attachments.TryGetValue(key, out var info))
-            // {
-            //     return info;
-            // }
-            foreach (var info in Attachments)
+            foreach (var info in Folders)
             {
-                if (info.Key == key) return info;
+                if (info.FolderName == key) return info;
             }
 
             if (createIfNotExist)
             {
-                var info = new AttachmentInfo() { key = key };
+                var info = new FolderInfo(key);
                 // Attachments.Add(key, info);
-                attachments.Add(info);
+                folders.Add(info);
                 return info;
             }
 
             return null;
         }
 
-        public IReadOnlyList<string>? GetAttachmentNames(string key)
-        {
-            var info = GetAttachmentInfo(key);
-            if (info == null) return null;
-            return info.AttachmentNames;
-        }
+        // public IReadOnlyList<string>? GetAttachmentNames(string key)
+        // {
+        //     var info = GetFolderInfo(key);
+        //     if (info == null) return null;
+        //     return info.AttachmentNames;
+        // }
 
-        public void AddAttachmentName(string key, string name, bool alertAlreadyExist = true)
+        public void AddAttachment(string folderName, SpineNodeType nodeType, string name, bool alertAlreadyExist = true)
         {
-            var info = GetAttachmentInfo(key, createIfNotExist: true)
+            var info = GetFolderInfo(folderName, createIfNotExist: true)
                 ?? throw new System.NullReferenceException();
-            info.AddAttachmentName(name, alertAlreadyExist);
+            info.AddAttachment(nodeType, name, alertAlreadyExist);
         }
 
     }

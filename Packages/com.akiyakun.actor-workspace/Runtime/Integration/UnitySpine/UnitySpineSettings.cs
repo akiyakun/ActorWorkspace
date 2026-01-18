@@ -26,27 +26,33 @@ namespace ActorWorkspace.UnitySpine
 
         public enum FollowerType
         {
+            [InspectorName("BoundingBoxFollower (Spine標準)")]
+            BoundingBoxFollower,
+
+            [InspectorName("BoundingBox2DFollower (AWカスタム実装)")]
             BoundingBox2DFollower,
+
+            [InspectorName("BoundingBox3DFollower (AWカスタム実装)")]
             BoundingBox3DFollower,
         }
 
         public enum LayerSetting
         {
             // 親と同じレイヤーに設定
-            Parent,
+            SameAsParent,
 
             // レイヤー毎に設定
-            LayerPair,
+            PerLayer,
         }
 
         [Serializable]
         public class LayerPair
         {
             [SerializeField, LayerSelector]
-            public int InLayer;
+            public int SourceLayer;
 
             [SerializeField, LayerSelector]
-            public int ToLayer;
+            public int TargetLayer;
         }
 
         [Serializable]
@@ -59,20 +65,20 @@ namespace ActorWorkspace.UnitySpine
             public List<LayerPair> LayerPairList = new();
         }
         [SerializeField] List<FolderSetting> folderSettings = new();
+        public IReadOnlyList<FolderSetting> FolderSettings => folderSettings;
 
-
-        /// <summary>
-        /// フォルダーのリストを取得
-        /// </summary>
-        public List<string> GetFolderList()
+        public FolderSetting? GetFolderSetting(string folderName)
         {
-            return new List<string>()
+            foreach (var setting in FolderSettings)
             {
-                CollisionBoxFolder,
-                HurtBoxFolder,
-                HitBoxFolder,
-            };
+                if (setting.FolderName == folderName)
+                {
+                    return setting;
+                }
+            }
+            return null;
         }
+
         #endregion
 
 
@@ -85,6 +91,36 @@ namespace ActorWorkspace.UnitySpine
         public string EffectPointFollower => effectPointFollower;
         #endregion
 
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// フォルダーのリストを取得
+        /// </summary>
+        List<string> GetFolderList()
+        {
+            return new List<string>()
+            {
+                CollisionBoxFolder,
+                HurtBoxFolder,
+                HitBoxFolder,
+            };
+        }
+
+        void Reset()
+        {
+            folderSettings = new();
+            foreach (var folder in GetFolderList())
+            {
+                folderSettings.Add(new FolderSetting()
+                {
+                    FolderName = folder,
+                    FollowerType = FollowerType.BoundingBoxFollower,
+                    LayerSetting = LayerSetting.SameAsParent,
+                    LayerPairList = new(),
+                });
+            }
+        }
+#endif
     }
 }
 #nullable restore
