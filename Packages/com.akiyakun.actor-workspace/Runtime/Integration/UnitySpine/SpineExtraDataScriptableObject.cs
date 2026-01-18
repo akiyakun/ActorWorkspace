@@ -11,14 +11,6 @@ namespace ActorWorkspace.UnitySpine
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
     public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData
     {
-        // FIXME: とりあえずここに書いてる
-        public const string EffectBoneFollower = "EffectBoneFollower";
-        public const string EffectPointFollower = "EffectPointFollower";
-
-        public const string CollisionBoxFollower = "3_CollisionBoxFolder";
-        public const string HurtBoxFollower = "4_HurtBoxFolder";
-        public const string HitBoxFollower = "5_HitBoxFolder";
-
         // アタッチメントを取得しやすいようにするための入れ物
         [System.Serializable]
         public class AttachmentInfo
