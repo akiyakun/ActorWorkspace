@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using UnityEngine;
 using UnityEditor;
 using afl;
 using afl.Editor;
@@ -8,7 +9,8 @@ namespace ActorWorkspace.Editor
     public class PackageSetup
     {
         // See also: Packages/cyou.sumomo.afl/Editor/Custom/AppMenu.cs
-        [MenuItem(AppMenu.Develop_afl + "ActorWorkspace Package Setup", false, MenuItems.Priority.Develop + 10002)]
+        public const string Develop_AW = MenuItems.Develop + "ActorWorkspace/";
+        [MenuItem(Develop_AW + "ActorWorkspace Package Setup", false, MenuItems.Priority.Develop + 2/* + 10002*/)]
         static void MenuPackageSetup() => DoPackageSetup();
 
         [InitializeOnLoadMethod]
@@ -21,8 +23,10 @@ namespace ActorWorkspace.Editor
             DoPackageSetup();
         }
 
-        public static void DoPackageSetup()
+        static void DoPackageSetup()
         {
+            Debug.Log("Start PackageSetup in ActorWorkspace...");
+
             // External~ のファイルのコピー
             var externalPath = Path.GetFullPath(ActorWorkspace.Environment.PackageRootPath) + "External~/";
 
@@ -39,6 +43,8 @@ namespace ActorWorkspace.Editor
                 string dest = Utility.PathCombine(EUtility.GetRootPath(), "tools/bin");
                 Utility.CopyDirectory(src, dest, overwrite: true, checkTimeStamp: false);
             }
+
+            Debug.Log("Completed PackageSetup in ActorWorkspace.");
         }
     }
 }
