@@ -13,7 +13,7 @@ namespace ActorWorkspace
         public event System.Action<IAWAnimation> OnAnimationEntered;
 
         // アニメーションが完了したときにコールバックされます
-        public event System.Action<IAWAnimation> OnAnimationComplate;
+        public event System.Action<IAWAnimation> OnAnimationComplete;
 
         // アニメーションのタイムラインに含まれるイベントが発生したときにコールバックされます
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent;

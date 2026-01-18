@@ -13,7 +13,7 @@ namespace ActorWorkspace.Tests
         // public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
 
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
-        public event System.Action<IAWAnimation> OnAnimationComplate = null!;
+        public event System.Action<IAWAnimation> OnAnimationComplete = null!;
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
 
         public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();

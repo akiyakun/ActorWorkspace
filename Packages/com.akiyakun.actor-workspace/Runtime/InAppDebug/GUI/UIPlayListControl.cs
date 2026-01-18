@@ -38,7 +38,7 @@ namespace ActorWorkspace.InAppDebug
             animationController = actor.AnimationController;
 
             // skeletonAnimation.state.Complete += OnAnimationComplete;
-            animationController.OnAnimationComplate += OnAnimationComplete;
+            animationController.OnAnimationComplete += OnAnimationComplete;
         }
 
         void ClearPlayList()

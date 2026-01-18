@@ -18,8 +18,8 @@ namespace ActorWorkspace.UnitySpine
         #region Events
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         protected virtual void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
-        public event System.Action<IAWAnimation> OnAnimationComplate = null!;
-        protected virtual void InvokeAnimationComplate(IAWAnimation animation) => OnAnimationComplate?.Invoke(animation);
+        public event System.Action<IAWAnimation> OnAnimationComplete = null!;
+        protected virtual void InvokeAnimationComplete(IAWAnimation animation) => OnAnimationComplete?.Invoke(animation);
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
         protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
         #endregion
