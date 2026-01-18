@@ -22,6 +22,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             targetList = new List<string>();
             targetList.Add(AssetDatabase.GetAssetPath(menuCommand.context));
             ProcessPendingAssets();
+            Debug.Log("[SpineAssetPostprocessor] AW再インポート完了");
         }
 
         // 監視対象のフォルダ（プロジェクト相対パス）
@@ -47,13 +48,32 @@ namespace ActorWorkspace.Editor.UnitySpine
                     // 指定フォルダ以下か？
                     if (path.StartsWith(targetFolder) == false) continue;
 
+                    // MEMO: データ更新時はSkeletonDataAssetの更新が検知されないので.jsonファイルを監視する必要がある
+                    if (path.EndsWith(".json") == true)
+                    {
+                        if (AssetUtility.CheckForValidSkeletonData(path))
+                        {
+                            // Debug.Log($"[SpineAssetPostprocessor] Imported Spine JSON: {path}");
+                            // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
+                            string skeletonDataPath = $"{Utility.GetPathWithoutExtension(path)}{AssetUtility.SkeletonDataSuffix}.asset";
+                            targetList.Add(skeletonDataPath);
+                            Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset: {skeletonDataPath}");
+                        }
+
+                        continue;
+                    }
+
+                    /* 上記json判定があれば必要なさそう
                     // 拡張子でフィルタリング
                     if (path.EndsWith(".asset") == false) continue;
+
+                    // Debug.Log($"[SpineAssetPostprocessor] Imported Asset: {path}");
 
                     // アセットのタイプでフィルタリング
                     if (AssetDatabase.GetMainAssetTypeAtPath(path) != typeof(SkeletonDataAsset)) continue;
 
                     targetList.Add(path);
+                    */
                 }
 
                 // 先にクリップを再生成しておく
@@ -64,6 +84,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 if (targetList.Count > 0)
                 {
                     // 1フレーム後に実行
+                    // MEMO: Spineライブラリ側の.json のインポート処理が完了していないため
                     // Debug.Log($"2 cout={pendingAssets.Count}");
                     EditorApplication.delayCall -= ProcessPendingAssets;
                     EditorApplication.delayCall += ProcessPendingAssets;
@@ -161,6 +182,7 @@ namespace ActorWorkspace.Editor.UnitySpine
 
             Debug.Assert(ret != null);
             ret.Clear();
+            Debug.Log($"[SpineAssetPostprocessor] Created/Loaded SpineExtraData: {extraDataPath}");
 
             return ret;
         }
@@ -301,12 +323,12 @@ namespace ActorWorkspace.Editor.UnitySpine
                                 if (eventName.IndexOf('+') >= 0)
                                 {
                                     spineExtraData.AddAttachmentName(
-                                        SpineExtraDataScriptableObject.EffectBoneFollower, eventName, alertAlreadyExist: false);
+                                        UnitySpineSettings.Instance.EffectBoneFollower, eventName, alertAlreadyExist: false);
                                 }
                                 else if (eventName.IndexOf('*') >= 0)
                                 {
                                     spineExtraData.AddAttachmentName(
-                                        SpineExtraDataScriptableObject.EffectPointFollower, eventName, alertAlreadyExist: false);
+                                        UnitySpineSettings.Instance.EffectPointFollower, eventName, alertAlreadyExist: false);
                                 }
 
                                 animEvent.stringParameter = eventName;
@@ -340,19 +362,18 @@ namespace ActorWorkspace.Editor.UnitySpine
             var skeletonData = sda.GetSkeletonData(true);
             if (skeletonData == null) return;
 
-            var folderNames = new List<string>()
+            foreach (var folder in UnitySpineSettings.Instance.GetFolderList())
             {
-                SpineExtraDataScriptableObject.CollisionBoxFollower,
-                SpineExtraDataScriptableObject.HurtBoxFollower,
-                SpineExtraDataScriptableObject.HitBoxFollower,
-            };
+                var boneDataList = SpineUtilityEditor.GetBonesUnderBone(skeletonData, folder, depth: 1);
+                foreach (var boneData in boneDataList)
+                {
+                    spineExtraData.AddAttachmentName(folder, boneData.Name);
+                }
 
-            foreach (var name in folderNames)
-            {
-                var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, name);
+                var slotDataList = SpineUtilityEditor.GetSlotsUnderBone(skeletonData, folder, depth: 1);
                 foreach (var slotData in slotDataList)
                 {
-                    spineExtraData.AddAttachmentName(name, slotData.Name);
+                    spineExtraData.AddAttachmentName(folder, slotData.Name);
                 }
             }
         }

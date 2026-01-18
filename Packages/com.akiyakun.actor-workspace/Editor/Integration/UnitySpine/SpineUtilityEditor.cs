@@ -97,8 +97,39 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
         }
 
+        // 特定の名前のボーン以下に存在するボーンを取得する方法
+        public static List<BoneData> GetBonesUnderBone(SkeletonData skeletonData, string boneName, int depth = 0)
+        {
+            Debug.Assert(skeletonData != null);
+
+            var result = new List<BoneData>();
+
+            // ボーン名から BoneData を取得
+            BoneData targetBone = skeletonData.FindBone(boneName);
+            if (targetBone == null)
+            {
+                // Debug.LogError($"Bone not found: boneName={boneName}, skeletonData={skeletonData.Name}");
+                return result;
+            }
+
+            // スケルトンデータのすべてのボーンをチェック
+            foreach (BoneData boneData in skeletonData.Bones.Items)
+            {
+                if (targetBone.Name == boneData.Name) continue;
+
+                // ボーンが指定されたボーンの子孫かどうかを判定
+                if (IsDescendantOf(boneData.Parent, targetBone, depth))
+                {
+                    // Debug.Log(boneData.Name);
+                    result.Add(boneData);
+                }
+            }
+
+            return result;
+        }
+
         // 特定の名前のボーン以下に存在するスロットを取得する方法
-        public static List<SlotData> GetSlotsUnderBone(SkeletonData skeletonData, string boneName)
+        public static List<SlotData> GetSlotsUnderBone(SkeletonData skeletonData, string boneName, int depth = 0)
         {
             Debug.Assert(skeletonData != null);
 
@@ -115,8 +146,13 @@ namespace ActorWorkspace.Editor.UnitySpine
             // スケルトンデータのすべてのスロットをチェック
             foreach (SlotData slotData in skeletonData.Slots.Items)
             {
+                if (slotData.BoneData == null) continue;
+
+                // if (slotData.Name == "dummy") continue;
+
                 // スロットが属するボーンを取得
-                if (slotData.BoneData != null && IsDescendantOf(slotData.BoneData, targetBone))
+                // MEMO: BoneDataを取得している時点で1階層上を見ている
+                if (IsDescendantOf(slotData.BoneData, targetBone, depth))
                 {
                     // Debug.Log(slotData.Name);
                     result.Add(slotData);
@@ -129,15 +165,18 @@ namespace ActorWorkspace.Editor.UnitySpine
         /// <summary>
         /// ボーンが指定されたボーンの子孫かどうかを判定
         /// </summary>
-        /// <param name="bone">確認したいボーン</param>
+        /// <param name="parent">確認したいボーン(親ボーンを渡す)</param>
         /// <param name="ancestor">親ボーン</param>
-        public static bool IsDescendantOf(BoneData bone, BoneData ancestor)
+        /// <param name="depth">深さの制限。0以下の場合は制限なし。</param>
+        public static bool IsDescendantOf(BoneData parent, BoneData ancestor, int depth = 0)
         {
-            BoneData current = bone;
-            while (current != null)
+            while (parent != null)
             {
-                if (current == ancestor) return true;
-                current = current.Parent;
+                if (parent == ancestor) return true;
+                parent = parent.Parent;
+
+                depth--;
+                if (depth == 0) return false;
             }
             return false;
         }
