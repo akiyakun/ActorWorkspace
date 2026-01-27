@@ -6,7 +6,6 @@ using UnityEngine;
 using Spine;
 using Spine.Unity;
 using afl;
-using UnityEditorInternal;
 
 namespace ActorWorkspace.UnitySpine
 {
