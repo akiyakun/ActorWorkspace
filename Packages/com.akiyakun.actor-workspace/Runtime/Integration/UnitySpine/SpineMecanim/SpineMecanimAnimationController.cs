@@ -431,6 +431,7 @@ namespace ActorWorkspace.UnitySpine
 
             // AnimationSetting(animation);
 
+            // Tag:RootMotion
             // if (EnableRootMotion == false
             //     && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
             // {
@@ -499,6 +500,7 @@ namespace ActorWorkspace.UnitySpine
 
                 // Debug.Log($"遷移中 next name={nextAnimation.Name}");
 
+                // Tag:RootMotion
                 // if (nextAnimation!.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
                 // {
                 //     EnableRootMotion = false;
@@ -507,7 +509,7 @@ namespace ActorWorkspace.UnitySpine
                 // if (EnableRootMotion == true)
                 {
                     if (RootMotionStatus == true
-                        && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+                        && nextAnimation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
                     {
                         ApplyRootMotion(false, force: true);
                         // Debug.Log($"RootMotion: Enable name={animation.Name}");
@@ -592,6 +594,8 @@ namespace ActorWorkspace.UnitySpine
 
         void ApplyRootMotion(bool enable, bool force = false)
         {
+            // Tag:RootMotion
+
             // RootMotionが無効なときは何もしない
             if (force == false && EnableRootMotion == false) return;
 
