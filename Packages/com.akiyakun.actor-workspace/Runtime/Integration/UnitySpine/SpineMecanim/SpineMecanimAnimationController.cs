@@ -599,7 +599,7 @@ namespace ActorWorkspace.UnitySpine
             // RootMotionが無効なときは何もしない
             if (force == false && EnableRootMotion == false) return;
 
-            Debug.Log($"ApplyRootMotion: Enable={enable}, force={force}");
+            // Debug.Log($"ApplyRootMotion: Enable={enable}, force={force}");
 
             if (enable == true)
             {
