@@ -20,6 +20,7 @@ namespace ActorWorkspace.Tests
         public IAWExtraData? ExtraData { get; protected set; }
         public bool IsVisibility { get; set; } = true;
         public bool EnableRootMotion { get; set; } = false;
+        public bool RootMotionStatus { get; set; } = false;
         public bool ApplyRootMotionPositionX { get; set; }
         public bool ApplyRootMotionPositionY { get; set; }
 

@@ -33,6 +33,7 @@ namespace ActorWorkspace.UnitySpine
             get => enableRootMotion;
             set => SetEnableRootMotion(value);
         }
+        // public override bool RootMotionStatus;
         public override bool ApplyRootMotionPositionX
         {
             get => skeletonMecanimRootMotion.transformPositionX;
@@ -79,8 +80,6 @@ namespace ActorWorkspace.UnitySpine
                 animatorStateEvent = AnimatorStateEvent.Get(animator, 0);
                 if (animatorStateEvent == null) throw new System.Exception("AnimatorStateEvent not found");
 
-                animatorStateEvent.GenerateHashMap();
-
                 var states = animatorStateEvent.GetStateInfoList();
                 for (int i = 0; i < states.Count; i++)
                 {
@@ -88,6 +87,9 @@ namespace ActorWorkspace.UnitySpine
                     D.Log(DefaultLogMask.Verbose, $"State: StateFullPath={state.StateFullPath}, StateName={state.StateName}, StateNameHash={state.StateNameHash}");
                     animationHashMap.Add(state.StateNameHash, new SpineMecanimAnimation(state, skeletonMecanim));
                 }
+
+                animatorStateEvent.GenerateHashMap();
+
 
                 // foreach (Spine.Animation animation in skeletonMecanim.Skeleton.Data.Animations)
                 // {
@@ -177,6 +179,12 @@ namespace ActorWorkspace.UnitySpine
                     Debug.Assert(false, "SpineMecanimAnimationEventDetector Initialize failed");
                     return GeneralReturnCode.Failed;
                 }
+            }
+
+            // RootMotionの設定
+            {
+                // SetEnableRootMotion(skeletonMecanimRootMotion.enabled);
+                SetEnableRootMotion(true);
             }
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
@@ -423,11 +431,20 @@ namespace ActorWorkspace.UnitySpine
 
             // AnimationSetting(animation);
 
-            if (EnableRootMotion == false
-                && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+            // if (EnableRootMotion == false
+            //     && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+            // {
+            //     EnableRootMotion = true;
+            //     // Debug.Log($"RootMotion: Enable name={animation.Name}");
+            // }
+            if (EnableRootMotion == true)
             {
-                EnableRootMotion = true;
-                // Debug.Log($"RootMotion: Enable name={animation.Name}");
+                if (RootMotionStatus == false
+                    && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+                {
+                    ApplyRootMotion(true);
+                    // Debug.Log($"RootMotion: Enable name={animation.Name}");
+                }
             }
 
             // // 遷移中でないとき
@@ -482,10 +499,19 @@ namespace ActorWorkspace.UnitySpine
 
                 // Debug.Log($"遷移中 next name={nextAnimation.Name}");
 
-                if (nextAnimation!.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+                // if (nextAnimation!.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+                // {
+                //     EnableRootMotion = false;
+                //     // Debug.Log($"RootMotion: Disable name={animation.Name}");
+                // }
+                // if (EnableRootMotion == true)
                 {
-                    EnableRootMotion = false;
-                    // Debug.Log($"RootMotion: Disable name={animation.Name}");
+                    if (RootMotionStatus == true
+                        && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+                    {
+                        ApplyRootMotion(false, force: true);
+                        // Debug.Log($"RootMotion: Enable name={animation.Name}");
+                    }
                 }
             }
             else
@@ -547,13 +573,13 @@ namespace ActorWorkspace.UnitySpine
         {
             if (animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
             {
-                SetEnableRootMotion(false);
+                ApplyRootMotion(false);
                 // Debug.Log($"RootMotion: Disable name={animation.Name}, delta.x={animator.deltaPosition}");
             }
             else
             {
                 // FIXME: とりま今は基本RootMotion有効で動かしている
-                SetEnableRootMotion(true);
+                ApplyRootMotion(true);
                 // Debug.Log($"RootMotion: Enable name={animation.Name}");
             }
         }
@@ -561,17 +587,27 @@ namespace ActorWorkspace.UnitySpine
         void SetEnableRootMotion(bool enable)
         {
             enableRootMotion = enable;
+            ApplyRootMotion(enable, force: true);
+        }
 
-            if (enableRootMotion == true)
+        void ApplyRootMotion(bool enable, bool force = false)
+        {
+            // RootMotionが無効なときは何もしない
+            if (force == false && EnableRootMotion == false) return;
+
+            Debug.Log($"ApplyRootMotion: Enable={enable}, force={force}");
+
+            if (enable == true)
             {
                 animator.applyRootMotion = true;
                 skeletonMecanimRootMotion.enabled = true;
-                // Debug.Log($"RootMotion: Enable");
+                RootMotionStatus = true;
             }
             else
             {
                 animator.applyRootMotion = false;
                 skeletonMecanimRootMotion.enabled = false;
+                RootMotionStatus = false;
 
                 // var before = skeletonMecanimRootMotion.rigidBody2D.transform.position;
                 Vector3 delta = animator.deltaPosition;
