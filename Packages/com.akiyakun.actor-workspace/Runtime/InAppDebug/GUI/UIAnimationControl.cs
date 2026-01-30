@@ -19,10 +19,14 @@ namespace ActorWorkspace.InAppDebug
 
         [SerializeField] GameObject trackControl;
 
+        [SerializeField] GameObject otherControl;
+        Toggle rootMotionToggle;
+
         public event System.Action<float> OnSpeedValueChanged;
         public event System.Action<float> OnMixValueChanged;
         public event System.Action<bool> OnLoopValueChanged;
         public event System.Action<int> OnActiveTrackChanged;
+        public event System.Action<bool> OnRootMotionValueChanged;
 
         // public event System.Action<int> OnAnimationChanged;
 
@@ -35,6 +39,8 @@ namespace ActorWorkspace.InAppDebug
 
             mixInputField = mixControl.GetComponent<TMP_InputField>("InputField");
             loopToggle = mixControl.GetComponent<Toggle>("Loop");
+
+            rootMotionToggle = otherControl.GetComponent<Toggle>("RootMotion");
 
             // イベント登録
             {
@@ -49,6 +55,8 @@ namespace ActorWorkspace.InAppDebug
                 trackControl.GetComponent<Toggle>("Track2").onValueChanged.AddListener(OnTrack2ToggleChanged);
                 trackControl.GetComponent<Toggle>("Track3").onValueChanged.AddListener(OnTrack3ToggleChanged);
                 // trackControl.GetComponent<Toggle>("Track4").onValueChanged.AddListener(OnTrack4ToggleChanged);
+
+                otherControl.GetComponent<Toggle>("RootMotion").onValueChanged.AddListener(OnRootMotionToggleChanged);
 
                 // OnAnimationChanged += InnerOnAnimationChanged;
             }
@@ -185,6 +193,13 @@ namespace ActorWorkspace.InAppDebug
         void OnTrack4ToggleChanged(bool value)
         {
             OnActiveTrackChanged?.Invoke(4);
+        }
+
+
+        void OnRootMotionToggleChanged(bool value)
+        {
+            rootMotionToggle.isOn = value;
+            OnRootMotionValueChanged?.Invoke(value);
         }
 
     }

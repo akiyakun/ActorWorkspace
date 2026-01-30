@@ -145,6 +145,7 @@ namespace ActorWorkspace.InAppDebug
                 uiAnimationControl.OnMixValueChanged += OnMixValueChanged;
                 uiAnimationControl.OnLoopValueChanged += OnLoopValueChanged;
                 uiAnimationControl.OnActiveTrackChanged += OnActiveTrackChanged;
+                uiAnimationControl.OnRootMotionValueChanged += OnRootMotionValueChanged;
             }
 
             {
@@ -336,6 +337,8 @@ namespace ActorWorkspace.InAppDebug
         // アニメーションリストからアニメーションをクリックしたときの処理
         public void OnClickEntityFromAnimationList(UIEntity sender)
         {
+            Debug.Log("UIAnimationList: OnClickEntityFromAnimationList");
+
             // var animation = sender.UserData as Spine.Animation;
             // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             var animation = sender.UserData as IAWAnimation;
@@ -354,20 +357,20 @@ namespace ActorWorkspace.InAppDebug
             // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             // if (cu != null && cu.Animation == animation)
             IAWTrack cu = animationController.GetTrack(currentTrackIndex);
-            if (cu != null && cu.Animation == animation)
-            {
-                // 再生チェックマークを更新
-                uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, false);
+            // if (cu != null && cu.Animation == animation)
+            // {
+            //     // 再生チェックマークを更新
+            //     uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, false);
 
-                // 同じアニメーションが選択された場合は停止させる
-                // animationController.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
-                animationController.SetEmptyAnimation(currentTrackIndex);
+            //     // 同じアニメーションが選択された場合は停止させる
+            //     // animationController.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
+            //     animationController.SetEmptyAnimation(currentTrackIndex);
 
-                // ClearTrack()だけだと一時停止みたいになってしまう
-                // skeletonAnimation.AnimationState.ClearTrack(currentTrackIndex);
-                uiAnimationControl.TrackAnimationChanged(currentTrackIndex, false);
-            }
-            else
+            //     // ClearTrack()だけだと一時停止みたいになってしまう
+            //     // skeletonAnimation.AnimationState.ClearTrack(currentTrackIndex);
+            //     uiAnimationControl.TrackAnimationChanged(currentTrackIndex, false);
+            // }
+            // else
             {
                 // 再生チェックマークを更新
                 if (uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, true) == false)
@@ -388,8 +391,13 @@ namespace ActorWorkspace.InAppDebug
                 // }
 
                 // TrackEntry trackEntry =
-                var track = animationController.SetAnimation(Utility.StringToHashId(animation.Name),
-                    uiAnimationControl.IsLoop, currentTrackIndex);
+                var opt = new AWAnimationOption();
+                opt.Track = currentTrackIndex;
+                opt.Flags = (uint)AWAnimationOptionFlag.Loop | (uint)AWAnimationOptionFlag.Immediate;
+
+                animationController.EnableRootMotion = false;
+
+                var track = animationController.SetAnimation(Utility.StringToHashId(animation.Name), opt);
                 // MixDurationを0にしないとDefaultMixが適応されない?
                 // trackEntry.MixDuration = 3.0f;
 
@@ -503,6 +511,14 @@ namespace ActorWorkspace.InAppDebug
 
             afl.Service.Input.IInputUIEventModule.SetSelectedGameObject(null);
         }
+
+        public void OnRootMotionValueChanged(bool value)
+        {
+            Debug.Log($"OnRootMotionValueChanged: value={value}");
+            var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
+            animationController.EnableRootMotion = value;
+        }
+
 
 
 #if UNITY_EDITOR
