@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 
 namespace ActorWorkspace
 {
-    public interface IAWActorFactory
+    public interface IAWActorFactory// : System.IDisposable
     {
         public event System.Action<IAWActor> OnCreated;
         public event System.Action<IAWActor> OnRelease;

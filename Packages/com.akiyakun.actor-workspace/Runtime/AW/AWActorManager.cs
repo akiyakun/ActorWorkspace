@@ -12,9 +12,9 @@ namespace ActorWorkspace
 
         // protected LinkedList<IAWActor> actorList = new LinkedList<IAWActor>();
 
-        #nullable disable
-        private AWActorManager() {}
-        #nullable enable
+#nullable disable
+        private AWActorManager() { }
+#nullable restore
 
         public AWActorManager(IAWActorFactory awActorFactory)
         {
@@ -31,6 +31,19 @@ namespace ActorWorkspace
             }
         }
 
+        public virtual void Dispose()
+        {
+            // 内部でOnRemoveElement()が呼ばれる
+            updateElementManager.ReleaseAll();
+
+            {
+                actorFactory.OnCreated -= OnCreatedFromFactory;
+                actorFactory.OnRelease -= OnReleaseFromFactory;
+
+                updateElementManager.OnRemoveElement -= OnRemoveElement;
+            }
+        }
+
         // From IAWActorManager
         public virtual void DoUpdate(float deltaTime)
         {
@@ -38,7 +51,7 @@ namespace ActorWorkspace
         }
 
         // From IAWActorManager
-		public virtual void DoLateUpdate(float deltaTime)
+        public virtual void DoLateUpdate(float deltaTime)
         {
             updateElementManager.DoLateUpdate(deltaTime);
         }

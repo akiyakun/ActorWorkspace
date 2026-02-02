@@ -1,11 +1,7 @@
 #nullable enable
-using System.Collections.Generic;
-using UnityEngine;
-using afl;
-
 namespace ActorWorkspace
 {
-    public interface IAWActorManager
+    public interface IAWActorManager : System.IDisposable
     {
         public void DoUpdate(float deltaTime);
 		public void DoLateUpdate(float deltaTime);

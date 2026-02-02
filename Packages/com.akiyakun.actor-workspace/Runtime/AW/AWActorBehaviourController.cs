@@ -26,9 +26,14 @@ namespace ActorWorkspace
             updater.OnRemoveElement += OnRemoveBehaviour;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            updater.OnRemoveElement -= OnRemoveBehaviour;
+            if (updater != null)
+            {
+                updater.ReleaseAll();
+                updater.OnRemoveElement -= OnRemoveBehaviour;
+                updater = null!;
+            }
         }
 
         public virtual void Restore()

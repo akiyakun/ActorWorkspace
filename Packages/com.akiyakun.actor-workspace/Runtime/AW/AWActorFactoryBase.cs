@@ -31,6 +31,10 @@ namespace ActorWorkspace
             Debug.Assert(awActorContextProvider != null);
         }
 
+        // public virtual void Dispose()
+        // {
+        // }
+
         public async UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken)
         {
             var actor = await InnerCreateAsync(param, cancellationToken);
