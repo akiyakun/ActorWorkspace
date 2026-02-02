@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-#
+from lib.core import *
+from lib import afl
 import sys
 import os
 import os.path
@@ -7,6 +7,7 @@ import argparse
 import shutil
 import filecmp
 import json
+from types import SimpleNamespace
 
 import subprocess
 import time
@@ -15,11 +16,13 @@ from tkinter import messagebox
 from tkinter import ttk
 from send2trash import send2trash
 
+
 msgbox_title = "spine_actor_export_to_unity"
 export_dir = "../Assets/AssetBundleData/Actor/"
 spine_export_settings_file = "./spine/default_spine_export_setting.json"
 temp_export_settings_file = "./spine/_temp_export_setting.json"
 override_export_setting_filename = "override_export_setting.json"
+extra_data_filename = "extra_data.json"
 
 
 # by AI
@@ -47,23 +50,77 @@ def merge_json_files(path_a: str, path_b: str, output_path: str = None):
     print(f"Saved: {save_path}")
 
 
+# e.g. spine_dir_path
+# /Spine/Player/Player_0001@bundle/
+# /Spine/Player/Player_0001@bundle/Player.spine
+# /Spine/Player/Player_0001@bundle/extra_data.json
+def create_fileinfo(spine_dir_path: str):
+  spine_path = None
+  category_dir_name = None
+  override_export_setting_file_path = None
+  extra_data_file_path = None
+
+  # カテゴリ名取得
+  # e.g. "Player"
+  category_dir_name = os.path.basename(os.path.dirname(spine_dir_path))
+
+  # フォルダ内のファイルを捜査
+  for root, dirs, files in os.walk(spine_dir_path):
+    for file in files:
+      # print(f"Checking file: {file}")
+      if file.endswith(".spine"):
+        # .spineファイルが存在
+        spine_path = os.path.join(root, file)
+      elif file == override_export_setting_filename:
+        # オーバーライド設定ファイルが存在
+        override_export_setting_file_path = os.path.join(root, override_export_setting_filename)
+      elif file == extra_data_filename:
+        # エクストラデータファイルが存在
+        extra_data_file_path = os.path.join(root, extra_data_filename)
+
+  # .spineファイルが無く、エクストラデータファイルのみ存在する場合
+  if spine_path is None:
+    if extra_data_file_path is not None:
+      # エクストラデータファイルを読み込み、externalSpineFilePathを取得して.spineファイルのパスを決定
+      with open(extra_data_file_path, "r", encoding="utf-8") as f:
+        extra_data = json.load(f)
+        if "externalSpineFilePath" in extra_data:
+          external_spine_path = extra_data["externalSpineFilePath"]
+          spine_path = os.path.normpath(os.path.join(spine_dir_path, external_spine_path))
+    else:
+      print_exception(f"エクスポート対象ファイルが見つかりません: {spine_dir_path}")
+
+  return SimpleNamespace(
+    spine_path = spine_path,
+    spine_dir_path = spine_dir_path,
+    category_dir_name = category_dir_name,
+    override_export_setting_file_path = override_export_setting_file_path,
+    extra_data_file_path = extra_data_file_path
+  )
+
+
 def get_spine_filelist(inputs):
   ret = []
 
   for i in range(len(inputs)):
-    # if i == 0: continue
-    # messagebox.showinfo('メッセージ', sys.argv[i])
+    # 絶対パスに変換
+    path = os.path.abspath(inputs[i])
 
-    # .spineファイルであればそのままリストに追加
-    if inputs[i].endswith(".spine"):
-      ret.append(inputs[i])
-      continue
+    # ディレクトリでなくファイルが渡された場合
+    if os.path.isdir(path) == False:
+      if path.endswith(".spine"):
+        # .spint ファイルは入力として受け付ける
+        path = os.path.dirname(path)
+      elif path.endswith(extra_data_filename):
+        # extra_data.json ファイルは入力として受け付ける
+        path = os.path.dirname(path)
+      else:
+        print_exception(f"無効なファイルが渡されました: {path}")
 
-    # ディレクトリであれば、そのディレクトリ以下の.spineファイルを全てリストに追加
-    for root, dirs, files in os.walk(inputs[i]):
-      for file in files:
-        if file.endswith(".spine"):
-          ret.append(os.path.join(root, file))
+    info = create_fileinfo(path)
+    print(info)
+
+    ret.append(info)
 
   return ret
 
@@ -86,9 +143,7 @@ def parse_args():
 
 
 # 例:
-# python3 spine_actor_export_to_unity.py --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs /Users/akiya/local/dev/ALunalia/onihime_origin_data/Spine/Player/Player_0001@bundle/Player.spine
-#
-# ./spine_actor_export_to_unity --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs /Users/akiya/local/dev/ALunalia/onihime_origin_data/Spine/Player/Player_0001@bundle/Player.spine
+# python3 -u -m spine.spine_actor_export_to_unity --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs Player@bundle
 if __name__ == '__main__':
   args = parse_args()
   export_dir = args.export_dir
@@ -152,15 +207,12 @@ if __name__ == '__main__':
   #   progbar.update()
 
   for i in range(len(spine_files)):
-    input_path = spine_files[i]
-    # e.g. /Spine/Player/Player_0001@bundle/Player.spine
+    info = spine_files[i]
 
-    category_dir_name = os.path.basename(os.path.dirname(os.path.dirname(input_path)))
-    # Player
-
-    output_path = os.path.join(export_dir, category_dir_name)
-    # print(f"test: {os.path.basename(os.path.dirname(input_path))}")
-    output_path = os.path.join(output_path, os.path.basename(os.path.dirname(input_path)))
+    # e.g. /Spine/Player
+    output_path = os.path.join(export_dir, info.category_dir_name)
+    # e.g. /Spine/Player/Player_0001@bundle
+    output_path = os.path.join(output_path, os.path.basename(info.spine_dir_path))
     print(f"output_path: {output_path}")
     os.makedirs(output_path, exist_ok=True)
     # sys.exit(1)
@@ -168,7 +220,7 @@ if __name__ == '__main__':
     # messagebox.showinfo('メッセージ', input_path)
 
     # プログレスバー表示変更
-    label1.configure(text=f"{input_path}")
+    label1.configure(text=f"{info.spine_path}")
     progbar.configure(value=i/len(spine_files))
     progbar.update()
 
@@ -176,10 +228,9 @@ if __name__ == '__main__':
     shutil.copy(spine_export_settings_file, temp_export_settings_file)
 
     # オーバーライド設定ファイルがあればマージ
-    override_path = os.path.join(os.path.dirname(input_path), override_export_setting_filename)
-    if os.path.isfile(override_path):
-        # print(f"Override found. Merging: {override_path}")
-        merge_json_files(temp_export_settings_file, override_path)
+    if info.override_export_setting_file_path is not None:
+      if os.path.isfile(info.override_export_setting_file_path):
+          merge_json_files(temp_export_settings_file, info.override_export_setting_file_path)
 
     try:
       # See also: https://ja.esotericsoftware.com/spine-command-line-interface
@@ -189,7 +240,7 @@ if __name__ == '__main__':
         [
           args.spine_path,
           "--update", "4.2.xx",
-          "--input", f"{input_path}",
+          "--input", f"{info.spine_path}",
           "--output", f"{output_path}",
           "--export", temp_export_settings_file
         ],
@@ -198,7 +249,7 @@ if __name__ == '__main__':
         check=True
       )
     except subprocess.CalledProcessError as e:
-      messagebox.showerror(msgbox_title, f"エクスポート失敗: {input_path}\n\n{e.stderr}")
+      messagebox.showerror(msgbox_title, f"エクスポート失敗: {info.spine_dir_path}\n\n{e.stderr}")
       sys.exit(1)
     finally:
       # 一時設定ファイルを削除
