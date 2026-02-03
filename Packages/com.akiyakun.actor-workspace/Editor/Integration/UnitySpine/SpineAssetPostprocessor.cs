@@ -97,20 +97,12 @@ namespace ActorWorkspace.Editor.UnitySpine
 
         }
 
-        // AnimationClipの再生成
         // Spineデータに変更があった場合にAnimationClipを再生成する(確実にするため)
-        // See also: https://ja.esotericsoftware.com/forum/d/14630-c-force-update-animationclips
         static void GenerateMecanimAnimationClips(List<string> targets)
         {
             foreach (var path in targets)
             {
-                var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
-                if (skeletonDataAsset == null || skeletonDataAsset.controller == null) continue;
-
-                D.LogVerbose($"[SpineMecanimPostprocessor] Updating Mecanim AnimationClips: {skeletonDataAsset.name}");
-
-                // MEMO: GenerateMecanimAnimationClips()内でSaveAssetes()している
-                SkeletonBaker.GenerateMecanimAnimationClips(skeletonDataAsset);
+                SpineUtilityEditor.GenerateMecanimAnimationClip(path);
             }
         }
 
@@ -150,10 +142,10 @@ namespace ActorWorkspace.Editor.UnitySpine
                 ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
 
                 // AnimationController が存在する場合
+                // MEMO: 通常のインポートだけではcontrollerは自動生成されない
                 if (skeletonDataAsset.controller != null)
                 {
-                    // "_loop"サフィックスのAnimationClipをループ設定にする
-                    SetLoopForLoopSuffix(skeletonDataAsset);
+                    SpineUtilityEditor.PreSetupAnimatorController(skeletonDataAsset);
                 }
 
                 ProcessFolders(skeletonDataAsset, spineExtraData);
@@ -195,59 +187,6 @@ namespace ActorWorkspace.Editor.UnitySpine
             Debug.Log($"[SpineAssetPostprocessor] Created/Loaded SpineExtraData: {extraDataPath}");
 
             return ret;
-        }
-
-        // SkeletonDataAsset を指定して呼び出す
-        public static void SetLoopForLoopSuffix(SkeletonDataAsset sda)
-        {
-            if (sda == null)
-            {
-                Debug.LogWarning("SkeletonDataAsset is null.");
-                return;
-            }
-
-            if (sda.controller == null)
-            {
-                Debug.LogWarning("SkeletonDataAsset has no AnimatorController.");
-                return;
-            }
-
-            // AnimatorControllerからすべてのAnimationClipを取得
-            var animatorController = sda.controller as UnityEditor.Animations.AnimatorController;
-            if (animatorController == null)
-            {
-                Debug.LogWarning("SkeletonDataAsset's controller is not an AnimatorController.");
-                return;
-            }
-            // var clips = animatorController.animationClips;
-
-            // AnimatorControllerからすべてのAnimationClipを取得
-            // var clips = sda.controller.animationClips;
-            // if (clips == null || clips.Length == 0) return;
-
-            // controllerAsset 配下の全ての AnimationClip を取得
-            var asset = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(animatorController));
-            AnimationClip[] clips = System.Array.FindAll(asset, obj => obj is AnimationClip).Cast<AnimationClip>().ToArray();
-
-            foreach (var clip in clips)
-            {
-                if (clip.name.EndsWith("_loop"))
-                {
-                    // 既存の AnimationClipSettings を取得
-                    var settings = AnimationUtility.GetAnimationClipSettings(clip);
-
-                    // ループを有効にする
-                    if (!settings.loopTime)
-                    {
-                        settings.loopTime = true;
-                        AnimationUtility.SetAnimationClipSettings(clip, settings);
-                        EditorUtility.SetDirty(clip);
-                        // Debug.Log($"[SpineLoopClipSetter] Set loopTime = true for {clip.name}");
-                    }
-                }
-            }
-
-            // AssetDatabase.SaveAssets();
         }
 
         /// <summary>

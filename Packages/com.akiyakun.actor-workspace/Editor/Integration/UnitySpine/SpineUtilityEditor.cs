@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using Spine;
 using Spine.Unity;
+using Spine.Unity.Editor;
+using afl;
+using afl.Editor;
 
 namespace ActorWorkspace.Editor.UnitySpine
 {
@@ -26,7 +30,78 @@ namespace ActorWorkspace.Editor.UnitySpine
             Multiplyx2,
         };
 
-        public static SkeletonAnimation CreateSkeletonAnimationFromAssetDatabae(string path)
+        // AnimatorControllerファイルのAnimationClipの生成(再生成)
+        // See also: https://ja.esotericsoftware.com/forum/d/14630-c-force-update-animationclips
+        public static void GenerateMecanimAnimationClip(string path)
+        {
+            var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
+            if (skeletonDataAsset == null || skeletonDataAsset.controller == null) return;
+
+            D.LogVerbose($"[SpineMecanimPostprocessor] Updating Mecanim AnimationClips: {skeletonDataAsset.name}");
+
+            // MEMO: GenerateMecanimAnimationClip()内でSaveAssets()している
+            SkeletonBaker.GenerateMecanimAnimationClips(skeletonDataAsset);
+        }
+
+        public static AnimatorEditorUtility.AnimatorControllerInfo PreSetupAnimatorController(SkeletonDataAsset skeletonDataAsset)
+        {
+            if (skeletonDataAsset == null)
+            {
+                Debug.LogWarning("SkeletonDataAsset is null.");
+                return null;
+            }
+
+            if (skeletonDataAsset.controller == null)
+            {
+                Debug.LogWarning("SkeletonDataAsset has no AnimatorController.");
+                return null;
+            }
+
+            var editorAnimatorController = skeletonDataAsset.controller as UnityEditor.Animations.AnimatorController;
+            if (editorAnimatorController == null)
+            {
+                Debug.LogWarning("SkeletonDataAsset's controller is not an AnimatorController.");
+                return null;
+            }
+
+            AnimatorEditorUtility.AnimatorControllerInfo animatorControllerInfo = AnimatorEditorUtility.GetAnimatorControllerInfo(editorAnimatorController);
+            Debug.Assert(animatorControllerInfo != null);
+
+            SetLoopForLoopSuffix(animatorControllerInfo);
+
+            AssetDatabase.SaveAssets();
+
+            return animatorControllerInfo;
+        }
+
+
+        // "_loop"サフィックスのAnimationClipをループ設定にする
+        public static void SetLoopForLoopSuffix(AnimatorEditorUtility.AnimatorControllerInfo animatorControllerInfo)
+        {
+            foreach (var clip in animatorControllerInfo.AnimationClips)
+            {
+                if (clip.name.EndsWith("_loop"))
+                {
+                    // 既存の AnimationClipSettings を取得
+                    var settings = AnimationUtility.GetAnimationClipSettings(clip);
+
+                    // ループを有効にする
+                    if (!settings.loopTime)
+                    {
+                        settings.loopTime = true;
+                        AnimationUtility.SetAnimationClipSettings(clip, settings);
+                        EditorUtility.SetDirty(clip);
+                        // Debug.Log($"[SpineLoopClipSetter] Set loopTime = true for {clip.name}");
+                    }
+                }
+            }
+
+            // AssetDatabase.SaveAssets();
+        }
+
+        // AssetDatabaseからSkeletonDataAssetを読み込みGameObjectを作成する
+        // 主にビューワーやデバッグ用途
+        public static SkeletonAnimation CreateSkeletonAnimationFromAssetDatabase(string path)
         {
             var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
             Debug.Assert(skeletonDataAsset != null, $"SkeletonDataAsset not found at path: {path}");
