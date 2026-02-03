@@ -162,7 +162,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 if (isCreated == true
                     && UnitySpineSettings.Instance.ImportCallback != null)
                 {
-                    UnitySpineSettings.Instance.ImportCallback.OnNewImported(path);
+                    UnitySpineSettings.Instance.ImportCallback.OnNewImported(path, skeletonDataAsset, spineExtraData);
                 }
 
             }
