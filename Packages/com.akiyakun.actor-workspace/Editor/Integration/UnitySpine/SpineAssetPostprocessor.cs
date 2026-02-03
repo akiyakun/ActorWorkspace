@@ -63,26 +63,29 @@ namespace ActorWorkspace.Editor.UnitySpine
                         continue;
                     }
 
-                    /* 上記json判定があれば必要なさそう
-                    // 拡張子でフィルタリング
-                    if (path.EndsWith(".asset") == false) continue;
+                    // 新規インポートかチェック
+                    if (path.EndsWith(".asset") == true
+                        && AssetDatabase.GetMainAssetTypeAtPath(path) == typeof(SkeletonDataAsset))
+                    {
+                        targetList.Add(path);
+                        Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset(.asset): {path}");
 
-                    // Debug.Log($"[SpineAssetPostprocessor] Imported Asset: {path}");
+                        continue;
+                    }
+
 
                     // アセットのタイプでフィルタリング
-                    if (AssetDatabase.GetMainAssetTypeAtPath(path) != typeof(SkeletonDataAsset)) continue;
 
-                    targetList.Add(path);
-                    */
+                    //*/
                 }
-
-                // 先にクリップを再生成しておく
-                GenerateMecanimAnimationClips(targetList);
             }
             finally
             {
                 if (targetList.Count > 0)
                 {
+                    // 先にクリップを再生成しておく
+                    GenerateMecanimAnimationClips(targetList);
+
                     // 1フレーム後に実行
                     // MEMO: Spineライブラリ側の.json のインポート処理が完了していないため
                     // Debug.Log($"2 cout={pendingAssets.Count}");
