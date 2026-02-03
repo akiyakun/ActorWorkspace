@@ -7,7 +7,6 @@ using Spine.Unity;
 using Spine.Unity.Editor;
 using System.Linq;
 using System;
-using ActorWorkspace;
 using ActorWorkspace.UnitySpine;
 using afl;
 
@@ -45,20 +44,18 @@ namespace ActorWorkspace.Editor.UnitySpine
 
                 foreach (string path in importedAssets)
                 {
-                    // 指定フォルダ以下か？
-                    if (path.StartsWith(targetFolder) == false) continue;
+                    // インポートターゲットディレクトリか？
+                    if (UnitySpineSettings.Instance.CheckTargetDirectory(path) == false) continue;
 
                     // MEMO: データ更新時はSkeletonDataAssetの更新が検知されないので.jsonファイルを監視する必要がある
-                    if (path.EndsWith(".json") == true)
+                    if (path.EndsWith(".json") == true
+                        && AssetUtility.CheckForValidSkeletonData(path) == true)
                     {
-                        if (AssetUtility.CheckForValidSkeletonData(path))
-                        {
-                            // Debug.Log($"[SpineAssetPostprocessor] Imported Spine JSON: {path}");
-                            // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
-                            string skeletonDataPath = $"{Utility.GetPathWithoutExtension(path)}{AssetUtility.SkeletonDataSuffix}.asset";
-                            targetList.Add(skeletonDataPath);
-                            Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset: {skeletonDataPath}");
-                        }
+                        // Debug.Log($"[SpineAssetPostprocessor] Imported Spine JSON: {path}");
+                        // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
+                        string skeletonDataPath = $"{Utility.GetPathWithoutExtension(path)}{AssetUtility.SkeletonDataSuffix}.asset";
+                        targetList.Add(skeletonDataPath);
+                        Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset(.json): {skeletonDataPath}");
 
                         continue;
                     }
@@ -146,7 +143,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 if (skeletonDataAsset == null) continue;
 
                 // 追加情報用ScriptableObjectの作成・取得と内容クリア
-                SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(path);
+                SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(path, out bool isCreated);
                 EditorUtility.SetDirty(spineExtraData);
 
                 // SpineイベントのInt/Float/Stringすべてをインポート
@@ -161,11 +158,19 @@ namespace ActorWorkspace.Editor.UnitySpine
 
                 ProcessFolders(skeletonDataAsset, spineExtraData);
 
+                // 新規作成時のコールバック
+                if (isCreated == true
+                    && UnitySpineSettings.Instance.ImportCallback != null)
+                {
+                    UnitySpineSettings.Instance.ImportCallback.OnNewImported(path);
+                }
+
             }
         }
 
         // 追加情報用ScriptableObjectの作成・取得と内容クリア
-        public static SpineExtraDataScriptableObject CreateSpineExtraDataAsset(string skeletonDataAssetPath)
+        // isCreated: 新規作成された場合true
+        static SpineExtraDataScriptableObject CreateSpineExtraDataAsset(string skeletonDataAssetPath, out bool isCreated)
         {
             string name = Path.GetFileNameWithoutExtension(skeletonDataAssetPath).Replace("_SkeletonData", "");
             string extraDataPath = $"{Path.GetDirectoryName(skeletonDataAssetPath)}/{name}_SpineExtraData.asset";
@@ -175,12 +180,14 @@ namespace ActorWorkspace.Editor.UnitySpine
             if (File.Exists(extraDataPath) == true)
             {
                 ret = AssetDatabase.LoadAssetAtPath<SpineExtraDataScriptableObject>(extraDataPath);
+                isCreated = false;
             }
             else
             {
                 ret = ScriptableObject.CreateInstance<SpineExtraDataScriptableObject>();
                 AssetDatabase.CreateAsset(ret, extraDataPath);
                 AssetDatabase.SaveAssets();
+                isCreated = true;
             }
 
             Debug.Assert(ret != null);

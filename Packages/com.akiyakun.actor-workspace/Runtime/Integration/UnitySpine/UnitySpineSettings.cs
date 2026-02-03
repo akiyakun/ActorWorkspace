@@ -12,6 +12,16 @@ namespace ActorWorkspace.UnitySpine
     [CreateAssetMenu(menuName = Environment.AssetMenuRoot + "UnitySpineSettings (ScriptableObject)", fileName = "UnitySpineSettings")]
     public class UnitySpineSettings : SingletonScriptableObject<UnitySpineSettings>
     {
+        #region Import Settings
+        [Header("Import Settings")]
+        [SerializeField] List<string> importTargetDirectories = new() { "Assets" };
+        public IReadOnlyList<string> ImportTargetDirectories => importTargetDirectories;
+
+        [SerializeField] UnitySpineImportCallback? importCallback = null;
+        public UnitySpineImportCallback? ImportCallback => importCallback;
+        #endregion
+
+
         #region Folders
         [Header("Folders")]
         [SerializeField] string collisionBoxFolder = "3_CollisionBoxFolder";
@@ -93,6 +103,19 @@ namespace ActorWorkspace.UnitySpine
 
 
 #if UNITY_EDITOR
+        public bool CheckTargetDirectory(string path)
+        {
+            foreach (var dir in importTargetDirectories)
+            {
+                if (string.IsNullOrEmpty(dir)) continue;
+                if (path.StartsWith(dir))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// フォルダーのリストを取得
         /// </summary>

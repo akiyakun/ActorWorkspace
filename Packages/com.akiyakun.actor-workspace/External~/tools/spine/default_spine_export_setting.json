@@ -23,7 +23,7 @@
 	"jpegQuality": 0.9,
 	"premultiplyAlpha": true,
 	"bleed": false,
-	"scale": [ 0.2 ],
+	"scale": [ 0.5 ],
 	"scaleSuffix": [ "" ],
 	"scaleResampling": [ "bicubic" ],
 	"paddingX": 2,
