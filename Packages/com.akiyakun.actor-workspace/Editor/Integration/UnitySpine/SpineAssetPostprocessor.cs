@@ -254,7 +254,14 @@ namespace ActorWorkspace.Editor.UnitySpine
                                 animEvent.stringParameter = AWDefaultAnimationEvents.Audio.ToString();
 
                                 var filename = Path.GetFileNameWithoutExtension(spineEvent.Data.AudioPath);
-                                animEvent.intParameter = int.Parse(filename.AsSpan(0, 4));
+                                try
+                                {
+                                    animEvent.intParameter = int.Parse(filename.AsSpan(0, 4));
+                                }
+                                catch (Exception)
+                                {
+                                    D.LogError($"[SpineEventImporter] Failed from AudioPath: {spineEvent.Data.AudioPath}");
+                                }
 
                                 // MEMO: ボリュームとバランスのパラメータにまだ非対応
                             }
