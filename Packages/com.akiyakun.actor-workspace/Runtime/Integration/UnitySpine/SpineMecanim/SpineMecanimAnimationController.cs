@@ -471,6 +471,10 @@ namespace ActorWorkspace.UnitySpine
             //     }
             // }
 
+            // FIXME:
+            var track = trackList[0];
+            track.Set(animation);
+
             InvokeAnimationEntered(animation);
 
         }
