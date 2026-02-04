@@ -8,8 +8,14 @@ ActorWorkspaceパッケージ、以下AWと略します。
 
 # 流れ
 
-SpineSettingsScriptableObject を作成。
-パッケージが使用する設定データになります。
+UnitySpineSettings (ScriptableObject) を作成します。
+パッケージが使用する設定データ(インポート設定や自動処理用の設定など)の情報が設定されます。
+
+作成方法はProjectウィンドウの右クリックメニューから
+`App/ActorWorkspace/UnitySpineSettings`
+を実行し設定ファイルを追加してください(/Assets/Settings 等に)
+
+
 
 ## インポート
 

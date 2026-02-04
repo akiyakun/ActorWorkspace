@@ -138,8 +138,8 @@ namespace ActorWorkspace.UnitySpine
             if (skeletonRenderer == null) throw new System.ArgumentNullException(nameof(skeletonRenderer));
 
             // Followerオブジェクトの作成
-            CreateBoneFollowers(parent, skeletonRenderer);
-            CreatePointFollowers(parent, skeletonRenderer);
+            // CreateBoneFollowers(parent, skeletonRenderer);
+            // CreatePointFollowers(parent, skeletonRenderer);
 
             // Folderの処理
             if (ExtraData != null)

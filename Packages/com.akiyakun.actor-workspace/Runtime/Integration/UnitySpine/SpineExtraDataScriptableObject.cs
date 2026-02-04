@@ -37,6 +37,15 @@ namespace ActorWorkspace.UnitySpine
                     Debug.LogError($"AttachmentNames already contains bone name={name}");
                 }
             }
+
+            public SpineNodeInfo? GetAttachment(string name)
+            {
+                foreach (var info in attachments)
+                {
+                    if (info.Name == name) return info;
+                }
+                return null;
+            }
         }
 
         // public Dictionary<string, AttachmentInfo> AttachmentTable { get; private set; } = new();
@@ -80,6 +89,13 @@ namespace ActorWorkspace.UnitySpine
             var info = GetFolderInfo(folderName, createIfNotExist: true)
                 ?? throw new System.NullReferenceException();
             info.AddAttachment(nodeType, name, alertAlreadyExist);
+        }
+
+        public SpineNodeInfo? GetAttachment(string folderName, string name)
+        {
+            var info = GetFolderInfo(folderName);
+            if (info == null) return null;
+            return info.GetAttachment(name);
         }
 
     }

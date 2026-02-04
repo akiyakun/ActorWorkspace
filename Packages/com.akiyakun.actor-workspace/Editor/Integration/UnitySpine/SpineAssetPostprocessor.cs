@@ -134,13 +134,6 @@ namespace ActorWorkspace.Editor.UnitySpine
                 var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
                 if (skeletonDataAsset == null) continue;
 
-                // 追加情報用ScriptableObjectの作成・取得と内容クリア
-                SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(path, out bool isCreated);
-                EditorUtility.SetDirty(spineExtraData);
-
-                // SpineイベントのInt/Float/Stringすべてをインポート
-                ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
-
                 // AnimationController が存在する場合
                 // MEMO: 通常のインポートだけではcontrollerは自動生成されない
                 if (skeletonDataAsset.controller != null)
@@ -148,7 +141,14 @@ namespace ActorWorkspace.Editor.UnitySpine
                     SpineUtilityEditor.PreSetupAnimatorController(skeletonDataAsset);
                 }
 
+                // 追加情報用ScriptableObjectの作成・取得と内容クリア
+                SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(path, out bool isCreated);
+                EditorUtility.SetDirty(spineExtraData);
+
                 ProcessFolders(skeletonDataAsset, spineExtraData);
+
+                // SpineイベントのInt/Float/Stringすべてをインポート
+                ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
 
                 // 新規作成時のコールバック
                 if (isCreated == true
@@ -278,13 +278,21 @@ namespace ActorWorkspace.Editor.UnitySpine
                                 // 特殊記号の処理
                                 if (eventName.IndexOf('+') >= 0)
                                 {
-                                    spineExtraData.AddAttachment(
-                                        UnitySpineSettings.Instance.EffectBoneFollower, SpineNodeType.Bone, eventName, alertAlreadyExist: false);
+                                    // spineExtraData.AddAttachment(
+                                    //     UnitySpineSettings.Instance.EffectBoneFollower, SpineNodeType.Bone, eventName, alertAlreadyExist: false);
+                                    if (spineExtraData.GetAttachment(UnitySpineSettings.Instance.EffectBoneFollower, eventName) == null)
+                                    {
+                                        throw new Exception($"SpineExtraData does not contain attachment for BoneFollower: {eventName}");
+                                    }
                                 }
                                 else if (eventName.IndexOf('*') >= 0)
                                 {
-                                    spineExtraData.AddAttachment(
-                                        UnitySpineSettings.Instance.EffectPointFollower, SpineNodeType.Bone, eventName, alertAlreadyExist: false);
+                                    // spineExtraData.AddAttachment(
+                                    //     UnitySpineSettings.Instance.EffectPointFollower, SpineNodeType.Bone, eventName, alertAlreadyExist: false);
+                                    if (spineExtraData.GetAttachment(UnitySpineSettings.Instance.EffectPointFollower, eventName) == null)
+                                    {
+                                        throw new Exception($"SpineExtraData does not contain attachment for PointFollower: {eventName}");
+                                    }
                                 }
 
                                 animEvent.stringParameter = eventName;

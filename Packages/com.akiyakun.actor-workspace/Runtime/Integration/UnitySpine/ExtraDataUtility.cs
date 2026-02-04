@@ -16,6 +16,47 @@ namespace ActorWorkspace.UnitySpine
         //     return value.Substring(0, index);
         // }
 
+        public static GameObject CreateBoneFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        {
+            // var newObject = new GameObject($"BoneFollower_{name}");
+            var newObject = new GameObject(nodeInfo.Name);// 取得したいときにイベント名と同名の方が都合が良い
+            newObject.transform.SetParent(parent, worldPositionStays: false);
+            newObject.transform.ResetLocalTransform();
+            newObject.SetLayerRecursively(parent.gameObject.layer);
+
+            var follower = newObject.AddComponent<BoneFollower>();
+            follower.skeletonRenderer = skeletonRenderer;
+            follower.Initialize();
+            // Debug.Log($"Add BoneFollower: boneName={info.Name}");
+            follower.SetBone(nodeInfo.Name);
+
+            // MEMO: boneNameに設定だとうまく動かない
+            // https://zenn.dev/happy_elements/articles/a9bbe3c99aefc5
+            // follower.boneName = name;
+
+            // AddFollowObject(info.Name, newObject);
+
+            return newObject;
+        }
+
+        public static GameObject CreatePointFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        {
+            // var newObject = new GameObject($"BoneFollower_{name}");
+            var newObject = new GameObject(nodeInfo.Name);// 取得したいときにイベント名と同名の方が都合が良い
+            newObject.transform.SetParent(parent, worldPositionStays: false);
+            newObject.transform.ResetLocalTransform();
+            // newObject.SetLayerRecursively(parent.gameObject.layer);
+
+            var follower = newObject.AddComponent<PointFollower>();
+            follower.skeletonRenderer = skeletonRenderer;
+            follower.Initialize();
+            // Debug.Log($"Add PointFollower: slotName={info.Name}");
+            follower.slotName = nodeInfo.Name;
+
+            // AddFollowObject(info.Name, newObject);
+
+            return newObject;
+        }
 
         public static GameObject CreateBoundingBoxFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
         {
@@ -37,6 +78,14 @@ namespace ActorWorkspace.UnitySpine
                 follower.Initialize();
             }
 
+            if (nodeInfo.NodeType == SpineNodeType.Bone)
+            {
+                var follower = newObject.AddComponent<BoneFollower>();
+                follower.skeletonRenderer = skeletonRenderer;
+                follower.boneName = nodeInfo.Name;
+                follower.Initialize();
+            }
+
             // skeletonRenderer.skeleton.FindSlot(name);
 
             return newObject;
@@ -44,8 +93,37 @@ namespace ActorWorkspace.UnitySpine
 
         public static GameObject CreateBoundingBox2DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
         {
-            Debug.Assert(false);
+            if (nodeInfo.NodeType != SpineNodeType.Bone)
+            {
+                throw new System.Exception($"CreateBoundingBox2DFollower: スロットではなくボーンを使用してください. name={nodeInfo.Name}");
+            }
+
             var newObject = new GameObject(nodeInfo.Name);
+            newObject.transform.SetParent(parent, worldPositionStays: false);
+            newObject.transform.ResetLocalTransform();
+            // newObject.SetLayerRecursively(parent.gameObject.layer);
+
+            Vector3 v = new Vector3();
+            v.Set(1.0f);
+
+            var collider = newObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = v;
+
+            // var follower = newObject.AddComponent<BoneFollower>();
+            var follower = newObject.AddComponent<BoneSlotFollower>();
+            follower.skeletonRenderer = skeletonRenderer;
+
+            // // slotName を先に設定してから初期化する
+            // // Debug.Log($"Add PointFollower: slotName={name}");
+            follower.boneName = nodeInfo.Name;
+            follower.followXYPosition = true;
+            follower.followLocalScale = false;
+            follower.followParentWorldScale = true;
+            newObject.transform.localScale = v;
+
+            follower.Initialize();
+
             return newObject;
         }
 
@@ -93,6 +171,8 @@ namespace ActorWorkspace.UnitySpine
         {
             return folderSetting.FollowerType switch
             {
+                UnitySpineSettings.FollowerType.BoneFollower => CreateBoneFollower(nodeInfo, parent, skeletonRenderer),
+                UnitySpineSettings.FollowerType.PointFollower => CreatePointFollower(nodeInfo, parent, skeletonRenderer),
                 UnitySpineSettings.FollowerType.BoundingBoxFollower => CreateBoundingBoxFollower(nodeInfo, parent, skeletonRenderer),
                 UnitySpineSettings.FollowerType.BoundingBox2DFollower => CreateBoundingBox2DFollower(nodeInfo, parent, skeletonRenderer),
                 UnitySpineSettings.FollowerType.BoundingBox3DFollower => CreateBoundingBox3DFollower(nodeInfo, parent, skeletonRenderer),

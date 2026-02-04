@@ -36,6 +36,12 @@ namespace ActorWorkspace.UnitySpine
 
         public enum FollowerType
         {
+            [InspectorName("BoneFollower (Spine標準)")]
+            BoneFollower,
+
+            [InspectorName("PointFollower (Spine標準)")]
+            PointFollower,
+
             [InspectorName("BoundingBoxFollower (Spine標準)")]
             BoundingBoxFollower,
 
@@ -94,10 +100,10 @@ namespace ActorWorkspace.UnitySpine
 
         #region Effects
         [Header("Effects")]
-        [SerializeField] string effectBoneFollower = "EffectBoneFollower";
+        [SerializeField] string effectBoneFollower = "8_EffectBoneFolder";
         public string EffectBoneFollower => effectBoneFollower;
 
-        [SerializeField] string effectPointFollower = "EffectPointFollower";
+        [SerializeField] string effectPointFollower = "9_EffectPointFolder";
         public string EffectPointFollower => effectPointFollower;
         #endregion
 
@@ -119,13 +125,15 @@ namespace ActorWorkspace.UnitySpine
         /// <summary>
         /// フォルダーのリストを取得
         /// </summary>
-        List<string> GetFolderList()
+        List<(string, FollowerType)> GetFolderList()
         {
-            return new List<string>()
+            return new List<(string, FollowerType)>()
             {
-                CollisionBoxFolder,
-                HurtBoxFolder,
-                HitBoxFolder,
+                (CollisionBoxFolder, FollowerType.BoundingBox2DFollower),
+                (HurtBoxFolder, FollowerType.BoundingBox2DFollower),
+                (HitBoxFolder, FollowerType.BoundingBox2DFollower),
+                (EffectBoneFollower, FollowerType.BoneFollower),
+                (EffectPointFollower, FollowerType.PointFollower),
             };
         }
 
@@ -136,8 +144,8 @@ namespace ActorWorkspace.UnitySpine
             {
                 folderSettings.Add(new FolderSetting()
                 {
-                    FolderName = folder,
-                    FollowerType = FollowerType.BoundingBoxFollower,
+                    FolderName = folder.Item1,
+                    FollowerType = folder.Item2,
                     LayerSetting = LayerSetting.SameAsParent,
                     LayerPairList = new(),
                 });
