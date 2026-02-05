@@ -86,7 +86,11 @@ def create_fileinfo(spine_dir_path: str):
         extra_data = json.load(f)
         if "externalSpineFilePath" in extra_data:
           external_spine_path = extra_data["externalSpineFilePath"]
+          if not external_spine_path:
+            print_exception(f"externalSpineFilePath フィールドが空です: {spine_dir_path}")
           spine_path = os.path.normpath(os.path.join(spine_dir_path, external_spine_path))
+        else:
+          print_exception(f"externalSpineFilePath フィールドがありません: {spine_dir_path}")
     else:
       print_exception(f"エクスポート対象ファイルが見つかりません: {spine_dir_path}")
 
@@ -210,10 +214,10 @@ def main():
   for i in range(len(spine_files)):
     info = spine_files[i]
 
-    # e.g. /Spine/Player
     output_path = os.path.join(export_dir, info.category_dir_name)
-    # e.g. /Spine/Player/Player_0001@bundle
+    # e.g. /Spine/Player
     output_path = os.path.join(output_path, os.path.basename(info.spine_dir_path))
+    # e.g. /Spine/Player/Player_0001@bundle
     print(f"output_path: {output_path}")
     os.makedirs(output_path, exist_ok=True)
     # sys.exit(1)
@@ -232,6 +236,11 @@ def main():
     if info.override_export_setting_file_path is not None:
       if os.path.isfile(info.override_export_setting_file_path):
           merge_json_files(temp_export_settings_file, info.override_export_setting_file_path)
+
+    # エクストラデータファイルが存在する場合コピー
+    if info.extra_data_file_path is not None:
+      shutil.copy(info.extra_data_file_path, os.path.join(output_path, extra_data_filename))
+
 
     try:
       # See also: https://ja.esotericsoftware.com/spine-command-line-interface
