@@ -1,5 +1,6 @@
 using System.IO;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
 using Spine;
@@ -108,11 +109,19 @@ namespace ActorWorkspace.Editor.UnitySpine
 
         static void ProcessPendingAssets()
         {
+            ProcessPendingAssetsAsync().Forget();
+        }
+
+        static async UniTask ProcessPendingAssetsAsync()
+        {
             // Debug.Log($"3 cout={targetList.Count}");
+
+            // EditorUtility.DisplayProgressBar("処理中", "しばらくお待ちください...", 0f);
+            // await UniTask.Delay(5000, DelayType.Realtime);
 
             try
             {
-                Process(targetList);
+                await Process(targetList);
 
                 targetList.Clear();
 
@@ -123,13 +132,20 @@ namespace ActorWorkspace.Editor.UnitySpine
             finally
             {
                 reImportGard = false;
+
+                // 必ずプログレスバーをクリア
+                // EditorUtility.ClearProgressBar();
+
+                Debug.Log("[SpineAssetPostprocessor] Spineのインポート処理が終了しました");
             }
         }
 
-        static void Process(List<string> targets)
+        static async UniTask Process(List<string> targets)
         {
             foreach (var path in targets)
             {
+                // EditorUtility.DisplayProgressBar("処理中", "もう少しです...1", 0.3f);
+
                 // Debug.Log($"[SpineAssetPostprocessor] Processing Spine Asset: {path}");
                 var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
                 if (skeletonDataAsset == null) continue;
@@ -154,8 +170,14 @@ namespace ActorWorkspace.Editor.UnitySpine
                 if (isCreated == true
                     && UnitySpineSettings.Instance.ImportCallback != null)
                 {
-                    UnitySpineSettings.Instance.ImportCallback.OnNewImported(path, skeletonDataAsset, spineExtraData);
+                    await UnitySpineSettings.Instance.ImportCallback.OnNewImported(path, skeletonDataAsset, spineExtraData);
                 }
+
+                // EditorUtility.DisplayProgressBar("処理中", "もう少しです...2", 0.3f);
+
+                // await UniTask.Yield();
+                // await UniTask.WaitForSeconds(4.0f, ignoreTimeScale: true);
+                await UniTask.Delay(10, DelayType.Realtime);
 
             }
         }

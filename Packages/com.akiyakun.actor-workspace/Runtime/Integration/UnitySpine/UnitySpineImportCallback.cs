@@ -1,4 +1,5 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using afl;
 using Spine.Unity;
@@ -11,8 +12,9 @@ namespace ActorWorkspace.UnitySpine
         /// <summary>
         /// 新規インポートされたときにコールバックされる
         /// </summary>
-        public virtual void OnNewImported(string path, SkeletonDataAsset skeletonDataAsset, SpineExtraDataScriptableObject spineExtraData)
+        public virtual async UniTask OnNewImported(string path, SkeletonDataAsset skeletonDataAsset, SpineExtraDataScriptableObject spineExtraData)
         {
+            await UniTask.CompletedTask;
         }
     }
 }
