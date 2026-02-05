@@ -144,7 +144,8 @@ def parse_args():
 
 # 例:
 # python3 -u -m spine.spine_actor_export_to_unity --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs Player@bundle
-if __name__ == '__main__':
+# if __name__ == '__main__':
+def main():
   args = parse_args()
   export_dir = args.export_dir
   spine_export_settings_file = args.spine_export_setting
@@ -260,3 +261,7 @@ if __name__ == '__main__':
 
   messagebox.showinfo(msgbox_title, "Spineのエクスポート処理が終了しました。")
   sys.exit(0)
+
+
+if __name__ == '__main__':
+  main()
