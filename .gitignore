@@ -1,4 +1,4 @@
-# v1.2.6
+# v1.2.11
 
 ###################################################################################################
 # 公式の.gitignoreのコピー
@@ -83,11 +83,16 @@ crashlytics-build.properties
 # Unity
 ## アセットにオプションとして含まれる場合が多々あるため除外しないほうがよいかも？
 !*.unitypackage
+
 ## Addressable
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/OSX.meta
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/OSX
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/Windows.meta
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/Windows
+# link.xmlは自動生成されるものなので除外する
+# https://discussions.unity.com/t/link-xml-part-of-version-control/868834/5
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml.meta
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml
 
 # OS generated
 # Windows
@@ -107,6 +112,13 @@ Thumbs.db
 
 # VisualStudio
 .vsconfig
+*.slnx
+
+# Microsoft Office
+~$*
+
+# Python
+**/__pycache__/
 
 # Package
 # ローカルフォルダに入れ子で.gitignoreを作成してください
@@ -120,11 +132,6 @@ Thumbs.db
 # /tools/utility/
 /tools/master_data/
 
-# Addressable
-# link.xmlは自動生成されるものなので除外する
-# https://discussions.unity.com/t/link-xml-part-of-version-control/868834/5
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml.meta
-/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml
 # Recorder
 /[Rr]ecordings/
 

@@ -1,4 +1,4 @@
-# v1.3.0
+# v1.3.8
 # .gitattributes ファイルと合わせること
 root = true
 
@@ -9,9 +9,17 @@ end_of_line = lf
 
 
 [*.bat]
+# 標準ではsjisに対応していない
 charset = shift-jis
 end_of_line = crlf
 trim_trailing_whitespace = true
+
+
+[*.sh,*.command]
+charset = urf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+# indent_style = space
 
 
 [*.json]
@@ -41,30 +49,69 @@ trim_trailing_whitespace = true
 #end_of_line = lf
 end_of_line = unset
 
+
+###########################################################
+# NOTE: コンパイラ警告(CSxxxx)の抑制はcsc.rspファイルに追記してください 
+# Unityのcsc.rspは#のコメントが書けない仕様のようなのでここにメモします
+#
+# unsafeコードを許可する
+# -unsafe
+#
+# イベント 'event' は使用されません
+# -nowarn:0067
+# プライベート フィールド 'field' は割り当てられますが、その値は使用されません
+# -nowarn:0414
+#
+
+
+###########################################################
+# IDEの警告を抑制 (C#)
+#
 # 名前を簡素化できます
 dotnet_diagnostic.IDE0001.severity = none
 # メンバー アクセスを簡略化する
 dotnet_diagnostic.IDE0002.severity = none
 # 不要なキャストを削除する
 dotnet_diagnostic.IDE0004.severity = none
+# throw 式を使う
+dotnet_diagnostic.IDE0016.severity = none
 # オブジェクト初期化子を使用する
 dotnet_diagnostic.IDE0017.severity = none
+# インライン変数宣言
+dotnet_diagnostic.IDE0018.severity = none
 # readonly 修飾子を追加する
 dotnet_diagnostic.IDE0044.severity = none
 # 不要なかっこを削除する
 dotnet_diagnostic.IDE0047.severity = none
 # 型参照のためのフレームワーク型名の代わりに言語キーワードを使用する
 dotnet_diagnostic.IDE0049.severity = none
+# 範囲演算子を使用する
+dotnet_diagnostic.IDE0057.severity = none
 # new 式を簡略化する
 dotnet_diagnostic.IDE0090.severity = none
 # 名前空間がフォルダー構造と一致しない
 dotnet_diagnostic.IDE0130.severity = none
+# null 許容ディレクティブが不要
+dotnet_diagnostic.IDE0241.severity = none
 # '読み取り専用' にできる構造体
 dotnet_diagnostic.IDE0250.severity = none
 # メンバーを "読み取り専用" にすることができます
 dotnet_diagnostic.IDE0251.severity = none
+# null チェックは簡略化できます
+dotnet_diagnostic.IDE0270.severity = none
+# プライマリ コンストラクターを使用する
+dotnet_diagnostic.IDE0290.severity = none
 # 配列にコレクション式を使用する(使用できるのはC#12以降)
 dotnet_diagnostic.IDE0300.severity = none
 # 名前付けルール違反
 dotnet_diagnostic.IDE1006.severity = none
+
+
+###########################################################
+# IDEの警告を抑制 (Unity)
+# 
+# 無効または冗長な SerializeField 属性
+dotnet_diagnostic.UNT0013.severity = none
+# GetComponent()呼び出し時にRequireComponents属性を自動的に追加する
+dotnet_diagnostic.UNT0039.severity = none
 
