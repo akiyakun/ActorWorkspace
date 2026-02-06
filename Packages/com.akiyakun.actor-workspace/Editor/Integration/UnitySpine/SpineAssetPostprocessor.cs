@@ -63,11 +63,12 @@ namespace ActorWorkspace.Editor.UnitySpine
 
                     // 新規インポートかチェック
                     if (path.EndsWith(".asset") == true
-                        && AssetDatabase.GetMainAssetTypeAtPath(path) == typeof(SkeletonDataAsset))
+                        && AssetDatabase.GetMainAssetTypeAtPath(path) == typeof(SkeletonDataAsset)
+                        // SpineExtraDataファイルが存在する場合は新規とみなさない
+                        && IsSpineExtraDataExists(path) == false)
                     {
                         targetList.Add(path);
                         Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset(.asset): {path}");
-
                         continue;
                     }
 
@@ -182,13 +183,22 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
         }
 
+        static string GetSpineExtraDataPath(string skeletonDataAssetPath)
+        {
+            string name = Path.GetFileNameWithoutExtension(skeletonDataAssetPath).Replace("_SkeletonData", "");
+            return $"{Path.GetDirectoryName(skeletonDataAssetPath)}/{name}_SpineExtraData.asset";
+        }
+
+        static bool IsSpineExtraDataExists(string skeletonDataAssetPath)
+        {
+            return File.Exists(GetSpineExtraDataPath(skeletonDataAssetPath));
+        }
+
         // 追加情報用ScriptableObjectの作成・取得と内容クリア
         // isCreated: 新規作成された場合true
         static SpineExtraDataScriptableObject CreateSpineExtraDataAsset(string skeletonDataAssetPath, out bool isCreated)
         {
-            string name = Path.GetFileNameWithoutExtension(skeletonDataAssetPath).Replace("_SkeletonData", "");
-            string extraDataPath = $"{Path.GetDirectoryName(skeletonDataAssetPath)}/{name}_SpineExtraData.asset";
-
+            string extraDataPath = GetSpineExtraDataPath(skeletonDataAssetPath);
             SpineExtraDataScriptableObject ret = null;
 
             if (File.Exists(extraDataPath) == true)
