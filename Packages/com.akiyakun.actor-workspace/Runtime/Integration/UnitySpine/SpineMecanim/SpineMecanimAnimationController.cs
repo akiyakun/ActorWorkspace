@@ -84,7 +84,7 @@ namespace ActorWorkspace.UnitySpine
                 for (int i = 0; i < states.Count; i++)
                 {
                     var state = states[i];
-                    D.Log(DefaultLogMask.Verbose, $"State: StateFullPath={state.StateFullPath}, StateName={state.StateName}, StateNameHash={state.StateNameHash}");
+                    D.Log(CoreLogMask.Verbose, $"State: StateFullPath={state.StateFullPath}, StateName={state.StateName}, StateNameHash={state.StateNameHash}");
                     animationHashMap.Add(state.StateNameHash, new SpineMecanimAnimation(state, skeletonMecanim));
                 }
 
