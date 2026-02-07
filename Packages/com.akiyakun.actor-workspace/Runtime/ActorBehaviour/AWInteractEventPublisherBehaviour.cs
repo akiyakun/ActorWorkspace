@@ -5,7 +5,8 @@ using ActorWorkspace.Common;
 
 namespace ActorWorkspace.ActorBehaviour
 {
-    public class InteractEventPublisherBehaviour : AWActorBehaviour<IAWActor>
+    // 汎用的なインタラクトイベントを発行
+    public class AWInteractEventPublisherBehaviour : AWActorBehaviour<IAWActor>
     {
 
         public override void Restore()
