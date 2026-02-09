@@ -1,4 +1,4 @@
-Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
+Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 	Properties {
 		[NoScaleOffset] _MainTex ("Main Texture", 2D) = "black" {}
 		[NoScaleOffset] _MaskTex("Mask", 2D) = "white" {}
@@ -9,6 +9,8 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 		_Black("    Dark Color", Color) = (0,0,0,0)
 		[HideInInspector] _StencilRef("Stencil Reference", Float) = 1.0
 		[Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("Stencil Compare", Float) = 8 // Set to Always as default
+
+		[Toggle(_ZWRITE)] _ZWrite("Z Write", Float) = 1.0
 	}
 
 	HLSLINCLUDE
@@ -20,7 +22,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 		// this Subshader will fail.
 		Tags {"Queue" = "Transparent" "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "IgnoreProjector" = "True" }
 		Cull Off
-		ZWrite Off
+		ZWrite[_ZWrite]
 
 		Stencil {
 			Ref[_StencilRef]
@@ -31,7 +33,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 		Pass {
 			Tags { "LightMode" = "Universal2D" }
 
-			ZWrite Off
+			ZWrite[_ZWrite]
 			Cull Off
 			Blend One OneMinusSrcAlpha
 
@@ -81,8 +83,8 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 			#endif
 
 			#define USE_URP
-			#include "../Include/SpineCoreShaders/Spine-Common.cginc"
-			#include "../Include/SpineCoreShaders/Spine-Skeleton-Tint-Common.cginc"
+			#include "Packages/com.esotericsoftware.spine.urp-shaders/Shaders/Include/SpineCoreShaders/Spine-Common.cginc"
+			#include "Packages/com.esotericsoftware.spine.urp-shaders/Shaders/Include/SpineCoreShaders/Spine-Skeleton-Tint-Common.cginc"
 
 		#if defined(_TINT_BLACK_ON)
 			CBUFFER_START(UnityPerMaterial)
@@ -186,7 +188,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 			Tags { "LightMode" = "NormalsRendering"}
 
 			Blend SrcAlpha OneMinusSrcAlpha
-			ZWrite Off
+			ZWrite On
 
 			HLSLPROGRAM
 			#pragma prefer_hlslcc gles
@@ -240,7 +242,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 			Name "Unlit"
 			Tags { "LightMode" = "UniversalForward" "Queue"="Transparent" "RenderType"="Transparent"}
 
-			ZWrite Off
+			ZWrite On
 			Cull Off
 			Blend One OneMinusSrcAlpha
 
@@ -250,7 +252,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex" {
 			#pragma vertex UnlitVertex
 			#pragma fragment UnlitFragment
 
-			#include "Include/Spine-SkeletonLit-UnlitPass-URP-2D.hlsl"
+			#include "Packages/com.esotericsoftware.spine.urp-shaders/Shaders/2D/Include/Spine-SkeletonLit-UnlitPass-URP-2D.hlsl"
 			ENDHLSL
 		}
 	}
