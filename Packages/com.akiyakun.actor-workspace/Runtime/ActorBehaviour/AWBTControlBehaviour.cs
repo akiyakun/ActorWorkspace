@@ -4,7 +4,7 @@ using afl;
 
 namespace ActorWorkspace.ActorBehaviour
 {
-    // BehaviorTreeのコントロール用
+    // 外部BehaviorTree機能のコントロール用
     public class AWBTControlBehaviour : AWActorBehaviour<IAWActor>
     {
         public const string BehaviorTreeVariableName = "BehaviorTree";
@@ -21,17 +21,24 @@ namespace ActorWorkspace.ActorBehaviour
         {
             Debug.Log($"AWBTControlBehaviour DoAwake ActorId={Actor.ActorId}");
             behaviorTree = GetBehaviorTree();
-            behaviorTree.enabled = true;
+            if (behaviorTree != null)
+            {
+                behaviorTree.enabled = true;
+            }
         }
 
-        protected virtual MonoBehaviour GetBehaviorTree()
+        protected virtual MonoBehaviour? GetBehaviorTree()
         {
             if (Actor.Variables.TryGet(BehaviorTreeVariableName, out var value) == false)
             {
                 throw new System.Exception($"BehaviorTree variable not found. ActorId={Actor.ActorId}");
             }
             var monoBehaviour = value.GetComponent<MonoBehaviour>();
-            if (monoBehaviour == null) throw new System.Exception($"BehaviorTree component not found. ActorId={Actor.ActorId}");
+            if (monoBehaviour == null)
+            {
+                // throw new System.Exception($"BehaviorTree component not found. ActorId={Actor.ActorId}");
+                return null;
+            }
             return monoBehaviour;
         }
 
