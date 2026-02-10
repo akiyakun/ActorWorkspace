@@ -16,6 +16,14 @@ namespace ActorWorkspace.UnitySpine
         {
             await UniTask.CompletedTask;
         }
+
+        /// <summary>
+        /// 更新インポートされたときにコールバックされる
+        /// </summary>
+        public virtual async UniTask OnUpdateImported(string path, SkeletonDataAsset skeletonDataAsset, SpineExtraDataScriptableObject spineExtraData)
+        {
+            await UniTask.CompletedTask;
+        }
     }
 }
 #nullable restore

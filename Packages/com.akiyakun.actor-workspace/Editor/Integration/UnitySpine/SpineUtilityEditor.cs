@@ -1,7 +1,7 @@
-using System;
+#nullable enable
+using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using Spine;
@@ -14,6 +14,8 @@ namespace ActorWorkspace.Editor.UnitySpine
 {
     public static class SpineUtilityEditor
     {
+        public const string SpineExtraDataSuffix = "_SpineExtraData";
+
         // Copy from SpineSpriteShaderGUI
         public enum eBlendMode
         {
@@ -30,6 +32,31 @@ namespace ActorWorkspace.Editor.UnitySpine
             Multiplyx2,
         };
 
+
+        #region SkeletonData
+        // SpineのjsonパスからSkeletonDataAssetのパスを取得する
+        public static string GetSkeletonDataPath(string spineJsonPath)
+        {
+            return $"{Utility.GetPathWithoutExtension(spineJsonPath)}{AssetUtility.SkeletonDataSuffix}.asset";
+        }
+        #endregion
+
+
+        #region SpineExtraData
+        public static string GetSpineExtraDataPath(string skeletonDataAssetPath)
+        {
+            string name = Path.GetFileNameWithoutExtension(skeletonDataAssetPath).Replace(AssetUtility.SkeletonDataSuffix, "");
+            return $"{Path.GetDirectoryName(skeletonDataAssetPath)}/{name}{SpineExtraDataSuffix}.asset";
+        }
+
+        public static bool IsSpineExtraDataExists(string skeletonDataAssetPath)
+        {
+            return File.Exists(GetSpineExtraDataPath(skeletonDataAssetPath));
+        }
+        #endregion
+
+
+        #region Mecanim
         // AnimatorControllerファイルのAnimationClipの生成(再生成)
         // See also: https://ja.esotericsoftware.com/forum/d/14630-c-force-update-animationclips
         public static void GenerateMecanimAnimationClip(string path)
@@ -42,8 +69,10 @@ namespace ActorWorkspace.Editor.UnitySpine
             // MEMO: GenerateMecanimAnimationClip()内でSaveAssets()している
             SkeletonBaker.GenerateMecanimAnimationClips(skeletonDataAsset);
         }
+        #endregion
 
-        public static AnimatorEditorUtility.AnimatorControllerInfo PreSetupAnimatorController(SkeletonDataAsset skeletonDataAsset)
+
+        public static AnimatorEditorUtility.AnimatorControllerInfo? PreSetupAnimatorController(SkeletonDataAsset skeletonDataAsset)
         {
             if (skeletonDataAsset == null)
             {
@@ -65,8 +94,6 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
 
             AnimatorEditorUtility.AnimatorControllerInfo animatorControllerInfo = AnimatorEditorUtility.GetAnimatorControllerInfo(editorAnimatorController);
-            Debug.Assert(animatorControllerInfo != null);
-
             SetLoopForLoopSuffix(animatorControllerInfo);
 
             AssetDatabase.SaveAssets();
@@ -104,7 +131,7 @@ namespace ActorWorkspace.Editor.UnitySpine
         public static SkeletonAnimation CreateSkeletonAnimationFromAssetDatabase(string path)
         {
             var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(path);
-            Debug.Assert(skeletonDataAsset != null, $"SkeletonDataAsset not found at path: {path}");
+            if (skeletonDataAsset == null) throw new System.Exception($"SkeletonDataAsset not found at path: {path}");
             var newSkeleton = new GameObject(skeletonDataAsset.name);
             var skeletonAnimation = newSkeleton.AddComponent<SkeletonAnimation>();
             skeletonAnimation.skeletonDataAsset = skeletonDataAsset;
@@ -121,7 +148,7 @@ namespace ActorWorkspace.Editor.UnitySpine
         public static void SetBlendMode(Material material, eBlendMode blendMode)
         {
             // SpineSpriteShaderGUIの型を取得
-            var spineShaderGUIType = Type.GetType("SpineSpriteShaderGUI, spine-unity-editor");
+            var spineShaderGUIType = System.Type.GetType("SpineSpriteShaderGUI, spine-unity-editor");
             if (spineShaderGUIType == null)
             {
                 Debug.LogError("SpineSpriteShaderGUI型が見つかりません");
@@ -137,7 +164,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
 
             // enum値を生成
-            var blendModeValue = Enum.ToObject(blendModeEnum, blendMode);
+            var blendModeValue = System.Enum.ToObject(blendModeEnum, blendMode);
 
             // SetBlendModeメソッドを取得
             var setBlendModeMethod = spineShaderGUIType.GetMethod("SetBlendMode", BindingFlags.Static | BindingFlags.NonPublic);
@@ -175,7 +202,7 @@ namespace ActorWorkspace.Editor.UnitySpine
         // 特定の名前のボーン以下に存在するボーンを取得する方法
         public static List<BoneData> GetBonesUnderBone(SkeletonData skeletonData, string boneName, int depth = 0)
         {
-            Debug.Assert(skeletonData != null);
+            if (skeletonData == null) throw new System.ArgumentNullException(nameof(skeletonData));
 
             var result = new List<BoneData>();
 
@@ -206,7 +233,7 @@ namespace ActorWorkspace.Editor.UnitySpine
         // 特定の名前のボーン以下に存在するスロットを取得する方法
         public static List<SlotData> GetSlotsUnderBone(SkeletonData skeletonData, string boneName, int depth = 0)
         {
-            Debug.Assert(skeletonData != null);
+            if (skeletonData == null) throw new System.ArgumentNullException(nameof(skeletonData));
 
             var result = new List<SlotData>();
 
@@ -259,3 +286,4 @@ namespace ActorWorkspace.Editor.UnitySpine
 
     }
 }
+#nullable restore
