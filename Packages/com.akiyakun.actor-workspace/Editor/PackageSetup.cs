@@ -27,7 +27,7 @@ namespace ActorWorkspace.Editor
         {
             Debug.Log("Start PackageSetup in ActorWorkspace...");
 
-            // External~ のファイルのコピー
+            // External~ のパスを作成
             var externalPath = Path.GetFullPath(ActorWorkspace.Environment.PackageRootPath) + "External~/";
 
             // spine
@@ -45,6 +45,42 @@ namespace ActorWorkspace.Editor
             }
 
             Debug.Log("Completed PackageSetup in ActorWorkspace.");
+        }
+
+        [MenuItem(Develop_AW + "BehaviorDesigner Core Setup", false, MenuItems.Priority.Develop + 3/* + 10002*/)]
+        static void BehaviorDesignerCoreSetup()
+        {
+            Debug.Log("Start BehaviorDesigner Core Setup in ActorWorkspace...");
+
+            // External~ のパスを作成
+            var externalPath = Path.GetFullPath(ActorWorkspace.Environment.PackageRootPath) + "External~/";
+
+            // BehaviorDesigner
+            {
+                string src = Utility.PathCombine(externalPath, "BehaviorDesigner");
+                string dest = Utility.PathCombine(EUtility.GetRootPath(), "Assets/BehaviorTree/Core");
+                Utility.CopyDirectory(src, dest, overwrite: true, checkTimeStamp: false);
+            }
+
+            Debug.Log("Completed BehaviorDesigner Core Setup in ActorWorkspace.");
+        }
+
+        [MenuItem(Develop_AW + "BehaviorDesigner core files to package", false, MenuItems.Priority.Develop + 4/* + 10002*/)]
+        static void BehaviorDesignerCoreFilesToPackage()
+        {
+            Debug.Log("Start BehaviorDesigner core files to package in ActorWorkspace...");
+
+            // External~ のパスを作成
+            var externalPath = Path.GetFullPath(ActorWorkspace.Environment.PackageRootPath) + "External~/";
+
+            // BehaviorDesigner
+            {
+                string src = Utility.PathCombine(EUtility.GetRootPath(), "Assets/BehaviorTree/Core");
+                string dest = Utility.PathCombine(externalPath, "BehaviorDesigner");
+                Utility.CopyDirectory(src, dest, overwrite: true, checkTimeStamp: false);
+            }
+
+            Debug.Log("Completed BehaviorDesigner core files to package in ActorWorkspace.");
         }
     }
 }
