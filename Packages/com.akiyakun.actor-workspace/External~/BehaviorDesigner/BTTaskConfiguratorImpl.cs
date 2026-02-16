@@ -5,8 +5,8 @@ using afl.BehaviorTask;
 
 namespace Project.BehaviorTask
 {
-    [CreateAssetMenu(menuName = "App/BehaviorTask/TaskControllerFactory", fileName = "TaskControllerFactorySO")]
-    public class TaskControllerFactory : BTTaskControllerFactory
+    [CreateAssetMenu(menuName = "App/BehaviorTask/BTTaskConfiguratorImpl", fileName = "BTTaskConfiguratorImplSO")]
+    public class BTTaskConfiguratorImpl : BTTaskConfigurator
     {
         public override IBTTaskController CreateTaskController(GameObject owner)
         {

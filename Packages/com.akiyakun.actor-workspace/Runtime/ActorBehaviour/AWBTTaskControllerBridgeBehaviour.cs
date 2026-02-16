@@ -8,11 +8,11 @@ namespace ActorWorkspace.ActorBehaviour
     // 外部BehaviorTree機能のコントロール用
     public class AWBTTaskControllerBridgeBehaviour : AWActorBehaviour<IAWActor>
     {
-        public const string BTTaskControllerFactoryVariableName = "BTTaskControllerFactory";
+        public const string BTTaskConfiguratorVariableName = "BTTaskConfigurator";
 
         public override UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
 
-        BTTaskControllerFactory? taskControllerFactory;
+        BTTaskConfigurator? taskConfigurator;
         IBTTaskController? taskController;
 
         public override void Restore()
@@ -22,10 +22,10 @@ namespace ActorWorkspace.ActorBehaviour
         public override void DoAwake()
         {
             Debug.Log($"AWBTTaskControllerBridgeBehaviour DoAwake ActorId={Actor.ActorId}");
-            taskControllerFactory = GetTaskControllerFactory();
-            if (taskControllerFactory != null)
+            taskConfigurator = GetTaskConfigurator();
+            if (taskConfigurator != null)
             {
-                taskController = taskControllerFactory.CreateTaskController(Actor.GameObject);
+                taskController = taskConfigurator.CreateTaskController(Actor.GameObject);
                 if (taskController == null) throw new System.Exception($"Failed to create BTTaskController. ActorId={Actor.ActorId}");
                 taskController.DoAwake();
                 // taskControllerFactory.enabled = true;
@@ -41,21 +41,19 @@ namespace ActorWorkspace.ActorBehaviour
             taskController?.DoUpdate(deltaTime);
         }
 
-        protected virtual BTTaskControllerFactory? GetTaskControllerFactory()
+        protected virtual BTTaskConfigurator? GetTaskConfigurator()
         {
-            if (Actor.Variables.TryGet(BTTaskControllerFactoryVariableName, out var value) == false)
+            if (Actor.Variables.TryGet(BTTaskConfiguratorVariableName, out var value) == false)
             {
                 throw new System.Exception($"Variable not found. ActorId={Actor.ActorId}");
             }
-            // BTTaskControllerFactory aa;
-            // aa.g
-            taskControllerFactory = value.GetUnityObject<BTTaskControllerFactory>();
-            if (taskControllerFactory == null)
+            taskConfigurator = value.GetUnityObject<BTTaskConfigurator>();
+            if (taskConfigurator == null)
             {
                 // throw new System.Exception($"BehaviorTree component not found. ActorId={Actor.ActorId}");
                 return null;
             }
-            return taskControllerFactory;
+            return taskConfigurator;
         }
 
     }

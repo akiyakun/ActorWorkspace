@@ -7,6 +7,8 @@ namespace Project.BehaviorTask
 {
     public class TaskController : IBTTaskController
     {
+        public bool Enabled { get; protected set; }
+
         GameObject owner;
         BehaviorTree behaviorTree = null!;
 
@@ -15,11 +17,14 @@ namespace Project.BehaviorTask
             this.owner = owner;
 
             behaviorTree = owner.GetComponent<BehaviorTree>();
-            Debug.Assert(behaviorTree != null);
+            // Debug.Assert(behaviorTree != null);
+            if (behaviorTree == null) Enabled = false;
         }
 
         public void DoAwake()
         {
+            if (Enabled == false) return;
+
             // behaviorTree.EnableBehavior();
             behaviorTree.enabled = true;
 
@@ -33,6 +38,8 @@ namespace Project.BehaviorTask
 
         public void DoUpdate(float deltaTime)
         {
+            if (Enabled == false) return;
+
             // FIXME: deltaTimeを渡したい
             // FIXME: FixedUpdateしたい場合どうしたら？
             //BehaviorDesigner.Runtime.Behavior
