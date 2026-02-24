@@ -22,7 +22,7 @@ namespace ActorWorkspace.Editor.UnitySpine
     public class SpineAssetPostprocessor : AssetPostprocessor
     {
         [MenuItem("CONTEXT/SkeletonDataAsset/AW再インポート", false, 0)]
-        static void ReImport(MenuCommand menuCommand)
+        static void MenuReImport(MenuCommand menuCommand)
         {
             reImportGard = true;
             targetList = new()
@@ -31,6 +31,30 @@ namespace ActorWorkspace.Editor.UnitySpine
             };
             OnDelayCall();
             Debug.Log("[SpineAssetPostprocessor] AW再インポート完了");
+        }
+
+        [MenuItem("CONTEXT/SkeletonDataAsset/AW更新インポート", false, 0)]
+        static void MenuUpdateImport(MenuCommand menuCommand)
+        {
+            reImportGard = true;
+            targetList = new()
+            {
+                new AssetInfo(AssetDatabase.GetAssetPath(menuCommand.context), true)
+            };
+            OnDelayCall();
+            Debug.Log("[SpineAssetPostprocessor] AW更新インポート完了");
+        }
+
+        public static void ReImport(List<string> paths, bool isUpdate = true)
+        {
+            reImportGard = true;
+            targetList = new();
+            foreach (var path in paths)
+            {
+                targetList.Add(new AssetInfo(path, isUpdate));
+            };
+            OnDelayCall();
+            Debug.Log("[SpineAssetPostprocessor] 再インポート完了");
         }
 
         class AssetInfo

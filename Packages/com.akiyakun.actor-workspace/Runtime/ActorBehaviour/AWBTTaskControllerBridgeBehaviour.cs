@@ -21,7 +21,7 @@ namespace ActorWorkspace.ActorBehaviour
 
         public override void DoAwake()
         {
-            Debug.Log($"AWBTTaskControllerBridgeBehaviour DoAwake ActorId={Actor.ActorId}");
+            // Debug.Log($"AWBTTaskControllerBridgeBehaviour DoAwake ActorId={Actor.ActorId}");
             taskConfigurator = GetTaskConfigurator();
             if (taskConfigurator != null)
             {
