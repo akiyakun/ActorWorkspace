@@ -18,7 +18,7 @@ namespace Project.BehaviorTask
 
             behaviorTree = owner.GetComponent<BehaviorTree>();
             // Debug.Assert(behaviorTree != null);
-            if (behaviorTree == null) Enabled = false;
+            Enabled = behaviorTree != null;
         }
 
         public void DoAwake()
@@ -26,6 +26,7 @@ namespace Project.BehaviorTask
             if (Enabled == false) return;
 
             // behaviorTree.EnableBehavior();
+            behaviorTree.StartWhenEnabled = true;
             behaviorTree.enabled = true;
 
             //     var factory = (IBTTaskFactory)GlobalVariables.Instance.GetVariable("BTTaskFactory").GetValue();
