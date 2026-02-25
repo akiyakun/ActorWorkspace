@@ -16,7 +16,8 @@ namespace ActorWorkspace.UnitySpine
         //     return value.Substring(0, index);
         // }
 
-        public static GameObject CreateBoneFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        public static GameObject CreateBoneFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
+            UnitySpineSettings.FolderSetting folderSetting)
         {
             // var newObject = new GameObject($"BoneFollower_{name}");
             var newObject = new GameObject(nodeInfo.Name);// 取得したいときにイベント名と同名の方が都合が良い
@@ -39,7 +40,8 @@ namespace ActorWorkspace.UnitySpine
             return newObject;
         }
 
-        public static GameObject CreatePointFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        public static GameObject CreatePointFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
+            UnitySpineSettings.FolderSetting folderSetting)
         {
             // var newObject = new GameObject($"BoneFollower_{name}");
             var newObject = new GameObject(nodeInfo.Name);// 取得したいときにイベント名と同名の方が都合が良い
@@ -58,7 +60,8 @@ namespace ActorWorkspace.UnitySpine
             return newObject;
         }
 
-        public static GameObject CreateBoundingBoxFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        public static GameObject CreateBoundingBoxFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
+            UnitySpineSettings.FolderSetting folderSetting)
         {
             // var newObject = new GameObject($"BoneFollower_{name}");
             var newObject = new GameObject(nodeInfo.Name);// 取得したいときにイベント名と同名の方が都合が良い
@@ -91,7 +94,8 @@ namespace ActorWorkspace.UnitySpine
             return newObject;
         }
 
-        public static GameObject CreateBoundingBox2DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        public static GameObject CreateBoundingBox2DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
+            UnitySpineSettings.FolderSetting folderSetting)
         {
             if (nodeInfo.NodeType != SpineNodeType.Bone)
             {
@@ -112,6 +116,7 @@ namespace ActorWorkspace.UnitySpine
 
             // var follower = newObject.AddComponent<BoneFollower>();
             var follower = newObject.AddComponent<BoneSlotFollower>();
+            follower.FolderName = folderSetting.FolderName;
             follower.skeletonRenderer = skeletonRenderer;
 
             // // slotName を先に設定してから初期化する
@@ -122,6 +127,14 @@ namespace ActorWorkspace.UnitySpine
             follower.followParentWorldScale = true;
             newObject.transform.localScale = v;
 
+// #if __INAPPDEBUG__
+//             {
+//                 var spriteRenderer = newObject.AddComponent<SpriteRenderer>();
+//                 spriteRenderer.sprite = afl.Service.Debugger.DebugVisualize.GetSprite100x();
+//                 spriteRenderer.color = new Color(1.0f, 0.0f, 0.0f, 0.3f);
+//             }
+// #endif
+
             follower.Initialize();
 
             return newObject;
@@ -129,7 +142,8 @@ namespace ActorWorkspace.UnitySpine
 
         // BoundingBox3DFollower
         // BoxCollider
-        public static GameObject CreateBoundingBox3DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer)
+        public static GameObject CreateBoundingBox3DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
+            UnitySpineSettings.FolderSetting folderSetting)
         {
             if (nodeInfo.NodeType != SpineNodeType.Bone)
             {
@@ -171,11 +185,11 @@ namespace ActorWorkspace.UnitySpine
         {
             return folderSetting.FollowerType switch
             {
-                UnitySpineSettings.FollowerType.BoneFollower => CreateBoneFollower(nodeInfo, parent, skeletonRenderer),
-                UnitySpineSettings.FollowerType.PointFollower => CreatePointFollower(nodeInfo, parent, skeletonRenderer),
-                UnitySpineSettings.FollowerType.BoundingBoxFollower => CreateBoundingBoxFollower(nodeInfo, parent, skeletonRenderer),
-                UnitySpineSettings.FollowerType.BoundingBox2DFollower => CreateBoundingBox2DFollower(nodeInfo, parent, skeletonRenderer),
-                UnitySpineSettings.FollowerType.BoundingBox3DFollower => CreateBoundingBox3DFollower(nodeInfo, parent, skeletonRenderer),
+                UnitySpineSettings.FollowerType.BoneFollower => CreateBoneFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
+                UnitySpineSettings.FollowerType.PointFollower => CreatePointFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
+                UnitySpineSettings.FollowerType.BoundingBoxFollower => CreateBoundingBoxFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
+                UnitySpineSettings.FollowerType.BoundingBox2DFollower => CreateBoundingBox2DFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
+                UnitySpineSettings.FollowerType.BoundingBox3DFollower => CreateBoundingBox3DFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
                 _ => throw new System.Exception($"CreateFollowerObject: Unsupported FollowerType={folderSetting.FollowerType}"),
             };
         }

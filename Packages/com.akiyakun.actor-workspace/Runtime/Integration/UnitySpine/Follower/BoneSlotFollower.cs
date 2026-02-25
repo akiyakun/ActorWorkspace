@@ -1,6 +1,8 @@
 #nullable enable
 using UnityEngine;
 using Spine.Unity;
+using System;
+using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
@@ -22,6 +24,7 @@ namespace ActorWorkspace.UnitySpine
         public bool followParentWorldScale = false;
         #endregion
 
+        [NonSerialized, Disable] public string? FolderName;
 
         bool isInitialized = false;
         Spine.Bone bone = null!;
