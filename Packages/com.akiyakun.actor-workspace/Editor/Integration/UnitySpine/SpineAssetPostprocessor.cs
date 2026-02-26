@@ -169,8 +169,35 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
         }
 
+        static bool ErrorCheck(AssetInfo assetInfo)
+        {
+            var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(assetInfo.Path);
+            if (skeletonDataAsset == null) return false;
+
+            var ret = skeletonDataAsset.GetSkeletonData(false);
+            if (ret == null)
+            {
+                // Debug.LogError($"[SpineAssetPostprocessor] Failed to get SkeletonData for path: {assetInfo.Path}");
+                return false;
+            }
+
+            return true;
+        }
+
         static async UniTask Process(AssetInfo assetInfo)
         {
+            // 追加情報用ScriptableObjectの作成・取得と内容クリア
+            SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(assetInfo.Path, out bool isCreated);
+
+            // エラーや警告が出ていないかチェック
+            if (ErrorCheck(assetInfo) == false)
+            {
+                spineExtraData.IsImportError = true;
+                EditorUtility.SetDirty(spineExtraData);
+                AssetDatabase.SaveAssets();
+                return;
+            }
+
             // Spineデータに変更があった場合にAnimationClipを再生成する(確実にするため)
             SpineUtilityEditor.GenerateMecanimAnimationClip(assetInfo.Path);
             await EUtility.WaitForEditor();
@@ -185,10 +212,6 @@ namespace ActorWorkspace.Editor.UnitySpine
             {
                 SpineUtilityEditor.PreSetupAnimatorController(skeletonDataAsset);
             }
-
-            // 追加情報用ScriptableObjectの作成・取得と内容クリア
-            SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(assetInfo.Path, out bool isCreated);
-            EditorUtility.SetDirty(spineExtraData);
 
             ProcessFolders(skeletonDataAsset, spineExtraData);
 
@@ -210,6 +233,11 @@ namespace ActorWorkspace.Editor.UnitySpine
                 }
             }
 
+            spineExtraData.IsImportError = false;
+            EditorUtility.SetDirty(spineExtraData);
+
+            AssetDatabase.SaveAssets();
+
             await EUtility.WaitForEditor();
         }
 
@@ -229,7 +257,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             {
                 ret = ScriptableObject.CreateInstance<SpineExtraDataScriptableObject>();
                 AssetDatabase.CreateAsset(ret, extraDataPath);
-                AssetDatabase.SaveAssets();
+                // AssetDatabase.SaveAssets();
                 isCreated = true;
             }
 

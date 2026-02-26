@@ -53,6 +53,9 @@ namespace ActorWorkspace.UnitySpine
         public List<FolderInfo> folders = new();
         public IReadOnlyList<FolderInfo> Folders => folders;
 
+        [SerializeField, Disable]
+        public bool IsImportError = true;
+
         public void Clear()
         {
             folders?.Clear();

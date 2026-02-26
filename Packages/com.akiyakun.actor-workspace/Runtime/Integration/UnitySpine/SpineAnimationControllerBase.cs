@@ -137,12 +137,18 @@ namespace ActorWorkspace.UnitySpine
         {
             if (skeletonRenderer == null) throw new System.ArgumentNullException(nameof(skeletonRenderer));
 
+            if (ExtraData == null) return;
+
+            if (ExtraData.IsImportError == true)
+            {
+                throw new System.Exception($"インポートエラーが発生しています name={skeletonRenderer.name}");
+            }
+
             // Followerオブジェクトの作成
             // CreateBoneFollowers(parent, skeletonRenderer);
             // CreatePointFollowers(parent, skeletonRenderer);
 
             // Folderの処理
-            if (ExtraData != null)
             {
                 foreach (var info in ExtraData.Folders)
                 {
