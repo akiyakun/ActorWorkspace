@@ -11,7 +11,7 @@
 	"rotation": true,
 	"alias": true,
 	"ignoreBlankImages": true,
-	"alphaThreshold": 3,
+	"alphaThreshold": 0,
 	"minWidth": 16,
 	"minHeight": 16,
 	"maxWidth": 8192,
