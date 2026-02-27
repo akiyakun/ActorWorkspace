@@ -185,6 +185,9 @@ namespace ActorWorkspace.UnitySpine
             {
                 // SetEnableRootMotion(skeletonMecanimRootMotion.enabled);
                 SetEnableRootMotion(true);
+
+                // 初期状態を適用
+                ApplyRootMotion(animatorStateEvent.ApplyRootMotionByDefault);
             }
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
