@@ -443,9 +443,30 @@ namespace ActorWorkspace.UnitySpine
             // }
             if (EnableRootMotion == true)
             {
-                if (RootMotionStatus == false
-                    && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+                // origin
+                // if (RootMotionStatus == false
+                //     && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+                // {
+                //     ApplyRootMotion(true);
+                //     // Debug.Log($"RootMotion: Enable name={animation.Name}");
+                // }
+
+                // 遷移中でないとき
+                if (animator.IsInTransition(0) == false)
                 {
+                    if (RootMotionStatus == true && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.NoRootMotion))
+                    {
+                        ApplyRootMotion(false);
+                    }
+                    else if (RootMotionStatus == false && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+                    {
+                        ApplyRootMotion(true);
+                    }
+                }
+                // 遷移中のとき
+                else if (RootMotionStatus == false && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
+                {
+                    // 遷移元関係なくRootMotionを優先する
                     ApplyRootMotion(true);
                     // Debug.Log($"RootMotion: Enable name={animation.Name}");
                 }

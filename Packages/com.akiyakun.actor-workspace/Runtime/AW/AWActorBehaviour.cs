@@ -53,6 +53,7 @@ namespace ActorWorkspace
 
         public virtual void Terminate()
         {
+            EventBag?.Dispose();
         }
 
         public abstract void Restore();
@@ -63,6 +64,7 @@ namespace ActorWorkspace
 
         public virtual void DoDestroy()
         {
+            EventBag?.Dispose();
         }
 
     }
