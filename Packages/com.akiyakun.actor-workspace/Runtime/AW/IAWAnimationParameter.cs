@@ -28,6 +28,8 @@ namespace ActorWorkspace
         public void ResetTrigger(string name);
         public void SetTrigger(int nameHash);
         public void SetTrigger(string name);
+
+        public void AllResetTrigger();
     }
 }
 #nullable restore

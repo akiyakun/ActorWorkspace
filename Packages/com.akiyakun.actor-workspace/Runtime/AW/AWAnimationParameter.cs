@@ -9,6 +9,7 @@ namespace ActorWorkspace
     public class AWAnimationParameter : IAWAnimationParameter
     {
         Dictionary<int, Variable> table = new();
+        List<Variable> triggerList = new();
 
         public void ResetAll()
         {
@@ -100,6 +101,17 @@ namespace ActorWorkspace
                 v = new Variable();
                 v.SetInt(value);
                 table.Add(nameHash, v);
+
+                // Triggerのリストにも追加
+                triggerList.Add(v);
+            }
+        }
+
+        public void AllResetTrigger()
+        {
+            foreach (var v in triggerList)
+            {
+                v.SetInt(0);
             }
         }
     }

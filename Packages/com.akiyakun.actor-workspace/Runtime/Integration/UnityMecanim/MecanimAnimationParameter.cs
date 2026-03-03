@@ -9,11 +9,23 @@ namespace ActorWorkspace
     public class MecanimAnimationParameter : IAWAnimationParameter
     {
         Animator animator;
+        List<AnimatorControllerParameter> triggerList = new();
 
         public MecanimAnimationParameter(Animator animator)
         {
+            if (animator == null) throw new System.ArgumentNullException(nameof(animator));
             this.animator = animator;
-            Debug.Assert(animator != null);
+
+            // Triggerのリストを作成
+            {
+                foreach (var param in animator.parameters)
+                {
+                    if (param.type == AnimatorControllerParameterType.Trigger)
+                    {
+                        triggerList.Add(param);
+                    }
+                }
+            }
         }
 
         public void ResetAll()
@@ -73,6 +85,14 @@ namespace ActorWorkspace
         public void SetTrigger(int nameHash) => animator.SetTrigger(nameHash);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetTrigger(string name) => animator.SetTrigger(name);
+
+        public void AllResetTrigger()
+        {
+            foreach (var param in triggerList)
+            {
+                animator.ResetTrigger(param.nameHash);
+            }
+        }
     }
 }
 #nullable restore
