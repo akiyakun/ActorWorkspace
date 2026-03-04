@@ -11,8 +11,8 @@ namespace ActorWorkspace
         // public const string InterruptEnd = "InterruptEnd";
         public const string UninterruptBegin = "UninterruptBegin";
         public const string UninterruptEnd = "UninterruptEnd";
-        // public const string UseRootMotionXBegin = "RootMotionXBegin";
-        // public const string UseRootMotionXEnd = "RootMotionXEnd";
+        public const string DisableRootMotionXBegin = "DisableRootMotionXBegin";
+        public const string DisableRootMotionXEnd = "DisableRootMotionXEnd";
         public const string RootMotionYBegin = "RootMotionYBegin";
         public const string RootMotionYEnd = "RootMotionYEnd";
     }
