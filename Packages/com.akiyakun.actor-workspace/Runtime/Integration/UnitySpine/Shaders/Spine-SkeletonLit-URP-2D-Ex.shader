@@ -11,6 +11,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 		[Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("Stencil Compare", Float) = 8 // Set to Always as default
 
 		[Toggle(_ZWRITE)] _ZWrite("Z Write", Float) = 1.0
+        _AddColor("AddColor", Color) = (0,0,0,0)
 	}
 
 	HLSLINCLUDE
@@ -86,12 +87,13 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 			#include "Packages/com.esotericsoftware.spine.urp-shaders/Shaders/Include/SpineCoreShaders/Spine-Common.cginc"
 			#include "Packages/com.esotericsoftware.spine.urp-shaders/Shaders/Include/SpineCoreShaders/Spine-Skeleton-Tint-Common.cginc"
 
-		#if defined(_TINT_BLACK_ON)
-			CBUFFER_START(UnityPerMaterial)
+		CBUFFER_START(UnityPerMaterial)
+            half4 _AddColor;
+			#if defined(_TINT_BLACK_ON)
 			half4 _Color;
 			half4 _Black;
-			CBUFFER_END
-		#endif
+			#endif
+		CBUFFER_END
 
 			TEXTURE2D(_MainTex);
 			SAMPLER(sampler_MainTex);
@@ -164,11 +166,12 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 				tex.rgb = tex.a < 0.001 ? tex.rgb : tex.rgb / tex.a; // < epsilon prevents imprecision issues on some HW.
 				#endif
 				half4 main = tex * i.color;
-				#endif
+			#endif
 				half4 mask = SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, i.uv);
 			#if UNITY_VERSION  < 202120
 				return half4(CombinedShapeLightShared(half4(main.rgb, 1), mask, i.lightingUV).rgb * main.a, main.a);
 			#else
+				main.rgb = saturate(main.rgb + _AddColor.rgb);
 				SurfaceData2D surfaceData;
 				InputData2D inputData;
 				surfaceData.albedo = main.rgb;
