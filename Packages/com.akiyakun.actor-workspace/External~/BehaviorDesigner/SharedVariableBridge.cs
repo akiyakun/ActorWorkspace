@@ -20,8 +20,8 @@ namespace Project
         }
 
         public override object GetSharedValue() => variable.Value;
-
         public override void SetSharedValue(object value) => variable.Value = (TValue)value;
+        public override bool IsNone => variable.IsNone;
 
     }
 }
