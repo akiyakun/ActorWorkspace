@@ -9,6 +9,10 @@ namespace ActorWorkspace
         // public IReadOnlyList<IAWAnimation> AnimationList { get; }
 
         #region Events
+        // public event System.Action<IAWAnimation, Vector2, float> OnUpdateOverride;
+		public delegate void UpdateOverrideDelegate(IAWAnimationController controller, Vector2 translation, float rotation);
+		public event UpdateOverrideDelegate OnUpdateOverride;
+
         // アニメーションが開始されたときにコールバックされます
         public event System.Action<IAWAnimation> OnAnimationEntered;
 

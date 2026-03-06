@@ -16,6 +16,11 @@ namespace ActorWorkspace.UnitySpine
         where TTrack : class, IAWTrack
     {
         #region Events
+        // public event System.Action<IAWAnimation, Vector2, float> OnUpdateOverride;
+        // protected virtual void InvokeUpdateOverride(IAWAnimation animation, Vector2 translation, float rotation) => OnUpdateOverride?.Invoke(animation, translation, rotation);
+        public event IAWAnimationController.UpdateOverrideDelegate OnUpdateOverride = null!;
+        protected virtual void InvokeUpdateOverride(IAWAnimationController controller, Vector2 translation, float rotation) => OnUpdateOverride?.Invoke(controller, translation, rotation);
+        protected bool IsNullOfUpdateOverride => OnUpdateOverride == null;
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         protected virtual void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
         public event System.Action<IAWAnimation> OnAnimationComplete = null!;

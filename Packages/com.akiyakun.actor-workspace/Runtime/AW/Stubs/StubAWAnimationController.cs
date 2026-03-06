@@ -12,6 +12,7 @@ namespace ActorWorkspace.Tests
 
         // public IReadOnlyList<IAWAnimation> AnimationList => new List<IAWAnimation> { new FakeAWAnimation() };
 
+        public event IAWAnimationController.UpdateOverrideDelegate OnUpdateOverride = null!;
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         public event System.Action<IAWAnimation> OnAnimationComplete = null!;
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
