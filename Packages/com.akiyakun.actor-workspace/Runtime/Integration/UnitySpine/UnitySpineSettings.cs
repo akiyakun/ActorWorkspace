@@ -24,6 +24,10 @@ namespace ActorWorkspace.UnitySpine
 
         #region Folders
         [Header("Folders")]
+
+        [SerializeField] string anchorFolder = "1_AnchorFolder";
+        public string AnchorFolder => anchorFolder;
+
         [SerializeField] string collisionBoxFolder = "3_CollisionBoxFolder";
         public string CollisionBoxFolder => collisionBoxFolder;
 
@@ -48,8 +52,14 @@ namespace ActorWorkspace.UnitySpine
             [InspectorName("BoundingBox2DFollower (AWカスタム実装)")]
             BoundingBox2DFollower,
 
+            [InspectorName("BoundingBox2DFollowerIsTrigger (AWカスタム実装)")]
+            BoundingBox2DFollowerIsTrigger,
+
             [InspectorName("BoundingBox3DFollower (AWカスタム実装)")]
             BoundingBox3DFollower,
+
+            [InspectorName("BoundingBox3DFollowerIsTrigger (AWカスタム実装)")]
+            BoundingBox3DFollowerIsTrigger,
         }
 
         public enum LayerSetting
@@ -69,6 +79,12 @@ namespace ActorWorkspace.UnitySpine
 
             [SerializeField, LayerSelector]
             public int TargetLayer;
+
+            [SerializeField]
+            public LayerMask IncludeLayerMask;
+
+            [SerializeField]
+            public LayerMask ExcludeLayerMask;
         }
 
         [Serializable]
@@ -76,6 +92,8 @@ namespace ActorWorkspace.UnitySpine
         {
             public string FolderName = "";
             public FollowerType FollowerType = FollowerType.BoundingBox2DFollower;
+
+            public string Options = string.Empty;
 
             public LayerSetting LayerSetting;
             public List<LayerPair> LayerPairList = new();

@@ -95,7 +95,7 @@ namespace ActorWorkspace.UnitySpine
         }
 
         public static GameObject CreateBoundingBox2DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
-            UnitySpineSettings.FolderSetting folderSetting)
+            UnitySpineSettings.FolderSetting folderSetting, bool isTrigger)
         {
             if (nodeInfo.NodeType != SpineNodeType.Bone)
             {
@@ -111,7 +111,7 @@ namespace ActorWorkspace.UnitySpine
             v.Set(1.0f);
 
             var collider = newObject.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
+            collider.isTrigger = isTrigger;
             collider.size = v;
 
             // var follower = newObject.AddComponent<BoneFollower>();
@@ -143,7 +143,7 @@ namespace ActorWorkspace.UnitySpine
         // BoundingBox3DFollower
         // BoxCollider
         public static GameObject CreateBoundingBox3DFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
-            UnitySpineSettings.FolderSetting folderSetting)
+            UnitySpineSettings.FolderSetting folderSetting, bool isTrigger)
         {
             if (nodeInfo.NodeType != SpineNodeType.Bone)
             {
@@ -159,7 +159,7 @@ namespace ActorWorkspace.UnitySpine
             v.Set(32.0f / 100.0f);
 
             var collider = newObject.AddComponent<BoxCollider>();
-            collider.isTrigger = true;
+            collider.isTrigger = isTrigger;
             collider.size = v;
 
             // var follower = newObject.AddComponent<BoneFollower>();
@@ -188,8 +188,10 @@ namespace ActorWorkspace.UnitySpine
                 UnitySpineSettings.FollowerType.BoneFollower => CreateBoneFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
                 UnitySpineSettings.FollowerType.PointFollower => CreatePointFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
                 UnitySpineSettings.FollowerType.BoundingBoxFollower => CreateBoundingBoxFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
-                UnitySpineSettings.FollowerType.BoundingBox2DFollower => CreateBoundingBox2DFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
-                UnitySpineSettings.FollowerType.BoundingBox3DFollower => CreateBoundingBox3DFollower(nodeInfo, parent, skeletonRenderer, folderSetting),
+                UnitySpineSettings.FollowerType.BoundingBox2DFollower => CreateBoundingBox2DFollower(nodeInfo, parent, skeletonRenderer, folderSetting, isTrigger: false),
+                UnitySpineSettings.FollowerType.BoundingBox2DFollowerIsTrigger => CreateBoundingBox2DFollower(nodeInfo, parent, skeletonRenderer, folderSetting, isTrigger: true),
+                UnitySpineSettings.FollowerType.BoundingBox3DFollower => CreateBoundingBox3DFollower(nodeInfo, parent, skeletonRenderer, folderSetting, isTrigger: false),
+                UnitySpineSettings.FollowerType.BoundingBox3DFollowerIsTrigger => CreateBoundingBox3DFollower(nodeInfo, parent, skeletonRenderer, folderSetting, isTrigger: true),
                 _ => throw new System.Exception($"CreateFollowerObject: Unsupported FollowerType={folderSetting.FollowerType}"),
             };
         }
@@ -223,6 +225,10 @@ namespace ActorWorkspace.UnitySpine
                             {
                                 // 対応するターゲットレイヤーに設定
                                 followerObject.SetLayerRecursively(pair.TargetLayer);
+
+                                // LayerMaskの適応
+                                ApplyColliderLayerMask(followerObject, pair);
+
                                 break;
                             }
                         }
@@ -234,6 +240,23 @@ namespace ActorWorkspace.UnitySpine
             }
         }
 
+        // LayerMaskの適応
+        public static void ApplyColliderLayerMask(GameObject followerObject, UnitySpineSettings.LayerPair layerPair)
+        {
+            var collider2DList = followerObject.GetComponents<BoxCollider2D>();
+            foreach (var collider in collider2DList)
+            {
+                collider.includeLayers = layerPair.IncludeLayerMask;
+                collider.excludeLayers = layerPair.ExcludeLayerMask;
+            }
+
+            var collider3DList = followerObject.GetComponents<BoxCollider>();
+            foreach (var collider in collider3DList)
+            {
+                collider.includeLayers = layerPair.IncludeLayerMask;
+                collider.excludeLayers = layerPair.ExcludeLayerMask;
+            }
+        }
     }
 }
 #nullable restore
