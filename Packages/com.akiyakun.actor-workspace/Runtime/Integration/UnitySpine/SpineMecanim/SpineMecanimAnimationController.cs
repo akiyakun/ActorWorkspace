@@ -45,7 +45,6 @@ namespace ActorWorkspace.UnitySpine
             set => skeletonMecanimRootMotion.transformPositionY = value;
         }
 
-
         SkeletonMecanim skeletonMecanim;
         Animator animator;
         SkeletonMecanimRootMotion skeletonMecanimRootMotion;
@@ -54,9 +53,48 @@ namespace ActorWorkspace.UnitySpine
 
         int currentStateNameHash = 0;
 
-// #if UNITY_EDITOR
-//         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
-// #endif
+        // #if UNITY_EDITOR
+        //         Dictionary<string, UnityEditor.Animations.AnimatorState> states = new();
+        // #endif
+
+        void OnPhysicsUpdateRootMotionOverride(SkeletonRootMotionBase component, Vector2 translation, float rotation)
+        {
+            var actor = skeletonMecanimRootMotion.rigidBody2D.gameObject.GetComponent<IAWActor>();
+            var rigidBody = skeletonMecanimRootMotion.rigidBody2D;
+
+            if (EnableRootMotion == false || RootMotionStatus == false)
+            {
+                // rigidBody.MovePosition(actor.ActorParam.GetPosition());
+                return;
+            }
+
+            // Debug.Log($"OnPhysicsUpdateRootMotionOverride: translation={translation}, rotation={rotation}");
+
+            // var pos = actor.ActorParam.GetPosition();
+            // if (ApplyRootMotionPositionX) pos.x += translation.x;
+            // if (ApplyRootMotionPositionY) pos.y += translation.y;
+            // actor.ActorParam.SetPosition(pos);
+
+            // 向きを合わせる
+            if (rigidBody.transform.lossyScale.x <= 0.0f) translation.x = -translation.x;
+
+            if (IsNullOfUpdateOverride)
+            {
+                var pos = actor.ActorParam.GetPosition();
+
+                if (ApplyRootMotionPositionX) pos.x += translation.x;
+                if (ApplyRootMotionPositionY) pos.y += translation.y;
+
+                rigidBody.MovePosition(pos);
+                rigidBody.MoveRotation(rigidBody.rotation * rotation);
+
+                // actor.ActorParam.SetPosition(rigidBody.position);
+            }
+            else
+            {
+                InvokeUpdateOverride(this, translation, rotation);
+            }
+        }
 
         public SpineMecanimAnimationController(SkeletonMecanim skeletonMecanim)
             : base(skeletonMecanim)
@@ -69,6 +107,8 @@ namespace ActorWorkspace.UnitySpine
 
             skeletonMecanimRootMotion = skeletonMecanim.GetComponent<SkeletonMecanimRootMotion>();
             if (skeletonMecanimRootMotion == null) throw new System.Exception("skeletonMecanimRootMotion component not found");
+
+            skeletonMecanimRootMotion.PhysicsUpdateRootMotionOverride += OnPhysicsUpdateRootMotionOverride;
 
             AnimationParameter = new MecanimAnimationParameter(animator);
             animationEventDecoder = new SpineMecanimAnimationEventDecoder();

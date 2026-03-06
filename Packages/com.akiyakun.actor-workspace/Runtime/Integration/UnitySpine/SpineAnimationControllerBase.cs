@@ -21,6 +21,7 @@ namespace ActorWorkspace.UnitySpine
         public event IAWAnimationController.UpdateOverrideDelegate OnUpdateOverride = null!;
         protected virtual void InvokeUpdateOverride(IAWAnimationController controller, Vector2 translation, float rotation) => OnUpdateOverride?.Invoke(controller, translation, rotation);
         protected bool IsNullOfUpdateOverride => OnUpdateOverride == null;
+
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         protected virtual void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
         public event System.Action<IAWAnimation> OnAnimationComplete = null!;
