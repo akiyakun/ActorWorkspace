@@ -28,6 +28,9 @@ namespace ActorWorkspace.UnitySpine
         protected virtual void InvokeAnimationComplete(IAWAnimation animation) => OnAnimationComplete?.Invoke(animation);
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
         protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
+
+        public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment = null!;
+        protected virtual void InvokeCreatedAttachment(GameObject attachmentObject, IAWAttachmentInfo attachmentInfo) => OnCreatedAttachment?.Invoke(attachmentObject, attachmentInfo);
         #endregion
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
@@ -188,7 +191,6 @@ namespace ActorWorkspace.UnitySpine
                 // https://zenn.dev/happy_elements/articles/a9bbe3c99aefc5
                 // follower.boneName = name;
 
-
                 AddFollowObject(info.Name, newObject);
             }
         }
@@ -255,6 +257,9 @@ namespace ActorWorkspace.UnitySpine
                 ExtraDataUtility.ApplyLayerSetting(followerObject, folderSetting);
 
                 AddFollowObject(info.Name, followerObject);
+
+                // コールバック
+                InvokeCreatedAttachment(followerObject, folderInfo);
             }
         }
 

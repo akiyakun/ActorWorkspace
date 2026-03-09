@@ -33,7 +33,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             Debug.Log("[SpineAssetPostprocessor] AW再インポート完了");
         }
 
-        [MenuItem("CONTEXT/SkeletonDataAsset/AW更新インポート", false, 0)]
+        [MenuItem("CONTEXT/SkeletonDataAsset/AW更新インポート", false, 1)]
         static void MenuUpdateImport(MenuCommand menuCommand)
         {
             reImportGard = true;

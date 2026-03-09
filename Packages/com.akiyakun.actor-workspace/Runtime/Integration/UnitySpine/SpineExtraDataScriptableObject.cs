@@ -13,8 +13,11 @@ namespace ActorWorkspace.UnitySpine
     {
         // アタッチメントを取得しやすいようにするための入れ物
         [System.Serializable]
-        public class FolderInfo
+        public class FolderInfo : IAWAttachmentInfo
         {
+            // From IAWAttachmentInfo
+            public string AttachmentName => folderName;
+
             [SerializeField] string folderName = "";
             public string FolderName => folderName;
 

@@ -44,6 +44,10 @@ namespace ActorWorkspace
         public UpdateFlags UpdateFlags { get; set; } = UpdateFlags.All;
         #endregion
 
+
+        public EventBag EventBag { get; private set; } = new();
+
+
 #if UNITY_EDITOR
         // デバッグ確認用
         [Disable] public List<string> debugActorBehaviours = new();
@@ -66,7 +70,6 @@ namespace ActorWorkspace
             // ActorContextProvider = awActorContextProvider;
             // Debug.Assert(awActorContextProvider != null);
 
-            ActorBehaviourController = new AWActorBehaviourController(this);
 
             // VariableTableの取得or生成
             if (GameObject.TryGetComponent<VariableTableComponent>(out var variableTableComponent))
@@ -78,17 +81,17 @@ namespace ActorWorkspace
                 Variables = new VariableTable();
             }
 
-#if UNITY_EDITOR
-            // デバッグ用のイベント登録
-            ActorBehaviourController.OnBehaviourAdded += (behaviour) =>
             {
-                debugActorBehaviours.Add(behaviour.GetType().Name);
-            };
-            ActorBehaviourController.OnBehaviourRemoved += (behaviour) =>
+                if (await CreateActorBehaviourController(cancellationToken) is int ret && ret < 0) return ret;
+            }
+
             {
-                debugActorBehaviours.Remove(behaviour.GetType().Name);
-            };
-#endif
+                if (await CreateAnimationController(cancellationToken) is int ret && ret < 0) return ret;
+            }
+
+            {
+                if (await EaryInitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
+            }
 
             {
                 if (await InnerInitializeAsync(awActorContextProvider, cancellationToken) is int ret && ret < 0) return ret;
@@ -101,6 +104,30 @@ namespace ActorWorkspace
             Restore();
 
             return GeneralReturnCode.Succeeded;
+        }
+
+        protected virtual async UniTask<int> CreateActorBehaviourController(CancellationToken cancellationToken)
+        {
+            ActorBehaviourController = new AWActorBehaviourController(this);
+
+#if UNITY_EDITOR
+            // デバッグ用のイベント登録
+            EventBag.In(ActorBehaviourController,
+                (entity) => entity.OnBehaviourAdded += OnBehaviourAdded,
+                (entity) => entity.OnBehaviourAdded -= OnBehaviourAdded);
+            EventBag.In(ActorBehaviourController,
+                (entity) => entity.OnBehaviourRemoved += OnBehaviourRemoved,
+                (entity) => entity.OnBehaviourRemoved -= OnBehaviourRemoved);
+#endif
+
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
+        }
+
+        protected abstract UniTask<int> CreateAnimationController(CancellationToken cancellationToken);
+
+        protected virtual async UniTask<int> EaryInitializeAsync(CancellationToken cancellationToken)
+        {
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
         // protected virtual async UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)
@@ -155,6 +182,18 @@ namespace ActorWorkspace
         public virtual void SetSkin(int skinIndex)
         {
         }
+
+#if UNITY_EDITOR
+        void OnBehaviourAdded(IAWActorBehaviour behaviour)
+        {
+            debugActorBehaviours.Add(behaviour.GetType().Name);
+        }
+
+        void OnBehaviourRemoved(IAWActorBehaviour behaviour)
+        {
+            debugActorBehaviours.Remove(behaviour.GetType().Name);
+        }
+#endif
     }
 }
 #nullable restore

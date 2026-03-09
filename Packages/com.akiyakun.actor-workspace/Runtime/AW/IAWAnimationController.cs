@@ -21,6 +21,9 @@ namespace ActorWorkspace
 
         // アニメーションのタイムラインに含まれるイベントが発生したときにコールバックされます
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent;
+
+        // アタッチメントが生成されたときにコールバックされます
+        public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment;
         #endregion
 
         public void Restore();
