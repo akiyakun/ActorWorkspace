@@ -5,6 +5,7 @@ namespace ActorWorkspace
 {
     public class AWDefaultAnimationEvents
     {
+        public const string MotionConfig = "MotionConfig";
         public const string Audio = "Audio";
         public const string Effect = "Effect";
         // public const string InterruptBegin = "InterruptBegin";
