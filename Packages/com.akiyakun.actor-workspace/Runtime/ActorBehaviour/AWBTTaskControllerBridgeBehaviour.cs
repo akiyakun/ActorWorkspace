@@ -56,6 +56,10 @@ namespace ActorWorkspace.ActorBehaviour
             return taskConfigurator;
         }
 
+        public void SetupParameters(System.Action<IBTTaskController> setupAction)
+        {
+            taskController?.SetupParameters(setupAction);
+        }
     }
 }
 #nullable restore
