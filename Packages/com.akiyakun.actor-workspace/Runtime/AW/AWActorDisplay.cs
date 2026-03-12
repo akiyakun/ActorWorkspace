@@ -9,6 +9,9 @@ namespace ActorWorkspace
     // MonoBehaviour前提
     public class AWActorDisplay : MonoBehaviour
     {
+        [SerializeField] GameObject main;
+        public GameObject Main => main;
+
         public bool ForceUnitScale { get; set; } = true;
 
         public bool IsVisibility
@@ -21,6 +24,8 @@ namespace ActorWorkspace
 
         public virtual void Awake()
         {
+            Debug.Assert(main != null, "Main is not assigned. ActorId={ActorId}");
+
             actor = gameObject.GetComponentInParent<IAWActor>();
             Debug.Assert(actor != null);
 

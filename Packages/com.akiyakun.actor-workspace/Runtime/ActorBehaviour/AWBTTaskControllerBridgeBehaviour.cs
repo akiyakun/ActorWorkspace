@@ -25,7 +25,7 @@ namespace ActorWorkspace.ActorBehaviour
             taskConfigurator = GetTaskConfigurator();
             if (taskConfigurator != null)
             {
-                taskController = taskConfigurator.CreateTaskController(Actor.GameObject);
+                taskController = taskConfigurator.CreateTaskController(Actor.ActorDisplay.Main);
                 if (taskController == null) throw new System.Exception($"Failed to create BTTaskController. ActorId={Actor.ActorId}");
                 taskController.DoAwake();
                 // taskControllerFactory.enabled = true;
