@@ -6,22 +6,26 @@ namespace Project
     public class SharedVariableBridge<TValue> : BTSharedVariable<TValue>
     // where TVariable : SharedVariable<TValue>
     {
-        SharedVariable<TValue> variable;
+        public SharedVariable<TValue> sharedVariable;
 
         public override TValue Value
         {
-            get => variable.Value;
-            set => variable.Value = value;
+            get => sharedVariable.Value;
+            set => sharedVariable.Value = value;
         }
 
+        public SharedVariableBridge()
+        {
+
+        }
         public SharedVariableBridge(SharedVariable<TValue> variable)
         {
-            this.variable = variable;
+            this.sharedVariable = variable;
         }
 
-        public override object GetSharedValue() => variable.Value;
-        public override void SetSharedValue(object value) => variable.Value = (TValue)value;
-        public override bool IsNone => variable.IsNone;
+        public override object GetSharedValue() => sharedVariable.Value;
+        public override void SetSharedValue(object value) => sharedVariable.Value = (TValue)value;
+        public override bool IsNone => sharedVariable.IsNone;
 
     }
 }

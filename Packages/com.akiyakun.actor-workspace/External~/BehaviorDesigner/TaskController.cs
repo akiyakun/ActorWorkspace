@@ -12,6 +12,7 @@ namespace Project.BehaviorTask
         GameObject owner;
         BehaviorTree behaviorTree = null!;
 
+        // owner: Actor.ActorDisplay.Main
         public TaskController(GameObject owner)
         {
             this.owner = owner;
@@ -48,6 +49,27 @@ namespace Project.BehaviorTask
             BehaviorManager.instance.Tick(behaviorTree);
         }
 
+        public void SetupParameters(System.Action<IBTTaskController> setupAction)
+        {
+            if (setupAction == null) return;
+            setupAction.Invoke(this);
+        }
+
+        public void SetParameter<T>(string key, T value)
+        {
+            SharedVariable sharedVariable = value switch
+            {
+                int intValue => new SharedInt { Value = intValue },
+                float floatValue => new SharedFloat { Value = floatValue },
+                bool boolValue => new SharedBool { Value = boolValue },
+                string stringValue => new SharedString { Value = stringValue },
+                Vector3 vector3Value => new SharedVector3 { Value = vector3Value },
+                GameObject gameObjectValue => new SharedGameObject { Value = gameObjectValue },
+                _ => throw new System.Exception($"Unsupported parameter type. Type={typeof(T)}"),
+            };
+
+            behaviorTree.SetVariable(key, sharedVariable);
+        }
     }
 }
 #nullable restore
