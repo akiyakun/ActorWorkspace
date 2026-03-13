@@ -10,6 +10,8 @@ namespace ActorWorkspace
     public abstract class AWActorBehaviour<TActor> : IAWActorBehaviour
         where TActor : class, IAWActor
     {
+        public bool IsActive { get; protected set; } = true;
+
         IAWActor IAWActorBehaviour.Actor => Actor as IAWActor;
         public TActor Actor { get; private set; } = null!;
 

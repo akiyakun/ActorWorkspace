@@ -8,9 +8,9 @@ namespace ActorWorkspace
         // IAsyncInitializable,
         IUpdateElement
     {
+        public bool IsActive { get; }
         public IAWActor Actor { get; }
         // public string Name { get; }
-
         public EventBus<string> EventBus { get; }
         public VariableTable Variables { get; }
         public EventBag EventBag { get; }
