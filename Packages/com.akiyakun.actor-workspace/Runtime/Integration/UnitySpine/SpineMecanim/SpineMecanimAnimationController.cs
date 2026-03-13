@@ -42,7 +42,7 @@ namespace ActorWorkspace.UnitySpine
         public override bool ApplyRootMotionPositionY
         {
             get => skeletonMecanimRootMotion.transformPositionY;
-            set => skeletonMecanimRootMotion.transformPositionY = value;
+            set => SetRootMotionPositionY(value);
         }
 
         SkeletonMecanim skeletonMecanim;
@@ -698,15 +698,18 @@ namespace ActorWorkspace.UnitySpine
             }
         }
 
-        // Vector3 accumulatedDeltaPosition = Vector3.zero;
-        // public override void DoUpdate(float deltaTime)
-        // {
-        //     // 毎フレーム deltaPosition を積算
-        //     Vector3 delta = animator.deltaPosition;
-        //     accumulatedDeltaPosition += delta;
+        void SetRootMotionPositionY(bool enable)
+        {
+            if (skeletonMecanimRootMotion.transformPositionY == enable) return;
 
-        //     Debug.Log($"DoUpdate: deltaPosition={delta.x}, accumulated={accumulatedDeltaPosition.x}");
-        // }
+            skeletonMecanimRootMotion.transformPositionY = enable;
+            // 抜けていいのか？
+            if (enable == true) return;
+
+            var pos = skeletonMecanimRootMotion.rigidBody2D.transform.position;
+            pos.y += animator.deltaPosition.y;
+            skeletonMecanimRootMotion.rigidBody2D.transform.position = pos;
+        }
     }
 }
 #nullable restore
