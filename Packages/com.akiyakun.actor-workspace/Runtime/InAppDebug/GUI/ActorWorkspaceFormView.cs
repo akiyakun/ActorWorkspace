@@ -395,7 +395,7 @@ namespace ActorWorkspace.InAppDebug
                 opt.Track = currentTrackIndex;
                 opt.Flags = (uint)AWAnimationOptionFlag.Loop | (uint)AWAnimationOptionFlag.Immediate;
 
-                animationController.EnableRootMotion = false;
+                animationController.UseRootMotion = false;
 
                 var track = animationController.SetAnimation(Utility.StringToHashId(animation.Name), opt);
                 // MixDurationを0にしないとDefaultMixが適応されない?
@@ -516,7 +516,7 @@ namespace ActorWorkspace.InAppDebug
         {
             Debug.Log($"OnRootMotionValueChanged: value={value}");
             var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
-            animationController.EnableRootMotion = value;
+            animationController.UseRootMotion = value;
         }
 
 

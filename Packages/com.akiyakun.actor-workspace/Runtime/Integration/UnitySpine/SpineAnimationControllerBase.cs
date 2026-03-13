@@ -38,7 +38,7 @@ namespace ActorWorkspace.UnitySpine
         public SpineExtraDataScriptableObject? ExtraData { get; protected set; }
         public abstract bool IsVisibility { get; set; }
 
-        public virtual bool EnableRootMotion { get; set; }
+        public virtual bool UseRootMotion { get; set; }
         public virtual bool RootMotionStatus { get; protected set; }
         public virtual bool ApplyRootMotionPositionX { get; set; }
         public virtual bool ApplyRootMotionPositionY { get; set; }

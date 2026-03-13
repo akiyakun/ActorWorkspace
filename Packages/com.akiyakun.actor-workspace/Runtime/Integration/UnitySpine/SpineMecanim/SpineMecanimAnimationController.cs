@@ -27,11 +27,11 @@ namespace ActorWorkspace.UnitySpine
             set => skeletonMecanim.GetComponent<Renderer>().enabled = value;
         }
 
-        protected bool enableRootMotion;
-        public override bool EnableRootMotion
+        protected bool useRootMotion;
+        public override bool UseRootMotion
         {
-            get => enableRootMotion;
-            set => SetEnableRootMotion(value);
+            get => useRootMotion;
+            set => SetUseRootMotion(value);
         }
         // public override bool RootMotionStatus;
         public override bool ApplyRootMotionPositionX
@@ -62,7 +62,7 @@ namespace ActorWorkspace.UnitySpine
             var actor = skeletonMecanimRootMotion.rigidBody2D.gameObject.GetComponent<IAWActor>();
             var rigidBody = skeletonMecanimRootMotion.rigidBody2D;
 
-            if (EnableRootMotion == false || RootMotionStatus == false)
+            if (UseRootMotion == false || RootMotionStatus == false)
             {
                 // rigidBody.MovePosition(actor.ActorParam.GetPosition());
                 return;
@@ -224,7 +224,7 @@ namespace ActorWorkspace.UnitySpine
             // RootMotionの設定
             {
                 // SetEnableRootMotion(skeletonMecanimRootMotion.enabled);
-                SetEnableRootMotion(true);
+                SetUseRootMotion(true);
 
                 // 初期状態を適用
                 ApplyRootMotion(animatorStateEvent.ApplyRootMotionByDefault);
@@ -481,7 +481,7 @@ namespace ActorWorkspace.UnitySpine
             //     EnableRootMotion = true;
             //     // Debug.Log($"RootMotion: Enable name={animation.Name}");
             // }
-            if (EnableRootMotion == true)
+            if (UseRootMotion == true)
             {
                 // origin
                 // if (RootMotionStatus == false
@@ -654,9 +654,9 @@ namespace ActorWorkspace.UnitySpine
             }
         }
 
-        void SetEnableRootMotion(bool enable)
+        void SetUseRootMotion(bool enable)
         {
-            enableRootMotion = enable;
+            useRootMotion = enable;
             ApplyRootMotion(enable, force: true);
         }
 
@@ -665,7 +665,7 @@ namespace ActorWorkspace.UnitySpine
             // Tag:RootMotion
 
             // RootMotionが無効なときは何もしない
-            if (force == false && EnableRootMotion == false) return;
+            if (force == false && UseRootMotion == false) return;
 
             // Debug.Log($"ApplyRootMotion: Enable={enable}, force={force}");
 
