@@ -16,6 +16,8 @@ namespace Project.BD
             set => base.GameObject = value;
         }
 
+        // public GameObject Main { get; protected set; }
+
         IBTConditional btConditional = null;
         Dictionary<string, BTSharedVariable> properties = new();
 
