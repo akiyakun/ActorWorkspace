@@ -32,6 +32,10 @@ namespace ActorWorkspace
 
         public IAWAnimationParameter AnimationParameter { get; }
         public IAWExtraData? ExtraData { get; }
+        public bool IsVisibility { get; set; }//FIXME: set
+        public bool IsPlaying { get; }
+
+        public void Stop();
 
         public IReadOnlyList<IAWAnimation> GetAnimationList();
         public IAWAnimation? GetAnimation(int nameHash);
@@ -55,7 +59,6 @@ namespace ActorWorkspace
 
         public IAWTrack? GetTrack(int trackIndex);
 
-        public bool IsVisibility { get; set; }
 
 
         #region RootMotion

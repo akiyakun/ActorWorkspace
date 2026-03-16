@@ -21,6 +21,8 @@ namespace ActorWorkspace.Tests
         public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();
         public IAWExtraData? ExtraData { get; protected set; }
         public bool IsVisibility { get; set; } = true;
+        public bool IsPlaying { get; set; } = false;
+
         public bool UseRootMotion { get; set; } = false;
         public bool RootMotionStatus { get; set; } = false;
         public bool ApplyRootMotionPositionX { get; set; }
@@ -58,6 +60,9 @@ namespace ActorWorkspace.Tests
             }
         }
 
+        public void Stop()
+        {
+        }
 
         public void SetEmptyAnimation(AWAnimationOption option = default)
         {

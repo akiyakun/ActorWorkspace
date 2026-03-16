@@ -21,6 +21,8 @@ namespace ActorWorkspace.UnitySpine
             set => skeletonAnimation.GetComponent<Renderer>().enabled = value;
         }
 
+        public override bool IsPlaying => true;
+
         SkeletonAnimation skeletonAnimation;
         IAWAnimationEventDecoder<Spine.Event> animationEventDecoder;
 
@@ -97,6 +99,9 @@ namespace ActorWorkspace.UnitySpine
         {
         }
 
+        public override void Stop()
+        {
+        }
 
         public override void SetEmptyAnimation(AWAnimationOption option = default)
         {

@@ -37,6 +37,7 @@ namespace ActorWorkspace.UnitySpine
         IAWExtraData? IAWAnimationController.ExtraData => ExtraData;
         public SpineExtraDataScriptableObject? ExtraData { get; protected set; }
         public abstract bool IsVisibility { get; set; }
+        public abstract bool IsPlaying { get; }
 
         public virtual bool UseRootMotion { get; set; }
         public virtual bool RootMotionStatus { get; protected set; }
@@ -91,6 +92,7 @@ namespace ActorWorkspace.UnitySpine
             // }
         }
 
+        public abstract void Stop();
 
         public IReadOnlyList<IAWAnimation> GetAnimationList()
         {

@@ -27,6 +27,8 @@ namespace ActorWorkspace.UnitySpine
             set => skeletonMecanim.GetComponent<Renderer>().enabled = value;
         }
 
+        public override bool IsPlaying => animator.enabled;
+
         protected bool useRootMotion;
         public override bool UseRootMotion
         {
@@ -156,8 +158,6 @@ namespace ActorWorkspace.UnitySpine
             {
                 // playableGraph.Play();
 
-
-
                 skeletonMecanim.Translator.OnClipApplied += (spineAnim, layerIndex, weight, time, lastTime, backward) =>
                 {
                     // spineAnim.Name が Animator 上の AnimationClip 名と対応
@@ -230,8 +230,23 @@ namespace ActorWorkspace.UnitySpine
                 ApplyRootMotion(animatorStateEvent.ApplyRootMotionByDefault);
             }
 
+            Stop();
+
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
+
+        // public override void DoUpdate(float deltaTime)
+        // {
+        //     base.DoUpdate(deltaTime);
+
+        //     // MEMO:
+        //     // Animatorコンポーネントが非アクティブだとUnityEditor上で
+        //     // 現在の遷移状態を確認することができなくなる問題がある
+        //     if (IsPlaying)
+        //     {
+        //         animator.Update(deltaTime);
+        //     }
+        // }
 
         public override void Dispose()
         {
@@ -242,9 +257,18 @@ namespace ActorWorkspace.UnitySpine
         {
         }
 
+        public override void Stop()
+        {
+            // MEMO: Animatorに停止メソッドが無いので代替の方法をとる必要がある
+            animator.enabled = false;
+        }
 
         public override void SetEmptyAnimation(AWAnimationOption option = default)
         {
+            if (IsPlaying == false)
+            {
+                animator.enabled = true;
+            }
         }
 
         /*
@@ -265,6 +289,11 @@ namespace ActorWorkspace.UnitySpine
             // Debug.Log($"SetAnimation: Name={animationImpl.Name}, Immediate={option.Immediate}, Track={option.Track}");
 
             // AnimationSetting(animationImpl);
+
+            if (IsPlaying == false)
+            {
+                animator.enabled = true;
+            }
 
             if (option.Immediate == true)
             {
@@ -458,14 +487,14 @@ namespace ActorWorkspace.UnitySpine
         // Mecanimのステートに入ったときのコールバック
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
-            // Debug.Log($"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
-
             // MEMO: 1Frame目のイベントが実行されている場合ここで抜けることになる
             if (currentStateNameHash == info.StateNameHash) return;
 
             var animation = GetAnimationImpl(info.StateNameHash);
             if (animation == null) return;
 
+            // D.Log(skeletonMecanim.gameObject.name == "Spine Mecanim GameObject (MimicryInsect)",
+            //     $"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
             currentStateNameHash = info.StateNameHash;
 
             // FIXME: パラメータリセットはどこのタイミングでやるべきか・・・
@@ -483,6 +512,8 @@ namespace ActorWorkspace.UnitySpine
             // }
             if (UseRootMotion == true)
             {
+                // D.DebugBreak(skeletonMecanim.gameObject.name == "Spine Mecanim GameObject (MimicryInsect)" && info.StateName == "attack_A");
+
                 // origin
                 // if (RootMotionStatus == false
                 //     && animation.stateOptionInfo.HasOptionFlag(AnimatorStateOptionFlag.RootMotion))
@@ -626,7 +657,8 @@ namespace ActorWorkspace.UnitySpine
             // イベント処理よりも先に OnHandleEntered() の処理をしたいので明示的に呼び出す
             if (rawData.animatorStateInfo.shortNameHash != currentStateNameHash)
             {
-                // D.Log($"OnSpineEvent: OnHandleEntered()より先にイベントが呼ばれた");
+                // D.Log(skeletonMecanim.gameObject.name == "Spine Mecanim GameObject (MimicryInsect)",
+                //     $"OnSpineEvent: OnHandleEntered()より先にイベントが呼ばれた");
                 AnimatorStateOptionInfo info = animatorStateEvent.GetStateInfo(rawData.animatorStateInfo.fullPathHash);
                 OnHandleEntered(info);
             }
