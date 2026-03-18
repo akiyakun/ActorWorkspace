@@ -96,7 +96,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             AnimatorEditorUtility.AnimatorControllerInfo animatorControllerInfo = AnimatorEditorUtility.GetAnimatorControllerInfo(editorAnimatorController);
             SetLoopForLoopSuffix(animatorControllerInfo);
 
-            AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             return animatorControllerInfo;
         }
