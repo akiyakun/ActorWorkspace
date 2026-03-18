@@ -171,6 +171,11 @@ namespace ActorWorkspace.UnitySpine
                     CreateFolders(parent, skeletonRenderer, info);
                 }
             }
+
+            {
+                rootMotionInfo.DefaultApplyRootMotionPositionX = ExtraData.DefaultApplyRootMotionPositionX;
+                rootMotionInfo.DefaultApplyRootMotionPositionY = ExtraData.DefaultApplyRootMotionPositionY;
+            }
         }
 
         protected void CreateBoneFollowers(Transform parent, SkeletonRenderer skeletonRenderer)

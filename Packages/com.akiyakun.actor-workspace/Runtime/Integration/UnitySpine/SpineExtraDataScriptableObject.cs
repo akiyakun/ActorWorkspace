@@ -11,6 +11,10 @@ namespace ActorWorkspace.UnitySpine
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
     public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData
     {
+        public bool DefaultApplyRootMotionPositionX;
+        public bool DefaultApplyRootMotionPositionY;
+
+
         // アタッチメントを取得しやすいようにするための入れ物
         [System.Serializable]
         public class FolderInfo : IAWAttachmentInfo
@@ -61,6 +65,9 @@ namespace ActorWorkspace.UnitySpine
 
         public void Clear()
         {
+            DefaultApplyRootMotionPositionX = true;
+            DefaultApplyRootMotionPositionY = false;
+
             folders?.Clear();
             folders = new();
         }
