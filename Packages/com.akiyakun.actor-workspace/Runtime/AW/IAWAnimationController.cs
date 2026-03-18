@@ -24,6 +24,9 @@ namespace ActorWorkspace
 
         // アタッチメントが生成されたときにコールバックされます
         public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment;
+
+        // RootMotionの状態が変化したときにコールバックされます
+        public event System.Action<IAWAnimationController> OnRootMotionChanged;
         #endregion
 
         public void Restore();
@@ -62,6 +65,7 @@ namespace ActorWorkspace
 
 
         #region RootMotion
+        public AWRootMotionInfo RootMotionInfo { get; }
         public bool UseRootMotion { get; set; }
         public bool RootMotionStatus { get; }
         public bool ApplyRootMotionPositionX { get; set; }

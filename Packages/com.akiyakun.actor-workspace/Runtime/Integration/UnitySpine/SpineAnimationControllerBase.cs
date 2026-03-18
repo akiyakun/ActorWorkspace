@@ -31,6 +31,9 @@ namespace ActorWorkspace.UnitySpine
 
         public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment = null!;
         protected virtual void InvokeCreatedAttachment(GameObject attachmentObject, IAWAttachmentInfo attachmentInfo) => OnCreatedAttachment?.Invoke(attachmentObject, attachmentInfo);
+
+        public event System.Action<IAWAnimationController> OnRootMotionChanged = null!;
+        protected virtual void InvokeRootMotionChanged() => OnRootMotionChanged?.Invoke(this);
         #endregion
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
@@ -39,6 +42,8 @@ namespace ActorWorkspace.UnitySpine
         public abstract bool IsVisibility { get; set; }
         public abstract bool IsPlaying { get; }
 
+        protected AWRootMotionInfo rootMotionInfo = new AWRootMotionInfo();
+        public AWRootMotionInfo RootMotionInfo => rootMotionInfo;
         public virtual bool UseRootMotion { get; set; }
         public virtual bool RootMotionStatus { get; protected set; }
         public virtual bool ApplyRootMotionPositionX { get; set; }

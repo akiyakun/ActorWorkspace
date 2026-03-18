@@ -17,12 +17,14 @@ namespace ActorWorkspace.Tests
         public event System.Action<IAWAnimation> OnAnimationComplete = null!;
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
         public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment = null!;
+        public event System.Action<IAWAnimationController> OnRootMotionChanged = null!;
 
         public IAWAnimationParameter AnimationParameter { get; protected set; } = new AWAnimationParameter();
         public IAWExtraData? ExtraData { get; protected set; }
         public bool IsVisibility { get; set; } = true;
         public bool IsPlaying { get; set; } = false;
 
+        public AWRootMotionInfo RootMotionInfo { get; set; } = new AWRootMotionInfo();
         public bool UseRootMotion { get; set; } = false;
         public bool RootMotionStatus { get; set; } = false;
         public bool ApplyRootMotionPositionX { get; set; }

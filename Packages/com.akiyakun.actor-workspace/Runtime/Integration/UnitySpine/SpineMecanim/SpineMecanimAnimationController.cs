@@ -155,14 +155,14 @@ namespace ActorWorkspace.UnitySpine
                 animatorStateEvent.OnStateExited += OnHandleComplete;
             }
 
-            {
-                // playableGraph.Play();
+            // {
+            //     // playableGraph.Play();
 
-                skeletonMecanim.Translator.OnClipApplied += (spineAnim, layerIndex, weight, time, lastTime, backward) =>
-                {
-                    // spineAnim.Name が Animator 上の AnimationClip 名と対応
-                };
-            }
+            //     skeletonMecanim.Translator.OnClipApplied += (spineAnim, layerIndex, weight, time, lastTime, backward) =>
+            //     {
+            //         // spineAnim.Name が Animator 上の AnimationClip 名と対応
+            //     };
+            // }
         }
 
         public override void CreateTrack()
@@ -223,11 +223,17 @@ namespace ActorWorkspace.UnitySpine
 
             // RootMotionの設定
             {
+                rootMotionInfo.DefaultUseRootMotion = true;
+                // 現状では、デフォルト設定をAnimatorStateEventから取得する
+                rootMotionInfo.DefaultApplyRootMotion = animatorStateEvent.ApplyRootMotionByDefault;
+
                 // SetEnableRootMotion(skeletonMecanimRootMotion.enabled);
-                SetUseRootMotion(true);
+                SetUseRootMotion(rootMotionInfo.DefaultUseRootMotion);
 
                 // 初期状態を適用
-                ApplyRootMotion(animatorStateEvent.ApplyRootMotionByDefault);
+                ApplyRootMotion(rootMotionInfo.DefaultApplyRootMotion);
+                ApplyRootMotionPositionX = rootMotionInfo.DefaultApplyRootMotionPositionX;
+                ApplyRootMotionPositionY = rootMotionInfo.DefaultApplyRootMotionPositionY;
             }
 
             Stop();
@@ -728,6 +734,8 @@ namespace ActorWorkspace.UnitySpine
 
                 // Debug.Log($"RootMotion: Disable delta.x={animator.deltaPosition}");
             }
+
+            InvokeRootMotionChanged();
         }
 
         void SetRootMotionPositionY(bool enable)
@@ -735,12 +743,15 @@ namespace ActorWorkspace.UnitySpine
             if (skeletonMecanimRootMotion.transformPositionY == enable) return;
 
             skeletonMecanimRootMotion.transformPositionY = enable;
-            // 抜けていいのか？
-            if (enable == true) return;
 
-            var pos = skeletonMecanimRootMotion.rigidBody2D.transform.position;
-            pos.y += animator.deltaPosition.y;
-            skeletonMecanimRootMotion.rigidBody2D.transform.position = pos;
+            if (enable == false)
+            {
+                var pos = skeletonMecanimRootMotion.rigidBody2D.transform.position;
+                pos.y += animator.deltaPosition.y;
+                skeletonMecanimRootMotion.rigidBody2D.transform.position = pos;
+            }
+
+            InvokeRootMotionChanged();
         }
     }
 }
