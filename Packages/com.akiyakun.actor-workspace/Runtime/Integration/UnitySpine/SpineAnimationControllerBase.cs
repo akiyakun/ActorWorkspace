@@ -248,7 +248,7 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        protected void CreateFolders(Transform parent, SkeletonRenderer skeletonRenderer,
+        protected void CreateFolders(Transform root, SkeletonRenderer skeletonRenderer,
             SpineExtraDataScriptableObject.FolderInfo folderInfo)
         {
             var folderSetting = UnitySpineSettings.Instance.GetFolderSetting(folderInfo.FolderName);
@@ -257,6 +257,12 @@ namespace ActorWorkspace.UnitySpine
                 Debug.Assert(false, $"CreateFolders: Not found folderSetting for folder={folderInfo.FolderName}");
                 return;
             }
+
+            // Folderオブジェクトの作成
+            Transform parent = new GameObject(folderSetting.FolderName).transform;
+            parent.SetParent(root, worldPositionStays: false);
+            parent.ResetLocalTransform();
+            parent.gameObject.layer = root.gameObject.layer;
 
             // Spineのアタッチメントボーン直下のノード名リストを回す
             foreach (var info in folderInfo.Attachments)
