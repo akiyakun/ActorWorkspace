@@ -48,6 +48,7 @@ namespace ActorWorkspace.UnitySpine
         public virtual bool RootMotionStatus { get; protected set; }
         public virtual bool ApplyRootMotionPositionX { get; set; }
         public virtual bool ApplyRootMotionPositionY { get; set; }
+        public virtual bool ApplyRootMotionRotation { get; set; }
 
 
         // SkeletonAnimation と SkeletonMecanim 双方が継承しているインターフェース
@@ -259,10 +260,7 @@ namespace ActorWorkspace.UnitySpine
             }
 
             // Folderオブジェクトの作成
-            Transform parent = new GameObject(folderSetting.FolderName).transform;
-            parent.SetParent(root, worldPositionStays: false);
-            parent.ResetLocalTransform();
-            parent.gameObject.layer = root.gameObject.layer;
+            Transform parent = ExtraDataUtility.CreateFolderObject(folderSetting.FolderName, root).transform;
 
             // Spineのアタッチメントボーン直下のノード名リストを回す
             foreach (var info in folderInfo.Attachments)

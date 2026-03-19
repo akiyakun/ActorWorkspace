@@ -70,6 +70,7 @@ namespace ActorWorkspace
         public bool RootMotionStatus { get; }
         public bool ApplyRootMotionPositionX { get; set; }
         public bool ApplyRootMotionPositionY { get; set; }
+        public bool ApplyRootMotionRotation { get; set; }
         #endregion
     }
 }

@@ -46,6 +46,11 @@ namespace ActorWorkspace.UnitySpine
             get => skeletonMecanimRootMotion.transformPositionY;
             set => SetRootMotionPositionY(value);
         }
+        public override bool ApplyRootMotionRotation
+        {
+            get => skeletonMecanimRootMotion.transformRotation;
+            set => SetRootMotionRotation(value);
+        }
 
         SkeletonMecanim skeletonMecanim;
         Animator animator;
@@ -750,6 +755,15 @@ namespace ActorWorkspace.UnitySpine
                 pos.y += animator.deltaPosition.y;
                 skeletonMecanimRootMotion.rigidBody2D.transform.position = pos;
             }
+
+            InvokeRootMotionChanged();
+        }
+
+        void SetRootMotionRotation(bool enable)
+        {
+            if (skeletonMecanimRootMotion.transformRotation == enable) return;
+
+            skeletonMecanimRootMotion.transformRotation = enable;
 
             InvokeRootMotionChanged();
         }

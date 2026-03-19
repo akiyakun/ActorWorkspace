@@ -16,6 +16,15 @@ namespace ActorWorkspace.UnitySpine
         //     return value.Substring(0, index);
         // }
 
+        public static GameObject CreateFolderObject(string folderName, Transform parent)
+        {
+            var newObject = new GameObject(folderName);
+            newObject.transform.SetParent(parent, worldPositionStays: false);
+            newObject.transform.ResetLocalTransform();
+            newObject.layer = parent.gameObject.layer;
+            return newObject;
+        }
+
         public static GameObject CreateBoneFollower(SpineNodeInfo nodeInfo, Transform parent, SkeletonRenderer skeletonRenderer,
             UnitySpineSettings.FolderSetting folderSetting)
         {

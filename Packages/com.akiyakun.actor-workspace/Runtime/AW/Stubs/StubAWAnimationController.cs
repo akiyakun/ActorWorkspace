@@ -29,6 +29,7 @@ namespace ActorWorkspace.Tests
         public bool RootMotionStatus { get; set; } = false;
         public bool ApplyRootMotionPositionX { get; set; }
         public bool ApplyRootMotionPositionY { get; set; }
+        public bool ApplyRootMotionRotation { get; set; }
 
         public IReadOnlyList<IAWAnimation> GetAnimationList() => animations.ToList<IAWAnimation>();
         public IAWAnimation? GetAnimation(int nameHash) => animations.Find(a => Utility.StringToHashId(a.Name) == nameHash);
