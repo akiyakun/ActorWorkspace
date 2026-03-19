@@ -11,7 +11,7 @@ namespace ActorWorkspace.UnitySpine
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
     public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData
     {
-        public bool DefaultApplyRootMotionPositionX;
+        public bool DefaultApplyRootMotionPositionX = true;
         public bool DefaultApplyRootMotionPositionY;
 
 
