@@ -24,10 +24,10 @@ namespace ActorWorkspace
 
         public virtual void Awake()
         {
-            Debug.Assert(main != null, "Main is not assigned. ActorId={ActorId}");
-
             actor = gameObject.GetComponentInParent<IAWActor>();
-            Debug.Assert(actor != null);
+            if (actor == null) throw new System.Exception("IAWActor is not found.");
+
+            Debug.Assert(main != null, $"Main is not assigned. ActorId={actor.ActorId}, name={actor.GameObject.name}");
 
             if (ForceUnitScale == true)
             {

@@ -18,7 +18,7 @@ namespace ActorWorkspace.UnitySpine
 
         public override TActorParam ActorParam { get; protected set; } = new();
         // public override TActorDisplay ActorDisplay { get; protected set; } = null!;
-        public override IAWAnimationController AnimationController { get; protected set; } = null!;
+        // public override IAWAnimationController AnimationController { get; protected set; } = null!;
         public override IReadOnlyList<SpineSkin> SkinList => skinList;
 
         protected Spine.Skeleton Skeleton => skeletonAnimationInterface.Skeleton;

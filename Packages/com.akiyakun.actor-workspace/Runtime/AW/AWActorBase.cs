@@ -31,7 +31,7 @@ namespace ActorWorkspace
         [SerializeField] AWActorDisplay actorDisplay = null!;
         public AWActorDisplay ActorDisplay => actorDisplay;
         IAWAnimationController IAWActor.AnimationController => AnimationController as IAWAnimationController;
-        public abstract TAnimationController AnimationController { get; protected set; }
+        public TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
         public abstract IReadOnlyList<TSkin> SkinList { get; }
         public virtual AWActorBehaviourController ActorBehaviourController { get; private set; }
