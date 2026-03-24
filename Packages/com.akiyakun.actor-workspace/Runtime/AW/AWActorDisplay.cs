@@ -10,7 +10,13 @@ namespace ActorWorkspace
     public class AWActorDisplay : MonoBehaviour
     {
         [SerializeField] GameObject main;
+
+        // FIXME:
+#if UNITY_EDITOR
+        public GameObject Main { get => main; set => main = value; }
+#else
         public GameObject Main => main;
+#endif
 
         public bool ForceUnitScale { get; set; } = true;
 
