@@ -85,6 +85,12 @@ namespace ActorWorkspace.UnitySpine
 
             [SerializeField]
             public LayerMask ExcludeLayerMask;
+
+            [SerializeField]
+            public LayerMask ContactCaptureLayers;
+
+            [SerializeField]
+            public LayerMask CallbackLayers;
         }
 
         [Serializable]

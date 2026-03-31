@@ -257,6 +257,9 @@ namespace ActorWorkspace.UnitySpine
             {
                 collider.includeLayers = layerPair.IncludeLayerMask;
                 collider.excludeLayers = layerPair.ExcludeLayerMask;
+
+                collider.contactCaptureLayers = layerPair.ContactCaptureLayers;
+                collider.callbackLayers = layerPair.CallbackLayers;
             }
 
             var collider3DList = followerObject.GetComponents<BoxCollider>();
@@ -264,6 +267,10 @@ namespace ActorWorkspace.UnitySpine
             {
                 collider.includeLayers = layerPair.IncludeLayerMask;
                 collider.excludeLayers = layerPair.ExcludeLayerMask;
+
+                // 3Dには存在しないのか？
+                // collider.contactCaptureLayers = layerPair.ContactCaptureLayers;
+                // collider.callbackLayers = layerPair.CallbackLayers;
             }
         }
     }
