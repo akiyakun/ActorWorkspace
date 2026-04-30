@@ -60,6 +60,29 @@ namespace ActorWorkspace.ActorBehaviour
         {
             taskController?.SetupParameters(setupAction);
         }
+
+
+        #region Event
+        public void SendEvent(string name)
+        {
+            taskController?.SendEvent(name);
+        }
+
+        public void SendEvent<T>(string name, T arg1)
+        {
+            taskController?.SendEvent(name, arg1);
+        }
+
+        public void SendEvent<T, U>(string name, T arg1, U arg2)
+        {
+            taskController?.SendEvent(name, arg1, arg2);
+        }
+
+        public void SendEvent<T, U, V>(string name, T arg1, U arg2, V arg3)
+        {
+            taskController?.SendEvent(name, arg1, arg2, arg3);
+        }
+        #endregion
     }
 }
 #nullable restore
