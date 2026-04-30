@@ -5,10 +5,11 @@ using afl;
 
 namespace ActorWorkspace
 {
-    public class AWActorManager : IAWActorManager
+    public class AWActorManager<TActor> : IAWActorManager
+        where TActor : class, IAWActor
     {
         protected IAWActorFactory actorFactory;
-        protected UpdateElementManager<IAWActor> updateElementManager;
+        protected UpdateElementManager<TActor> updateElementManager;
 
         // protected LinkedList<IAWActor> actorList = new LinkedList<IAWActor>();
 
@@ -21,7 +22,7 @@ namespace ActorWorkspace
             actorFactory = awActorFactory;
             Debug.Assert(awActorFactory != null);
 
-            updateElementManager = new UpdateElementManager<IAWActor>(enablePrioritySort: true);
+            updateElementManager = new UpdateElementManager<TActor>(enablePrioritySort: true);
 
             {
                 actorFactory.OnCreated += OnCreatedFromFactory;
@@ -65,6 +66,11 @@ namespace ActorWorkspace
         // From IAWActorManager
         public virtual bool Add(IAWActor actor)
         {
+            return Add(actor as TActor);
+        }
+
+        public virtual bool Add(TActor actor)
+        {
             D.Log(CoreLogMask.Lifecycle, $"AWActorManager.Add(): {actor.GetType().Name}");
             return updateElementManager.Add(actor);
         }
@@ -72,15 +78,31 @@ namespace ActorWorkspace
         // From IAWActorManager
         public virtual bool Remove(IAWActor actor)
         {
+            return Remove(actor as TActor);
+        }
+
+        public virtual bool Remove(TActor actor)
+        {
             D.Log(CoreLogMask.Lifecycle, $"AWActorManager.Remove(): {actor.GetType().Name}");
             return updateElementManager.Remove(actor);
+        }
+
+        // From IAWActorManager
+        // public virtual IReadOnlyList<IAWActor> GetAllActorList()
+        // {
+        //     return updateElementManager.ReadOnlyList;
+        // }
+
+        public virtual IReadOnlyList<TActor> GetAllActorList()
+        {
+            return updateElementManager.ReadOnlyList;
         }
 
 
         protected virtual void OnCreatedFromFactory(IAWActor actor)
         {
             D.Log(CoreLogMask.Lifecycle, $"AWActorManager.OnCreatedActor(): {actor.GetType().Name}");
-            updateElementManager.Add(actor);
+            updateElementManager.Add(actor as TActor);
         }
 
         protected virtual void OnReleaseFromFactory(IAWActor actor)

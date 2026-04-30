@@ -22,7 +22,7 @@ namespace ActorWorkspace.InAppDebug
 
             ActorContextProvider = new AWActorContextProvider(AssetRepositories);
             ActorFactory = new Tests.StubAWActorFactory(ActorContextProvider);
-            ActorManager = new AWActorManager(ActorFactory);
+            ActorManager = new AWActorManager<IAWActor>(ActorFactory);
         }
 
         public ActorWorkspaceFormContextProvider(AssetRepositoryCategorize assetRepositories,

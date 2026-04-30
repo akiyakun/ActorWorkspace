@@ -1,4 +1,6 @@
 #nullable enable
+using System.Collections.Generic;
+
 namespace ActorWorkspace
 {
     public interface IAWActorManager : System.IDisposable
@@ -9,6 +11,8 @@ namespace ActorWorkspace
 
         public bool Add(IAWActor actor);
         public bool Remove(IAWActor actor);
+
+        // public IReadOnlyList<IAWActor> GetAllActorList();
     }
 }
 #nullable restore
