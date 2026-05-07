@@ -128,21 +128,22 @@ namespace ActorWorkspace.Editor.UnitySpine
                     // アセットのタイプでフィルタリング
 
                     //*/
+                }// foreach
+
+                if (targetList.Count == 1)
+                {
+                    // extra_data.jsonのみ更新された場合の検知
+                    if (targetList[0].Path.EndsWith(SpineUtilityEditor.ExtraDataJsonFileName) == true)
+                    {
+                        Debug.LogError($"[SpineAssetPostprocessor] extra_data.jsonのみ変更した場合、更新インポートされないので.spineファイルに何かしら変更を加えて更新が検知されるようにしてもう一度インポートを行なってください。 Path: {targetList[0].Path}");
+                        targetList.Clear();
+                    }
                 }
             }
             finally
             {
                 if (targetList != null && targetList.Count > 0)
                 {
-                    if (targetList.Count == 1)
-                    {
-                        // extra_data.jsonのみ更新された場合の検知
-                        if (targetList[0].Path.EndsWith(SpineUtilityEditor.ExtraDataJsonFileName) == true)
-                        {
-                            Debug.LogError($"[SpineAssetPostprocessor] extra_data.jsonのみ変更した場合、更新インポートされないので.spineファイルに何かしら変更を加えて更新が検知されるようにしてもう一度インポートを行なってください。 Path: {targetList[0].Path}");
-                        }
-                    }
-
                     EditorApplication.delayCall -= OnDelayCall;
                     EditorApplication.delayCall += OnDelayCall;
                 }
