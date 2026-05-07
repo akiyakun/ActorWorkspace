@@ -91,11 +91,11 @@ namespace ActorWorkspace.Editor.UnitySpine
                         && AssetUtility.CheckForValidSkeletonData(path) == true)
                     {
                         // Debug.Log($"[SpineAssetPostprocessor] Imported Spine JSON: {path}");
+
                         // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
                         string skeletonDataPath = SpineUtilityEditor.GetSkeletonDataPath(path);
                         targetList.Add(new AssetInfo(skeletonDataPath, SpineUtilityEditor.IsSpineExtraDataExists(skeletonDataPath)));
                         Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset(.json): {skeletonDataPath}");
-
                         continue;
                     }
 
@@ -110,6 +110,20 @@ namespace ActorWorkspace.Editor.UnitySpine
                         continue;
                     }
 
+                    // extra_data.jsonのみ更新された場合の検知
+                    if (path.EndsWith(SpineUtilityEditor.ExtraDataJsonFileName) == true)
+                    {
+                        // FIXME: 同フォルダ内のSkeletonDataAssetを探す必要がある
+                        // 検知用に一旦そのままパスを入れる
+                        targetList.Add(new AssetInfo(path, false));
+
+                        // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
+                        // string skeletonDataPath = SpineUtilityEditor.GetSkeletonDataPath(path);
+                        // targetList.Add(new AssetInfo(skeletonDataPath, SpineUtilityEditor.IsSpineExtraDataExists(skeletonDataPath)));
+                        // Debug.Log($"[SpineAssetPostprocessor] Imported Spine ExtraData JSON: {skeletonDataPath}");
+                        continue;
+                    }
+
 
                     // アセットのタイプでフィルタリング
 
@@ -120,6 +134,15 @@ namespace ActorWorkspace.Editor.UnitySpine
             {
                 if (targetList != null && targetList.Count > 0)
                 {
+                    if (targetList.Count == 1)
+                    {
+                        // extra_data.jsonのみ更新された場合の検知
+                        if (targetList[0].Path.EndsWith(SpineUtilityEditor.ExtraDataJsonFileName) == true)
+                        {
+                            Debug.LogError($"[SpineAssetPostprocessor] extra_data.jsonのみ変更した場合、更新インポートされないので.spineファイルに何かしら変更を加えて更新が検知されるようにしてもう一度インポートを行なってください。 Path: {targetList[0].Path}");
+                        }
+                    }
+
                     EditorApplication.delayCall -= OnDelayCall;
                     EditorApplication.delayCall += OnDelayCall;
                 }
@@ -195,6 +218,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 spineExtraData.IsImportError = true;
                 EditorUtility.SetDirty(spineExtraData);
                 AssetDatabase.SaveAssets();
+                Debug.LogError($"[SpineAssetPostprocessor] Import error. {assetInfo.Path}");
                 return;
             }
 

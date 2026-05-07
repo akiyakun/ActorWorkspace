@@ -14,6 +14,8 @@ namespace ActorWorkspace.Editor.UnitySpine
 {
     public static class SpineUtilityEditor
     {
+        //extra_data.json
+        public const string ExtraDataJsonFileName = "extra_data.json";
         public const string SpineExtraDataSuffix = "_SpineExtraData";
 
         // Copy from SpineSpriteShaderGUI
