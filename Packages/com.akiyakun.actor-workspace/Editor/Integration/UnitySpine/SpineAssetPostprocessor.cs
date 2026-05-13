@@ -69,6 +69,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
         }
         static List<AssetInfo>? targetList;
+        static List<string>? extraJsonList;
         static bool reImportGard = false;
 
 
@@ -80,6 +81,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             try
             {
                 targetList = new();
+                extraJsonList = new();
 
                 foreach (string path in importedAssets)
                 {
@@ -115,7 +117,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                     {
                         // FIXME: 同フォルダ内のSkeletonDataAssetを探す必要がある
                         // 検知用に一旦そのままパスを入れる
-                        targetList.Add(new AssetInfo(path, false));
+                        extraJsonList.Add(path);
 
                         // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
                         // string skeletonDataPath = SpineUtilityEditor.GetSkeletonDataPath(path);
@@ -130,13 +132,12 @@ namespace ActorWorkspace.Editor.UnitySpine
                     //*/
                 }// foreach
 
-                if (targetList.Count == 1)
+                // extra_data.jsonのみ更新された場合の検知
+                if (targetList.Count == 0 && extraJsonList.Count > 0)
                 {
-                    // extra_data.jsonのみ更新された場合の検知
-                    if (targetList[0].Path.EndsWith(SpineUtilityEditor.ExtraDataJsonFileName) == true)
+                    foreach (var extraJsonPath in extraJsonList)
                     {
-                        Debug.LogError($"[SpineAssetPostprocessor] extra_data.jsonのみ変更した場合、更新インポートされないので.spineファイルに何かしら変更を加えて更新が検知されるようにしてもう一度インポートを行なってください。 Path: {targetList[0].Path}");
-                        targetList.Clear();
+                        Debug.LogError($"[SpineAssetPostprocessor] extra_data.jsonのみ変更した場合、更新インポートされないので.spineファイルに何かしら変更を加えて更新が検知されるようにしてもう一度インポートを行なってください。 Path: {extraJsonPath}");
                     }
                 }
             }
@@ -150,6 +151,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 else
                 {
                     targetList = null;
+                    extraJsonList = null;
                     reImportGard = false;
                 }
             }
