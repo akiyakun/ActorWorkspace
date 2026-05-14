@@ -28,4 +28,23 @@ namespace Project
         public override bool IsNone => sharedVariable.IsNone;
 
     }
+
+    public class SharedVariableBridge : BTSharedVariable
+    {
+        public SharedVariable sharedVariable;
+
+        public SharedVariableBridge()
+        {
+
+        }
+        public SharedVariableBridge(SharedVariable variable)
+        {
+            this.sharedVariable = variable;
+        }
+
+        public override object GetSharedValue() => sharedVariable.GetValue();
+        public override void SetSharedValue(object value) => sharedVariable.SetValue(value);
+        public override bool IsNone => sharedVariable == null || sharedVariable.IsNone;
+
+    }
 }

@@ -65,11 +65,38 @@ namespace Project.BehaviorTask
                 string stringValue => new SharedString { Value = stringValue },
                 Vector3 vector3Value => new SharedVector3 { Value = vector3Value },
                 GameObject gameObjectValue => new SharedGameObject { Value = gameObjectValue },
+
+                Bounds boundsValue => new SharedBounds { Value = boundsValue },
+
                 _ => throw new System.Exception($"Unsupported parameter type. Type={typeof(T)}"),
             };
 
             behaviorTree.SetVariable(key, sharedVariable);
         }
+
+
+
+        #region Event
+        public void SendEvent(string name)
+        {
+            behaviorTree.SendEvent(name);
+        }
+
+        public void SendEvent<T>(string name, T arg1)
+        {
+            behaviorTree.SendEvent(name, arg1);
+        }
+
+        public void SendEvent<T, U>(string name, T arg1, U arg2)
+        {
+            behaviorTree.SendEvent(name, arg1, arg2);
+        }
+
+        public void SendEvent<T, U, V>(string name, T arg1, U arg2, V arg3)
+        {
+            behaviorTree.SendEvent(name, arg1, arg2, arg3);
+        }
+        #endregion
     }
 }
 #nullable restore
