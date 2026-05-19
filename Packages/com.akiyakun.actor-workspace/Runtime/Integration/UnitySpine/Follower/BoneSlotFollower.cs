@@ -13,8 +13,22 @@ namespace ActorWorkspace.UnitySpine
         // default値はBoneFollowerに合わせてある
         #region BoneFollower Like Fields
         public SkeletonRenderer skeletonRenderer = null!;
+
 		[SpineBone(dataField: "skeletonRenderer")]
-        public string boneName;
+        // public string boneName;
+        public string boneName
+        {
+            get => _boneName;
+            set
+            {
+                if (_boneName != value)
+                {
+                    _boneName = value;
+                    BoneNameHash = Utility.StringToHashId(_boneName);
+                }
+            }
+        }
+
         public bool followXYPosition = true;
 
         // BoneFollowerとは違う仕組みが欲しくなるかも？接触させないために奥に移動させたい等
@@ -24,6 +38,10 @@ namespace ActorWorkspace.UnitySpine
         public bool followParentWorldScale = false;
         #endregion
 
+        public event System.Action<BoneSlotFollower, bool>? OnActiveChanged;
+
+        string _boneName = string.Empty;
+        public int BoneNameHash { get; private set; }
         [NonSerialized, Disable] public string? FolderName;
 
         bool isInitialized = false;
@@ -114,11 +132,13 @@ namespace ActorWorkspace.UnitySpine
                 if (currentAttachment == null)
                 {
                     // スロットにアタッチメントが設定されていない場合は非表示にする
+                    OnActiveChanged?.Invoke(this, false);
                     gameObject.SetActive(false);
                 }
                 else
                 {
                     // スロットにアタッチメントが設定されている場合は表示する
+                    OnActiveChanged?.Invoke(this, true);
                     gameObject.SetActive(true);
                 }
                 // gameObject.SetActive(slot.Bone.Active);
