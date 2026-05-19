@@ -8,13 +8,13 @@ namespace ActorWorkspace.UnitySpine
 {
     // FIXME: クラス名
     // MEMO: Spine.Unity.BoneFollower を参考にして作成
-    public class BoneSlotFollower : MonoBehaviour
+    public class BoneSlotFollower : MonoBehaviour, IAWFollower
     {
         // default値はBoneFollowerに合わせてある
         #region BoneFollower Like Fields
         public SkeletonRenderer skeletonRenderer = null!;
 
-		[SpineBone(dataField: "skeletonRenderer")]
+        [SpineBone(dataField: "skeletonRenderer")]
         // public string boneName;
         public string boneName
         {
@@ -38,7 +38,7 @@ namespace ActorWorkspace.UnitySpine
         public bool followParentWorldScale = false;
         #endregion
 
-        public event System.Action<BoneSlotFollower, bool>? OnActiveChanged;
+        public event System.Action<IAWFollower, bool>? OnActiveChange;
 
         string _boneName = string.Empty;
         public int BoneNameHash { get; private set; }
@@ -132,14 +132,21 @@ namespace ActorWorkspace.UnitySpine
                 if (currentAttachment == null)
                 {
                     // スロットにアタッチメントが設定されていない場合は非表示にする
-                    OnActiveChanged?.Invoke(this, false);
-                    gameObject.SetActive(false);
+                    if (gameObject.activeSelf == true)
+                    {
+                        OnActiveChange?.Invoke(this, false);
+                        gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
                     // スロットにアタッチメントが設定されている場合は表示する
-                    OnActiveChanged?.Invoke(this, true);
-                    gameObject.SetActive(true);
+                    if (gameObject.activeSelf == false)
+                    {
+                        // if (gameObject.activeInHierarchy == true)
+                        OnActiveChange?.Invoke(this, true);
+                        gameObject.SetActive(true);
+                    }
                 }
                 // gameObject.SetActive(slot.Bone.Active);
             }

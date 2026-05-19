@@ -1,10 +1,11 @@
 #nullable enable
 using UnityEngine;
 using afl;
-using ActorWorkspace.Common;
+using ActorWorkspace;
 
 namespace ActorWorkspace.ActorBehaviour
 {
+#if false
     // 汎用的なインタラクトイベントを発行
     public class AWInteractEventPublisherBehaviour : AWActorBehaviour<IAWActor>
     {
@@ -15,7 +16,7 @@ namespace ActorWorkspace.ActorBehaviour
 
         public override void DoAwake()
         {
-            if (Variables.TryGet(AWVariableKey.Hurtbox1, out var hurtbox1))
+            if (Variables.TryGet(AWCoreVariableKey.Hurtbox1, out var hurtbox1))
             {
                 GameObject obj = hurtbox1.Get<GameObject>();
                 if (obj == null) throw new System.Exception("Hurtbox1(GameObject) is null");
@@ -37,5 +38,6 @@ namespace ActorWorkspace.ActorBehaviour
             EventBus.Publish(AWCoreActorEvents.OnInteractHurtbox1, info);
         }
     }
+#endif
 }
 #nullable restore
