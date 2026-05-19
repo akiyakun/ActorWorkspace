@@ -357,7 +357,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                             {
                                 // AudioPathが設定されている場合は優先的に設定
                                 // animEvent.stringParameter = spineEvent.Data.AudioPath;
-                                animEvent.stringParameter = AWDefaultAnimationEvents.Audio.ToString();
+                                animEvent.stringParameter = AWCoreAnimationEvents.Audio.ToString();
 
                                 var filename = Path.GetFileNameWithoutExtension(spineEvent.Data.AudioPath);
                                 try

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ActorWorkspace
 {
-    public class AWDefaultAnimationEvents
+    public class AWCoreAnimationEvents
     {
         public const string MotionConfig = "MotionConfig";
         public const string Audio = "Audio";
