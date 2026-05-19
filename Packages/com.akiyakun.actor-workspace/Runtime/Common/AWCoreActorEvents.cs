@@ -8,7 +8,7 @@ namespace ActorWorkspace
     // 受信するものはOn+
     //
     // 本来static classだが継承して使いたいのでinterfaceになっています
-    public interface AWActorEvents
+    public interface AWCoreActorEvents
     {
         #region Controls
         // public static readonly (string, bool) Exclusive = ("Exclusive", default);

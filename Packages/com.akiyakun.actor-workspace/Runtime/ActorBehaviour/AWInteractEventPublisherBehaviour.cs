@@ -34,7 +34,7 @@ namespace ActorWorkspace.ActorBehaviour
         void OnHurtbox1Enter(CollisionDetectorInfo info)
         {
             // Debug.Log($"InteractEventPublisherBehaviour: OnHurtbox1Enter: other={info.Other?.name}");
-            EventBus.Publish(AWActorEvents.OnInteractHurtbox1, info);
+            EventBus.Publish(AWCoreActorEvents.OnInteractHurtbox1, info);
         }
     }
 }
