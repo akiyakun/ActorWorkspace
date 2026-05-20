@@ -38,7 +38,10 @@ namespace ActorWorkspace.UnitySpine
         public bool followParentWorldScale = false;
         #endregion
 
-        public event System.Action<IAWFollower, bool>? OnActiveChange;
+        // public event System.Action<IAWFollower, bool>? OnActiveChange;
+        public event System.Action<IAWFollower>? OnActivating;
+
+        public GameObject GameObject => gameObject;
 
         string _boneName = string.Empty;
         public int BoneNameHash { get; private set; }
@@ -134,7 +137,8 @@ namespace ActorWorkspace.UnitySpine
                     // スロットにアタッチメントが設定されていない場合は非表示にする
                     if (gameObject.activeSelf == true)
                     {
-                        OnActiveChange?.Invoke(this, false);
+                        // OnActiveChange?.Invoke(this, false);
+                        // OnActivated?.Invoke(this);
                         gameObject.SetActive(false);
                     }
                 }
@@ -144,7 +148,8 @@ namespace ActorWorkspace.UnitySpine
                     if (gameObject.activeSelf == false)
                     {
                         // if (gameObject.activeInHierarchy == true)
-                        OnActiveChange?.Invoke(this, true);
+                        // OnActiveChange?.Invoke(this, true);
+                        OnActivating?.Invoke(this);
                         gameObject.SetActive(true);
                     }
                 }

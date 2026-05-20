@@ -8,11 +8,13 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     public class ALHurtBoxBehaviour : AWActorBehaviour<IAWActor>
     {
-
-        public override void Initialize(IAWActor actor)
+        public override void Restore()
         {
-            base.Initialize(actor);
 
+        }
+
+        public override void DoAwake()
+        {
             var hurtBoxFolderObject = Variables.Get(AWCoreVariableKey.HurtBoxFolder).GetGameObject();
             if (hurtBoxFolderObject != null)
             {
@@ -26,11 +28,6 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                         (entity) => entity.OnCollision -= OnCollision);
                 }
             }
-        }
-
-        public override void Restore()
-        {
-
         }
 
         void OnCollision(CollisionDetectorInfo info)
