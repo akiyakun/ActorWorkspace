@@ -8,10 +8,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     public class ALHitBoxInfo : MonoBehaviour
     {
-        public object? UserData { get; set; }
+        public IAWActor Actor { get; set; } = null!;
 
         [SerializeField, Disable] uint serialNumber = 0;
         public uint SerialNumber { get => serialNumber; set => serialNumber = value; }
+
+        public object? UserData { get; set; }
     }
 
     public class ALHitBoxBehaviour : AWActorBehaviour<IAWActor>
@@ -37,7 +39,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 {
                     var follower = followers[i];
 
-                    follower.GameObject.AddComponent<ALHitBoxInfo>();
+                    var hitBoxInfo = follower.GameObject.AddComponent<ALHitBoxInfo>();
+                    hitBoxInfo.Actor = Actor;
 
                     EventBag.In(follower,
                         (entity) => entity.OnActivating += OnActivatingFromFollower,
