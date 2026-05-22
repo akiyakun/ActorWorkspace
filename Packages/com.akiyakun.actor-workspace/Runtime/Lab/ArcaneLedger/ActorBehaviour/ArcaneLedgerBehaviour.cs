@@ -2,58 +2,70 @@
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
+using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
+    public struct HitResult
+    {
+        public static readonly HitResult NotHit = new HitResult() { IsHit = false };
+
+        public bool IsHit;
+        public float Value;
+        // public Vector3 HitPoint;
+        // public Vector3 HitNormal;
+    }
+
     // FIXME: 後で整理整する。雑多に処理入れてる
+    // public class ArcaneLedgerBehaviour<TCalculator> : AWActorBehaviour<IAWActor>
+        // where TCalculator : IALCalculator
     public class ArcaneLedgerBehaviour : AWActorBehaviour<IAWActor>
     {
-        class GeneralParam
-        {
-            public float Value;
-            public float Factor;
-            public float Modifier;
+        ActorWorkspace.ArcaneLedger.ALDefaultCalculator calculator;
+        public ActorWorkspace.ArcaneLedger.ALDefaultCalculator Calculator => calculator;
 
-            public GeneralParam()
-            {
-                Restore();
-            }
-
-            public void Restore()
-            {
-                Value = 0.0f;
-                Factor = 1.0f;
-                Modifier = 0.0f;
-            }
-        }
-        GeneralParam[] generalParams = new GeneralParam[AWCoreAnimationEvents.MaxGenParamCount];
+        uint animationGenParamValueDirtyFlag = 0;
+        uint animationGenParamFactorDirtyFlag = 0;
+        uint animationGenParamModifierDirtyFlag = 0;
 
         public override void Restore()
         {
-            for (int i = 0; i < generalParams.Length; i++)
-            {
-                generalParams[i].Restore();
-            }
+            ResetMotionValues();
         }
 
         public override void DoAwake()
         {
-            for (int i = 0; i < generalParams.Length; i++)
-            {
-                generalParams[i] = new GeneralParam();
-            }
+            calculator = new ALDefaultCalculator(Actor);
 
             // イベント購読
             {
+                // AnimationController
+                EventBag.In(Actor.AnimationController,
+                    (entity) => entity.OnAnimationEntered += OnAnimationEntered,
+                    (entity) => entity.OnAnimationEntered -= OnAnimationEntered);
                 EventBag.In(Actor.AnimationController,
                     (entity) => entity.OnAnimationEvent += OnAnimationEvent,
                     (entity) => entity.OnAnimationEvent -= OnAnimationEvent);
             }
         }
 
-        public void Hit(IAWActor me, GameObject other, ALHitBoxInfo hitBoxInfo)
+        public void ContactWithHurtBox(CollisionContactInfo contactInfo)
         {
+            // me: ステータスの取得
+            // me: モーション値の取得
+            // other: ステータスの取得
+            // other: ヒットボックスの情報から攻撃の強さや属性を取得
 
+            var hitResult = calculator.Hit(contactInfo);
+            if (hitResult.IsHit == false) return;
+
+            EventBus.Publish(AWCoreActorEvents.DamageReaction, Mathf.RoundToInt(hitResult.Value));
+
+        }
+
+        protected virtual void OnAnimationEntered(IAWAnimation animation)
+        {
+            ResetMotionValues();
         }
 
         void OnAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData)
@@ -76,6 +88,34 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             // }
         }
 
+        // モーション値のリセット
+        void ResetMotionValues()
+        {
+            uint valueDirtyFlag = animationGenParamValueDirtyFlag;
+            uint factorDirtyFlag = animationGenParamFactorDirtyFlag;
+            uint modifierDirtyFlag = animationGenParamModifierDirtyFlag;
+
+            animationGenParamValueDirtyFlag = 0;
+            animationGenParamFactorDirtyFlag = 0;
+            animationGenParamModifierDirtyFlag = 0;
+
+            for (int index = 0; index < AWCoreAnimationEvents.MaxGenParamCount; index++)
+            {
+                if ((valueDirtyFlag & (1u << index)) != 0)
+                {
+                    Calculator.GeneralParams[index].Value = 0;
+                }
+                if ((factorDirtyFlag & (1u << index)) != 0)
+                {
+                    Calculator.GeneralParams[index].Factor = 0;
+                }
+                if ((modifierDirtyFlag & (1u << index)) != 0)
+                {
+                    Calculator.GeneralParams[index].Modifier = 0;
+                }
+            }
+        }
+
         void ProcessSetGenEvent(IAWAnimation animation, AWAnimationEventData eventData)
         {
             // SetGenValue[X] イベント
@@ -83,24 +123,27 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             {
                 int index = eventData.Name[AWCoreAnimationEvents.SetGenValuePrefix.Length] - 'A';
                 if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenValue event name: {eventData.Name}");
-                generalParams[index].Value = eventData.Float;
-                Debug.Log($"SetGenValue: {(char)('A' + index)}, value={eventData.Float}");
+                Calculator.GeneralParams[index].Value = eventData.Float;
+                D.Log(CoreLogMask.Events, $"SetGenValue: {(char)('A' + index)}, value={eventData.Float}");
+                animationGenParamValueDirtyFlag |= (uint)(1u << index);
             }
             // SetGenFactor[X] イベント
             else if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenFactorPrefix, System.StringComparison.Ordinal))
             {
                 int index = eventData.Name[AWCoreAnimationEvents.SetGenFactorPrefix.Length] - 'A';
                 if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenFactor event name: {eventData.Name}");
-                generalParams[index].Factor = eventData.Float;
-                Debug.Log($"SetGenFactor: {(char)('A' + index)}, factor={eventData.Float}");
+                Calculator.GeneralParams[index].Factor = eventData.Float;
+                D.Log(CoreLogMask.Events, $"SetGenFactor: {(char)('A' + index)}, factor={eventData.Float}");
+                animationGenParamFactorDirtyFlag |= (uint)(1u << index);
             }
             // SetGenModifier[X] イベント
             else if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenModifierPrefix, System.StringComparison.Ordinal))
             {
                 int index = eventData.Name[AWCoreAnimationEvents.SetGenModifierPrefix.Length] - 'A';
                 if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenModifier event name: {eventData.Name}");
-                generalParams[index].Modifier = eventData.Float;
-                Debug.Log($"SetGenModifier: {(char)('A' + index)}, modifier={eventData.Float}");
+                Calculator.GeneralParams[index].Modifier = eventData.Float;
+                D.Log(CoreLogMask.Events, $"SetGenModifier: {(char)('A' + index)}, modifier={eventData.Float}");
+                animationGenParamModifierDirtyFlag |= (uint)(1u << index);
             }
             else
             {

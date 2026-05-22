@@ -20,14 +20,18 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             processor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>()!;
             if (processor == null) throw new System.Exception("ALHurtBoxBehaviour DoAwake: ArcaneLedgerBehaviour not found in ActorBehaviourController");
 
-            var hurtBoxFolderObject = Variables.Get(AWCoreVariableKey.HurtBoxFolder).GetGameObject();
-            if (hurtBoxFolderObject != null)
+            var folderObject = Variables.Get(AWCoreVariableKey.HurtBoxFolder).GetGameObject();
+            if (folderObject != null)
             {
-                var detectors = hurtBoxFolderObject.GetComponentsInChildren<ICollisionDetector>(includeInactive: true);
-                for (int i = 0; i < detectors.Length; i++)
+                var followers = folderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);
+                for (int i = 0; i < followers.Length; i++)
                 {
-                    var detector = detectors[i];
+                    var follower = followers[i];
 
+                    var extraInfo = follower.GameObject.AddComponent<ALColliderExtraInfo>();
+                    extraInfo.Actor = Actor;
+
+                    var detector = follower.GameObject.GetComponent<ICollisionDetector>();
                     EventBag.In(detector,
                         (entity) => entity.OnCollision += OnCollision,
                         (entity) => entity.OnCollision -= OnCollision);
@@ -35,14 +39,10 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             }
         }
 
-        void OnCollision(CollisionDetectorInfo info)
+        void OnCollision(CollisionContactInfo info)
         {
-            Debug.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}, Other={info.Other.name}");
-
-            if (info.Other.TryGetComponent<ALHitBoxInfo>(out var hitBoxInfo))
-            {
-                processor.Hit(Actor, info.Other, hitBoxInfo);
-            }
+            // Debug.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}, Other={info.Other.name}");
+            processor.ContactWithHurtBox(info);
         }
     }
 }

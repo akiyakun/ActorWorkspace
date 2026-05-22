@@ -21,10 +21,12 @@ namespace ActorWorkspace
 
         public static readonly (string, bool) SetDisplayVisibility = ("SetDisplayVisibility", default);
 
-        //DamageReaction
+
+
         public static readonly (string, int) DamageReaction = ("DamageReaction", 0);
 
-        public static readonly (string, CollisionDetectorInfo) OnInteractHurtbox1 = ("OnInteractHurtbox1", default);
+
+        public static readonly (string, CollisionContactInfo) OnInteractHurtbox1 = ("OnInteractHurtbox1", default);
     }
 }
 #nullable restore

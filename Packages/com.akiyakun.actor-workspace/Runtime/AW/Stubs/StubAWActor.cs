@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
+using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace.Tests
 {
@@ -21,6 +22,8 @@ namespace ActorWorkspace.Tests
         public AWActorBehaviourController ActorBehaviourController { get; set; } = null!;
         public EventBus<string> EventBus { get; set; } = new();
         public VariableTable Variables { get; set; } = new();
+
+        public IALCalculator? ALCalculator { get; set; } = null;
 
         #region IUpdateElement
         public bool ElementActive { get; set; }

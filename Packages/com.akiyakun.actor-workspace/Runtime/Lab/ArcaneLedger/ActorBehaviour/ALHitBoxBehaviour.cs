@@ -6,16 +6,6 @@ using ActorWorkspace;
 
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
-    public class ALHitBoxInfo : MonoBehaviour
-    {
-        public IAWActor Actor { get; set; } = null!;
-
-        [SerializeField, Disable] uint serialNumber = 0;
-        public uint SerialNumber { get => serialNumber; set => serialNumber = value; }
-
-        public object? UserData { get; set; }
-    }
-
     public class ALHitBoxBehaviour : AWActorBehaviour<IAWActor>
     {
         static uint currentSerialNumber = 0;
@@ -31,16 +21,16 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void DoAwake()
         {
-            var hitBoxFolderObject = Variables.Get(AWCoreVariableKey.HitBoxFolder).GetGameObject();
-            if (hitBoxFolderObject != null)
+            var folderObject = Variables.Get(AWCoreVariableKey.HitBoxFolder).GetGameObject();
+            if (folderObject != null)
             {
-                var followers = hitBoxFolderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);
+                var followers = folderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);
                 for (int i = 0; i < followers.Length; i++)
                 {
                     var follower = followers[i];
 
-                    var hitBoxInfo = follower.GameObject.AddComponent<ALHitBoxInfo>();
-                    hitBoxInfo.Actor = Actor;
+                    var extraInfo = follower.GameObject.AddComponent<ALColliderExtraInfo>();
+                    extraInfo.Actor = Actor;
 
                     EventBag.In(follower,
                         (entity) => entity.OnActivating += OnActivatingFromFollower,
@@ -53,14 +43,14 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         {
             Debug.Log($"ALHitBoxBehaviour OnFollowerActiveChanged: {follower}");
 
-            ALHitBoxInfo hitBoxInfo = follower.GameObject.GetComponent<ALHitBoxInfo>();
-            if (hitBoxInfo == null)
+            ALColliderExtraInfo extraInfo = follower.GameObject.GetComponent<ALColliderExtraInfo>();
+            if (extraInfo == null)
             {
-                Debug.Assert(false, $"ALHitBoxBehaviour OnFollowerActiveChanged: ALHitBoxInfo component not found in {follower.GameObject.name}");
+                Debug.Assert(false, $"ALHitBoxBehaviour OnFollowerActiveChanged: ALColliderExtraInfo component not found in {follower.GameObject.name}");
                 return;
             }
 
-            hitBoxInfo.SerialNumber = GetNextSerialNumber();
+            extraInfo.SerialNumber = GetNextSerialNumber();
             // Debug.Log($"{currentSerialNumber}");
 
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
+using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace
 {
@@ -20,6 +21,8 @@ namespace ActorWorkspace
         public AWActorBehaviourController ActorBehaviourController { get; }
         public EventBus<string> EventBus { get; }
         public VariableTable Variables { get; }
+
+        public IALCalculator? ALCalculator { get; }
 
         // 初期状態に戻す
         public void Restore();

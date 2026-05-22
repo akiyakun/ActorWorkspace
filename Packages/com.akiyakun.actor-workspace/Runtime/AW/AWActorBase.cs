@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using afl;
+using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace
 {
@@ -37,6 +38,8 @@ namespace ActorWorkspace
         public virtual AWActorBehaviourController ActorBehaviourController { get; private set; }
         public EventBus<string> EventBus { get; protected set; } = new();
         public VariableTable Variables { get; protected set; } = null!;
+
+        public IALCalculator? ALCalculator { get; protected set; }
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
