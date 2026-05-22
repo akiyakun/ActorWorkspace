@@ -7,6 +7,8 @@ namespace ActorWorkspace.ArcaneLedger
     {
         public void Restore();
 
+        public ALGeneralParam GetGeneralParam(int paramId);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Calc(int paramId);
 

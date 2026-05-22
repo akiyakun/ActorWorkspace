@@ -98,6 +98,11 @@ namespace ActorWorkspace.ArcaneLedger
             }
         }
 
+        public ALGeneralParam GetGeneralParam(int paramId)
+        {
+            return generalParams[paramId];
+        }
+
         public ALGeneralParam GetGeneralParam(ParamId type)
         {
             return generalParams[(int)type];
@@ -121,6 +126,12 @@ namespace ActorWorkspace.ArcaneLedger
             float meValue = Calc((int)ParamId.DamageReactionResist);
             float otherValue = otherCalculator.Calc((int)ParamId.DamageReaction);
             var result = Mathf.Max(0.0f, otherValue - meValue);
+
+            // 録画用
+            // float v = otherCalculator.GetGeneralParam((int)ParamId.DamageReaction).Value;
+            // v += 1.0f;
+            // if (v >= 3.0f) v = 0.0f;
+            // otherCalculator.GetGeneralParam((int)ParamId.DamageReaction).Value = v;
 
             return new HitResult() { IsHit = true, Value = result };
         }
