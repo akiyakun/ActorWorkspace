@@ -7,14 +7,15 @@ namespace ActorWorkspace
     {
         public int Id;
         public int Category;
-        public Vector3 Position;
+        // public Vector3 Position;
         public object? UserData;
 
-        public ActorCreateParam(int id, int category, Vector3 position, object? userData = null)
+        // public ActorCreateParam(int id, int category, Vector3 position, object? userData = null)
+        public ActorCreateParam(int id, int category, object? userData = null)
         {
             Id = id;
             Category = category;
-            Position = position;
+            // Position = position;
             UserData = userData;
         }
     }

@@ -6,11 +6,14 @@ using Cysharp.Threading.Tasks;
 
 namespace ActorWorkspace
 {
+    // Actorの生成と解放
+    // Actorの表示状態や、プール管理などは担当しない
     public interface IAWActorFactory// : System.IDisposable
     {
         public event System.Action<IAWActor> OnCreated;
         public event System.Action<IAWActor> OnRelease;
 
+        // 非表示状態で生成されます
         public UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken = default);
 
         public bool Release(IAWActor actor);
