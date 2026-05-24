@@ -14,6 +14,13 @@ namespace ActorWorkspace.EventCommand
         public override int Id => (int)AWEventCommandId.SpawnActor;
         public override EventCommandExecuteMode ExecuteMode => EventCommandExecuteMode.Immediate;
 
+        public class SpawnOption
+        {
+            public GameObject? Parent;
+            public Vector3 Position;
+        }
+        static SpawnOption spawnOption = new SpawnOption();
+
         AWEventCommandFactory? awEventCommandFactory;
 
 #nullable disable
@@ -27,25 +34,44 @@ namespace ActorWorkspace.EventCommand
 
         public override void Start(EventCommandParam param = default)
         {
-            StartImmediateMode(awEventCommandFactory!.ActorManager, param.Param1.Int, param.Param2.Int);
+            if (param.UserData is SpawnOption option)
+            {
+                SpawnFromPool(awEventCommandFactory!.ActorManager,
+                    param.Param1.Int, param.Param2.Int, parent: option.Parent, position: option.Position);
+            }
+            else
+            {
+                SpawnFromPool(awEventCommandFactory!.ActorManager,
+                    param.Param1.Int, param.Param2.Int, parent: null, position: Vector3.zero);
+            }
         }
 
-        protected IAWActor? StartImmediateMode(IAWActorManager actorManager, int id, int category)
+        protected IAWActor? SpawnFromPool(IAWActorManager actorManager, int id, int category, GameObject? parent, Vector3 position)
+        // SpawnOption? spawnOption = null)
         {
-            var actor = actorManager.Spawn(id: id, category: category, parent: null);
+            var actor = actorManager.Spawn(id: id, category: category, parent: parent);
             if (actor == null)
             {
                 // プールに空きがない場合は非同期生成コマンドを発行する
-                var param = new EventCommandParam();
-                param.Param1.Int = id;
-                param.Param2.Int = category;
-                EventDirector.Instance.Request(AWEventCommandId.SpawnActorAsync, param);
+                spawnOption.Parent = parent;
+                spawnOption.Position = position;
+                EventDirector.Instance.Request((int)AWEventCommandId.SpawnActorAsync,
+                    new EventCommandParam { Param1 = { Int = id }, Param2 = { Int = category }, UserData = spawnOption });
+
                 return null;
             }
 
-            // actor.GameObject.SetActive(true);
+            actor.GameObject.transform.position = position;
+            actor.GameObject.SetActive(true);
+
             return actor;
         }
+
+        // protected virtual void RequestSpawnAsync(int commandId, EventCommandParam param)
+        // {
+        //     EventDirector.Instance.Request(commandId, param);
+        // }
+
     }
 }
 #nullable restore

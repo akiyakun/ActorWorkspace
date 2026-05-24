@@ -29,15 +29,15 @@ namespace ActorWorkspace.EventCommand
             return id switch
             {
                 (int)AWEventCommandId.AddToActorPool => new ECAddToActorPool(actorManager),
+                (int)AWEventCommandId.SpawnActorAsync => new ECSpawnActorAsync(this),
                 _ => throw new System.ArgumentOutOfRangeException(
-                    nameof(id), $"Invalid AWEventCommandId={id}, Enum={((AWEventCommandId)id).ToString()}"),
+                    nameof(id), $"AWEventCommandFactory: Invalid AWEventCommandId={id}, Enum={((AWEventCommandId)id).ToString()}"),
             };
         }
 
         protected override void PrecreateImmediateCommands()
         {
-            // AddImmediateCommand(new ECLog());
-            // AddImmediateCommand(new ECEmpty());
+            AddImmediateCommand(new ECSpawnActor(this));
         }
 
         public override int ParseCommandId(string str)
