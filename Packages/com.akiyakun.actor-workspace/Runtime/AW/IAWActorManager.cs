@@ -16,8 +16,9 @@ namespace ActorWorkspace
         // public bool Remove(IAWActor actor);
 
         public int GetPoolCount(int id, int category);
-        public UniTask AddToPool(int id, int category, int count, CancellationToken cancellationToken = default);
         public void ClearPool(int id, int category);
+        public UniTask AddToPoolAsync(int id, int category, int count, CancellationToken cancellationToken = default);
+        // public void AddToPool(int id, int category);
 
         public IAWActor? Spawn(int id, int category, GameObject? parent = null, bool autoCreate = true);
         public void Despawn(IAWActor actor);

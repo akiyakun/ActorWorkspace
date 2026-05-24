@@ -105,7 +105,20 @@ namespace ActorWorkspace
         }
 
         // From IAWActorManager
-        public virtual async UniTask AddToPool(int id, int category, int count, CancellationToken cancellationToken = default)
+        public virtual void ClearPool(int id, int category)
+        {
+            if (categoryPools.TryGetValue(category, out var categoryPool) == false) return;
+            if (categoryPool.ActorPools.TryGetValue(id, out var stack) == false) return;
+
+            while (stack.Count > 0)
+            {
+                var actor = stack.Pop();
+                actorFactory.Release(actor);
+            }
+        }
+
+        // From IAWActorManager
+        public virtual async UniTask AddToPoolAsync(int id, int category, int count, CancellationToken cancellationToken = default)
         {
             if (categoryPools.TryGetValue(category, out var categoryPool) == false)
             {
@@ -134,20 +147,36 @@ namespace ActorWorkspace
         }
 
         // From IAWActorManager
-        public virtual void ClearPool(int id, int category)
-        {
-            if (categoryPools.TryGetValue(category, out var categoryPool) == false) return;
-            if (categoryPool.ActorPools.TryGetValue(id, out var stack) == false) return;
+        // public virtual void AddToPool(int id, int category)
+        // {
+        //     if (categoryPools.TryGetValue(category, out var categoryPool) == false)
+        //     {
+        //         categoryPool = new CategoryPool();
+        //         categoryPools.Add(category, categoryPool);
+        //     }
 
-            while (stack.Count > 0)
-            {
-                var actor = stack.Pop();
-                actorFactory.Release(actor);
-            }
-        }
+        //     if (categoryPool.ActorPools.TryGetValue(id, out var stack) == false)
+        //     {
+        //         stack = new Stack<TActor>();
+        //         categoryPool.ActorPools.Add(id, stack);
+        //     }
+
+        //     // for (int i = 0; i < count; i++)
+        //     {
+        //         var actor = actorFactory.Create(new ActorCreateParam(id, category));
+        //         if (actor == null)
+        //         {
+        //             throw new System.Exception($"AWActorManager.AddToPool(): Failed to create actor. id={id}");
+        //         }
+        //         stack.Push((TActor)actor);
+
+        //         actor.GameObject.transform.SetParent(gameObject.transform);
+        //         // actor.GameObject.hideFlags = HideFlags.HideInHierarchy;
+        //     }
+        // }
 
         // From IAWActorManager
-        public virtual IAWActor? Spawn(int id, int category, GameObject? parent = null, bool autoCreate = true)
+        public virtual IAWActor? Spawn(int id, int category, GameObject? parent = null, bool autoCreate = false)
         {
             Stack<TActor>? stack = null;
             bool addToPool = false;
@@ -166,7 +195,7 @@ namespace ActorWorkspace
                 }
 
                 // 同期的にプールを1つ追加
-                AddToPool(id, category, 1).GetAwaiter().GetResult();
+                // AddToPool(id, category);
                 return Spawn(id, category, autoCreate: false);
             }
 

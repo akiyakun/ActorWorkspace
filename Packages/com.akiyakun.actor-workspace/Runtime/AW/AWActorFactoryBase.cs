@@ -43,8 +43,17 @@ namespace ActorWorkspace
             return actor;
         }
 
+        // public IAWActor? Create(ActorCreateParam param)
+        // {
+        //     var actor = InnerCreate(param);
+        //     if (actor == null) return null;
+        //     OnCreated?.Invoke(actor);
+        //     return actor;
+        // }
+
         // MEMO: 実装先でOnCreated()の呼び出しをする必要はありません
         protected abstract UniTask<IAWActor?> InnerCreateAsync(ActorCreateParam param, CancellationToken cancellationToken);
+        // protected abstract IAWActor? InnerCreate(ActorCreateParam param);
 
         public bool Release(IAWActor actor)
         {

@@ -10,11 +10,12 @@ namespace ActorWorkspace
     // Actorの表示状態や、プール管理などは担当しない
     public interface IAWActorFactory// : System.IDisposable
     {
-        public event System.Action<IAWActor> OnCreated;
-        public event System.Action<IAWActor> OnRelease;
+        public event System.Action<IAWActor>? OnCreated;
+        public event System.Action<IAWActor>? OnRelease;
 
         // 非表示状態で生成されます
         public UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken = default);
+        // public IAWActor? Create(ActorCreateParam param);
 
         public bool Release(IAWActor actor);
 

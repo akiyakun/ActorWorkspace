@@ -27,6 +27,13 @@ namespace ActorWorkspace.Tests
             return UniTask.FromResult<IAWActor?>(actor);
         }
 
+        public IAWActor? Create(ActorCreateParam param)
+        {
+            var actor = new StubAWActor(contextProvider, param.Id, param.Category);
+            OnCreated?.Invoke(actor);
+            return actor;
+        }
+
         public bool Release(IAWActor actor)
         {
             OnRelease?.Invoke(actor);
