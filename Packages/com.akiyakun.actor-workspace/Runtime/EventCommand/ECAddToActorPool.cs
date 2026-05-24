@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using afl;
 using afl.EventDirector;
 
-namespace ActorWorkspace.EventDirector
+namespace ActorWorkspace.EventCommand
 {
     public class ECAddToActorPool : EventCommandBase
     {
@@ -34,7 +34,7 @@ namespace ActorWorkspace.EventDirector
         async UniTask EvaluateAsync(int id, int category, int count, CancellationToken cancellationToken)
         {
             Debug.Log($"[ECAddToActorPool] id={id}, category={category}, count={count}");
-            await actorManager.AddToPool(id, category, count, cancellationToken: cancellationToken);
+            await actorManager.AddToPoolAsync(id, category, count, cancellationToken: cancellationToken);
             State = EventCommandState.Completed;
         }
     }

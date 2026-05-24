@@ -3,11 +3,12 @@ using UnityEngine;
 using afl.EventDirector;
 using ActorWorkspace;
 
-namespace ActorWorkspace.EventDirector
+namespace ActorWorkspace.EventCommand
 {
     public class AWEventCommandFactory : EventCommandFactory
     {
         IAWActorManager actorManager;
+        public IAWActorManager ActorManager => actorManager;
 
 #nullable disable
         private AWEventCommandFactory() {}
