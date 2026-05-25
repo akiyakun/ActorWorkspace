@@ -141,6 +141,7 @@ namespace ActorWorkspace
                 }
                 stack.Push((TActor)actor);
 
+                actor.GameObject.SetActive(false);
                 actor.GameObject.transform.SetParent(gameObject.transform);
                 // actor.GameObject.hideFlags = HideFlags.HideInHierarchy;
             }
@@ -185,7 +186,8 @@ namespace ActorWorkspace
             else if (categoryPool.ActorPools.TryGetValue(id, out stack) == false) addToPool = true;
             else if (stack.Count == 0) addToPool = true;
 
-            if (autoCreate == false) return null;
+            // プールが空で自動生成しない場合はnullを返す
+            if (addToPool && autoCreate == false) return null;
 
             if (addToPool)
             {
@@ -220,6 +222,10 @@ namespace ActorWorkspace
             actor.ElementActive = false;
         }
 
+        /// <summary>
+        /// IReadOnlyListなのでforeachしないよう注意してください。
+        /// TActorのリストが欲しい場合はActorListプロパティの方を使用してください。
+        /// </summary>
         // From IAWActorManager
         public virtual IReadOnlyList<IAWActor> GetActorList() => updateElementManager.ReadOnlyList;
 
