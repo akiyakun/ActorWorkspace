@@ -22,7 +22,7 @@ namespace ActorWorkspace
         public EventBus<string> EventBus { get; }
         public VariableTable Variables { get; }
 
-        public IALCalculator? ALCalculator { get; }
+        public IALProcessor? ALProcessor { get; }
 
         // 初期状態に戻す
         public void Restore();

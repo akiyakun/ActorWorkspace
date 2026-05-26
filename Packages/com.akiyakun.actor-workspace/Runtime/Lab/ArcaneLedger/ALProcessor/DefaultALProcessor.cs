@@ -38,8 +38,10 @@ namespace ActorWorkspace.ArcaneLedger
     /* General Params List
         D: ダメージリアクション調整値
     */
-    public class ALDefaultCalculator : IALCalculator
+    public class DefaultALProcessor : IALProcessor
     {
+        public IAWActor Actor { get; private set; }
+
         public enum ParamId
         {
             A = 0,
@@ -78,16 +80,20 @@ namespace ActorWorkspace.ArcaneLedger
         ALGeneralParam[] generalParams = new ALGeneralParam[ALGeneralParam.MaxParamCount];
         public ALGeneralParam[] GeneralParams => generalParams;
 
-        IAWActor me;
-
-        public ALDefaultCalculator(IAWActor actor)
+        public DefaultALProcessor(IAWActor actor)
         {
-            me = actor;
+            Actor = actor;
 
             for (int i = 0; i < generalParams.Length; i++)
             {
                 generalParams[i] = new ALGeneralParam();
             }
+        }
+
+        public void Setup(IAWActor actor)
+        {
+            if (Actor != null) throw new System.InvalidOperationException("Already setup");
+            Actor = actor;
         }
 
         public void Restore()
@@ -120,7 +126,7 @@ namespace ActorWorkspace.ArcaneLedger
                 return HitResult.NotHit;
             }
 
-            var otherCalculator = otherInfo.Actor.ALCalculator;
+            var otherCalculator = otherInfo.Actor.ALProcessor;
             if (otherCalculator == null) return HitResult.NotHit;
 
             float meValue = Calc((int)ParamId.DamageReactionResist);
@@ -156,6 +162,13 @@ namespace ActorWorkspace.ArcaneLedger
         //     var param = GetGeneralParam(GeneralParamType.DamageReactionResist);
         //     return param.Value + param.Modifier;
         // }
+
+        public void SetupStatusEffects(IStatusEffect[] statusEffects)
+        {
+            if (statusEffects == null) throw new System.ArgumentNullException(nameof(statusEffects));
+
+            //  statusEffects[(int)StatusEffectId.Freeze] = new StatusEffectFreeze();
+        }
 
     }
 }

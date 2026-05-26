@@ -23,7 +23,7 @@ namespace ActorWorkspace.Tests
         public EventBus<string> EventBus { get; set; } = new();
         public VariableTable Variables { get; set; } = new();
 
-        public IALCalculator? ALCalculator { get; set; } = null;
+        public IALProcessor? ALProcessor { get; set; } = null;
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
