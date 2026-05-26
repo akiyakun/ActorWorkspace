@@ -20,7 +20,7 @@ namespace ActorWorkspace.ArcaneLedger
         float tickIntervalTime;
         float tickCountdown;
 
-        protected UnionPrimitiveData[] GeneralParams = new UnionPrimitiveData[StatusEffectController.MaxGeneralParamCount];
+        protected UnionPrimitiveData[] Params = new UnionPrimitiveData[StatusEffectController.MaxGeneralParamCount];
 
         public void Setup(StatusEffectController controller)
         {
@@ -30,9 +30,9 @@ namespace ActorWorkspace.ArcaneLedger
             // Id = id;
             Actor = controller.Actor;
 
-            for (int i = 0; i < GeneralParams.Length; i++)
+            for (int i = 0; i < Params.Length; i++)
             {
-                GeneralParams[i] = new UnionPrimitiveData();
+                Params[i] = new UnionPrimitiveData();
             }
 
             OnAwake();
@@ -50,14 +50,14 @@ namespace ActorWorkspace.ArcaneLedger
             OnRestore();
         }
 
-        public virtual bool Apply(ApplyStatusEffectParams param)
+        public virtual bool Apply(ApplyStatusEffectParams applyParam)
         {
             // if (OnRequest(param) == false) return;
 
             Enable = 1;
             ElapsedTime = 0.0f;
-            RemainingTime = param.DurationTime;
-            tickIntervalTime = param.TickIntervalTime;
+            RemainingTime = applyParam.DurationTime;
+            tickIntervalTime = applyParam.TickIntervalTime;
             tickCountdown = tickIntervalTime;
 
             return true;
@@ -70,6 +70,7 @@ namespace ActorWorkspace.ArcaneLedger
 
         public void DoDisable()
         {
+            Enable = 0;
             OnDisable();
         }
 

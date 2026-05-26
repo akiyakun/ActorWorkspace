@@ -9,16 +9,16 @@ namespace ActorWorkspace.ArcaneLedger
     public class DefaultALProcessor : IALProcessor
     {
         protected ArcaneLedgerBehaviour owner = null!;
-        public IAWActor Actor { get; private set; } = null!;
+        protected IAWActor actor = null!;
         protected StatusEffectController statusEffectController = null!;
 
-        ALGeneralParam generalParam = null!;
+        protected ALGeneralParam generalParam = null!;
 
         public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController)
         {
             if (this.owner != null) throw new System.InvalidOperationException("Already setup");
             this.owner = owner;
-            Actor = owner.Actor;
+            actor = owner.Actor;
 
             this.statusEffectController = statusEffectController;
 
@@ -32,6 +32,24 @@ namespace ActorWorkspace.ArcaneLedger
         }
 
         public void Restore()
+        {
+        }
+
+        public void Prepare()
+        {
+            OnPrepare();
+        }
+
+        protected virtual void OnPrepare()
+        {
+        }
+
+        public void DoUpdate(float deltaTime)
+        {
+            OnUpdate(deltaTime);
+        }
+
+        protected virtual void OnUpdate(float deltaTime)
         {
         }
 

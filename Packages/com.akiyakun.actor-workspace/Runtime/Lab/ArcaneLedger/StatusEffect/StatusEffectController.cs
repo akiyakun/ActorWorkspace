@@ -19,6 +19,7 @@ namespace ActorWorkspace.ArcaneLedger
         ArcaneLedgerBehaviour owner;
         // IAWActor actor;
         public IAWActor Actor { get; private set; } = null!;
+        public ALGeneralParam GeneralParam { get; } = null!;
 
         // IALProcessor processor;
         StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
@@ -30,7 +31,8 @@ namespace ActorWorkspace.ArcaneLedger
         {
             this.owner = owner;
             // this.processor = processor;
-            this.Actor = owner.Actor;
+            Actor = owner.Actor;
+            GeneralParam = owner.GeneralParam;
 
             // for (int id = 0; id < MaxStatusEffectCount; id++)
             // {
@@ -76,19 +78,19 @@ namespace ActorWorkspace.ArcaneLedger
             statusEffects[statusEffect.Id] = statusEffect;
         }
 
-        public void Request(int id, ApplyStatusEffectParams param)
+        public void Request(int id, ApplyStatusEffectParams applyParam)
         {
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
 
-            if (RandomEx.Chance(param.ApplyChance) == false) return;
+            if (RandomEx.Chance(applyParam.ApplyChance) == false) return;
 
             requestFlags|= (1u << id);
-            requestParams[id] = param;
+            requestParams[id] = applyParam;
 
             // FIXME: 仮
             if (statusEffects[id] != null)
             {
-                statusEffects[id].Apply(param);
+                statusEffects[id].Apply(applyParam);
             }
         }
 

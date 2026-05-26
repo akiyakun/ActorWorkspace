@@ -46,7 +46,7 @@ namespace ActorWorkspace.ArcaneLedger
             // 既に設定されているときは優先度が高い効果のほうを優先する
             if (factorVariable.Float != 0.0f) return;
 
-            factorVariable.Float = GeneralParams[(int)Param.MoveSpeedFactor].Float;
+            factorVariable.Float = Params[(int)Param.MoveSpeedFactor].Float;
         }
 
     }

@@ -8,10 +8,13 @@ namespace ActorWorkspace.ArcaneLedger
     // FIXME: 適当な名前
     public interface IALProcessor
     {
-        public IAWActor Actor { get; }
+        // public IAWActor Actor { get; }
 
         public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController);
         public void Restore();
+
+        public void Prepare();
+        public void DoUpdate(float deltaTime);
 
         // public ALGeneralParam GetGeneralParam(int paramId);
 

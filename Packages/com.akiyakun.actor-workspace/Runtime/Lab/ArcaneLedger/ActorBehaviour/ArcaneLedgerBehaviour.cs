@@ -68,7 +68,10 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public override void DoUpdate(float deltaTime)
         {
             statusEffectController.DoPrepare();
+            Processor.Prepare();
+
             statusEffectController.DoUpdate(deltaTime);
+            Processor.DoUpdate(deltaTime);
         }
 
         public override void DoLateUpdate(float deltaTime)
