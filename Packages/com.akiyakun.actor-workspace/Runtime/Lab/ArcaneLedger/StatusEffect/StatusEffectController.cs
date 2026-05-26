@@ -13,29 +13,27 @@ namespace ActorWorkspace.ArcaneLedger
         // public const int MaxStatusEffectParamCount = 6;
         public const int MaxGeneralParamCount = 3;
 
-        public uint EnableFlag { get; private set; }
+        public uint EnableFlags { get; private set; }
 
         IAWActor actor;
         public IAWActor Actor => actor;
 
-        IALProcessor processor;
-        // StatusEffectData[] statusEffects = new StatusEffectData[MaxStatusEffectCount];
-        IStatusEffect[] statusEffects = new IStatusEffect[MaxStatusEffectCount];
+        // IALProcessor processor;
+        StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
 
-        uint requestFlag = 0;
+        uint requestFlags = 0;
         ApplyStatusEffectParams[] requestParams = new ApplyStatusEffectParams[MaxStatusEffectCount];
-        // Stack<uint> requestStack = new Stack<uint>(8);
 
-        public StatusEffectController(IAWActor actor, IALProcessor processor)
+        public StatusEffectController(IAWActor actor)
         {
             this.actor = actor;
-            this.processor = processor;
+            // this.processor = processor;
 
             // for (int id = 0; id < MaxStatusEffectCount; id++)
             // {
             //     statusEffects[id] = new StatusEffectData(id);
             // }
-            processor.SetupStatusEffects(statusEffects);
+            // processor.SetupStatusEffects(statusEffects);
         }
 
         public void Restore()
@@ -56,25 +54,36 @@ namespace ActorWorkspace.ArcaneLedger
 
         public void DoUpdate(float deltaTime)
         {
+            EnableFlags = 0;
+
             for (int id = 0; id < MaxStatusEffectCount; id++)
             {
-                statusEffects[id]?.DoUpdate(deltaTime);
+                var statusEffect = statusEffects[id];
+                if (statusEffect == null) continue;
+                statusEffect.DoUpdate(deltaTime);
+                if (statusEffect.Enable > 0) EnableFlags |= (1u << id);
             }
         }
 
-        public void SetStatusEffect(IStatusEffect effect)
+        public void SetStatusEffect(StatusEffect statusEffect)
         {
-            Debug.Assert(effect! != null, "Effect is null");
-            Debug.Assert(effect!.Id >= 0 && effect.Id < MaxStatusEffectCount, "Invalid status effect ID");
-            effect.Setup(this);
-            statusEffects[effect.Id] = effect;
+            Debug.Assert(statusEffect! != null, "Effect is null");
+            Debug.Assert(statusEffect!.Id >= 0 && statusEffect.Id < MaxStatusEffectCount, "Invalid status effect ID");
+            statusEffect.Setup(this);
+            statusEffects[statusEffect.Id] = statusEffect;
         }
 
         public void Request(int id, ApplyStatusEffectParams param)
         {
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
-            requestFlag |= (1u << id);
+            requestFlags|= (1u << id);
             requestParams[id] = param;
+
+            // FIXME: 仮
+            if (statusEffects[id] != null)
+            {
+                statusEffects[id].Request(param);
+            }
         }
 
     }

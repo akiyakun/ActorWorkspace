@@ -40,7 +40,8 @@ namespace ActorWorkspace.ArcaneLedger
     */
     public class DefaultALProcessor : IALProcessor
     {
-        public IAWActor Actor { get; private set; }
+        public IAWActor Actor { get; private set; } = null!;
+        protected StatusEffectController statusEffectController = null!;
 
         public enum ParamId
         {
@@ -80,20 +81,23 @@ namespace ActorWorkspace.ArcaneLedger
         ALGeneralParam[] generalParams = new ALGeneralParam[ALGeneralParam.MaxParamCount];
         public ALGeneralParam[] GeneralParams => generalParams;
 
-        public DefaultALProcessor(IAWActor actor)
+        public void Setup(IAWActor actor, StatusEffectController statusEffectController)
         {
+            if (Actor != null) throw new System.InvalidOperationException("Already setup");
             Actor = actor;
+
+            this.statusEffectController = statusEffectController;
 
             for (int i = 0; i < generalParams.Length; i++)
             {
                 generalParams[i] = new ALGeneralParam();
             }
+
+            OnSetup();
         }
 
-        public void Setup(IAWActor actor)
+        protected virtual void OnSetup()
         {
-            if (Actor != null) throw new System.InvalidOperationException("Already setup");
-            Actor = actor;
         }
 
         public void Restore()
@@ -163,12 +167,12 @@ namespace ActorWorkspace.ArcaneLedger
         //     return param.Value + param.Modifier;
         // }
 
-        public void SetupStatusEffects(IStatusEffect[] statusEffects)
-        {
-            if (statusEffects == null) throw new System.ArgumentNullException(nameof(statusEffects));
+        // public void SetupStatusEffects(StatusEffect[] statusEffects)
+        // {
+        //     if (statusEffects == null) throw new System.ArgumentNullException(nameof(statusEffects));
 
-            //  statusEffects[(int)StatusEffectId.Freeze] = new StatusEffectFreeze();
-        }
+        //     //  statusEffects[(int)StatusEffectId.Freeze] = new StatusEffectFreeze();
+        // }
 
     }
 }

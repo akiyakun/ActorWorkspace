@@ -16,14 +16,21 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // public Vector3 HitNormal;
     }
 
+    public class ArcaneLedgerBehaviour<TALProcessor> : ArcaneLedgerBehaviour
+        where TALProcessor : class, IALProcessor, new()
+    {
+        public override IALProcessor Processor { get; } = new TALProcessor();
+    }
+
     // アーケイン・レジャー
     // FIXME: 後で整理整する。雑多に処理入れてる
     // public class ArcaneLedgerBehaviour<TCalculator> : AWActorBehaviour<IAWActor>
     // where TCalculator : IALCalculator
-    public class ArcaneLedgerBehaviour : AWActorBehaviour<IAWActor>
+    public abstract class ArcaneLedgerBehaviour : AWActorBehaviour<IAWActor>
     {
-        ActorWorkspace.ArcaneLedger.DefaultALProcessor processor = null!;
-        public ActorWorkspace.ArcaneLedger.DefaultALProcessor Processor => processor;
+        public abstract IALProcessor Processor { get; }
+
+        public override UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
 
         uint animationGenParamValueDirtyFlag = 0;
         uint animationGenParamFactorDirtyFlag = 0;
@@ -38,8 +45,9 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void DoAwake()
         {
-            processor = new DefaultALProcessor(Actor);
-            statusEffectController = new StatusEffectController(Actor, processor);
+            statusEffectController = new StatusEffectController(Actor);
+
+            Processor.Setup(Actor, statusEffectController);
 
             // イベント購読
             {
@@ -71,7 +79,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             // other: ステータスの取得
             // other: ヒットボックスの情報から攻撃の強さや属性を取得
 
-            var hitResult = processor.Hit(contactInfo);
+            var hitResult = Processor.Hit(contactInfo);
             if (hitResult.IsHit == false) return;
 
             EventBus.Publish(AWCoreActorEvents.DamageReaction, Mathf.RoundToInt(hitResult.Value));
@@ -118,15 +126,15 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             {
                 if ((valueDirtyFlag & (1u << index)) != 0)
                 {
-                    Processor.GeneralParams[index].Value = 0;
+                    Processor.GetGeneralParam(index).Value = 0;
                 }
                 if ((factorDirtyFlag & (1u << index)) != 0)
                 {
-                    Processor.GeneralParams[index].Factor = 0;
+                    Processor.GetGeneralParam(index).Factor = 0;
                 }
                 if ((modifierDirtyFlag & (1u << index)) != 0)
                 {
-                    Processor.GeneralParams[index].Modifier = 0;
+                    Processor.GetGeneralParam(index).Modifier = 0;
                 }
             }
         }
@@ -138,7 +146,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             {
                 int index = eventData.Name[AWCoreAnimationEvents.SetGenValuePrefix.Length] - 'A';
                 if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenValue event name: {eventData.Name}");
-                Processor.GeneralParams[index].Value = eventData.Float;
+                Processor.GetGeneralParam(index).Value = eventData.Float;
                 D.Log(CoreLogMask.Events, $"SetGenValue: {(char)('A' + index)}, value={eventData.Float}");
                 animationGenParamValueDirtyFlag |= (uint)(1u << index);
             }
@@ -147,7 +155,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             {
                 int index = eventData.Name[AWCoreAnimationEvents.SetGenFactorPrefix.Length] - 'A';
                 if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenFactor event name: {eventData.Name}");
-                Processor.GeneralParams[index].Factor = eventData.Float;
+                Processor.GetGeneralParam(index).Factor = eventData.Float;
                 D.Log(CoreLogMask.Events, $"SetGenFactor: {(char)('A' + index)}, factor={eventData.Float}");
                 animationGenParamFactorDirtyFlag |= (uint)(1u << index);
             }
@@ -156,7 +164,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             {
                 int index = eventData.Name[AWCoreAnimationEvents.SetGenModifierPrefix.Length] - 'A';
                 if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenModifier event name: {eventData.Name}");
-                Processor.GeneralParams[index].Modifier = eventData.Float;
+                Processor.GetGeneralParam(index).Modifier = eventData.Float;
                 D.Log(CoreLogMask.Events, $"SetGenModifier: {(char)('A' + index)}, modifier={eventData.Float}");
                 animationGenParamModifierDirtyFlag |= (uint)(1u << index);
             }

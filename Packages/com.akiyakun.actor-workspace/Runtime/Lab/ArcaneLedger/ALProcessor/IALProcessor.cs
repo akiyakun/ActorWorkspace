@@ -1,6 +1,7 @@
 #nullable enable
 using System.Runtime.CompilerServices;
 using ActorWorkspace.ArcaneLedger.ActorBehaviour;
+using afl;
 
 namespace ActorWorkspace.ArcaneLedger
 {
@@ -9,15 +10,17 @@ namespace ActorWorkspace.ArcaneLedger
     {
         public IAWActor Actor { get; }
 
-        public void Setup(IAWActor actor);
+        public void Setup(IAWActor actor, StatusEffectController statusEffectController);
         public void Restore();
 
         public ALGeneralParam GetGeneralParam(int paramId);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public HitResult Hit(CollisionContactInfo contactInfo);
+
+        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Calc(int paramId);
 
-        public void SetupStatusEffects(IStatusEffect[] statusEffects);
+        // public void SetupStatusEffects(IStatusEffect[] statusEffects);
 
     }
 }

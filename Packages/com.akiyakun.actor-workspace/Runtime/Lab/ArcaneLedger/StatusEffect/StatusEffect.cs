@@ -3,7 +3,7 @@ using afl;
 
 namespace ActorWorkspace.ArcaneLedger
 {
-    public abstract class StatusEffectBase
+    public abstract class StatusEffect
     {
         public abstract int Id { get; }
         public int Enable { get; protected set; }
