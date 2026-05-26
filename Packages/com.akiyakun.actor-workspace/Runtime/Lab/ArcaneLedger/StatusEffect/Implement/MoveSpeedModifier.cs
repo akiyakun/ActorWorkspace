@@ -25,7 +25,7 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected override void OnAwake()
         {
-            factorVariable = owner.Actor.Variables.Get(FactorVariableName);
+            factorVariable = Actor.Variables.Get(FactorVariableName);
         }
 
         protected override void OnEnable()

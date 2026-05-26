@@ -10,10 +10,10 @@ namespace ActorWorkspace.ArcaneLedger
     {
         public IAWActor Actor { get; }
 
-        public void Setup(IAWActor actor, StatusEffectController statusEffectController);
+        public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController);
         public void Restore();
 
-        public ALGeneralParam GetGeneralParam(int paramId);
+        // public ALGeneralParam GetGeneralParam(int paramId);
 
         public HitResult Hit(CollisionContactInfo contactInfo);
 

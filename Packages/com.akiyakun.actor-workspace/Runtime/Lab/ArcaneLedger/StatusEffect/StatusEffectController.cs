@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
+using ActorWorkspace.ArcaneLedger.ActorBehaviour;
 
 namespace ActorWorkspace.ArcaneLedger
 {
@@ -15,8 +16,9 @@ namespace ActorWorkspace.ArcaneLedger
 
         public uint EnableFlags { get; private set; }
 
-        IAWActor actor;
-        public IAWActor Actor => actor;
+        ArcaneLedgerBehaviour owner;
+        // IAWActor actor;
+        public IAWActor Actor { get; private set; } = null!;
 
         // IALProcessor processor;
         StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
@@ -24,10 +26,11 @@ namespace ActorWorkspace.ArcaneLedger
         uint requestFlags = 0;
         ApplyStatusEffectParams[] requestParams = new ApplyStatusEffectParams[MaxStatusEffectCount];
 
-        public StatusEffectController(IAWActor actor)
+        public StatusEffectController(ArcaneLedgerBehaviour owner)
         {
-            this.actor = actor;
+            this.owner = owner;
             // this.processor = processor;
+            this.Actor = owner.Actor;
 
             // for (int id = 0; id < MaxStatusEffectCount; id++)
             // {
@@ -76,13 +79,16 @@ namespace ActorWorkspace.ArcaneLedger
         public void Request(int id, ApplyStatusEffectParams param)
         {
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
+
+            if (RandomEx.Chance(param.ApplyChance) == false) return;
+
             requestFlags|= (1u << id);
             requestParams[id] = param;
 
             // FIXME: 仮
             if (statusEffects[id] != null)
             {
-                statusEffects[id].Request(param);
+                statusEffects[id].Apply(param);
             }
         }
 

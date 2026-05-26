@@ -5,8 +5,8 @@ namespace ActorWorkspace.ArcaneLedger
 {
     public struct ApplyStatusEffectParams
     {
-        // 成功率は抵抗率なので受ける側のデータだな
-        // public int SuccessRate;
+        // 成功率(0-1)
+        public float ApplyChance;
 
         // 効果時間
         public float DurationTime;

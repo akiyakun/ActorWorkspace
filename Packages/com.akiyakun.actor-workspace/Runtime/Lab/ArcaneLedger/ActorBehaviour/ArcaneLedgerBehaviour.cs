@@ -32,33 +32,37 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
 
-        uint animationGenParamValueDirtyFlag = 0;
-        uint animationGenParamFactorDirtyFlag = 0;
-        uint animationGenParamModifierDirtyFlag = 0;
+        public ALGeneralParam GeneralParam { get; } = new ALGeneralParam();
 
+        MotionValueController motionValueController = null!;
         StatusEffectController statusEffectController = null!;
+
 
         public override void Restore()
         {
-            ResetMotionValues();
+            motionValueController.Restore();
+            statusEffectController.Restore();
+            Processor.Restore();
+            GeneralParam.Restore();
         }
 
         public override void DoAwake()
         {
-            statusEffectController = new StatusEffectController(Actor);
+            motionValueController = new MotionValueController(this);
+            statusEffectController = new StatusEffectController(this);
 
-            Processor.Setup(Actor, statusEffectController);
+            Processor.Setup(this, statusEffectController);
 
             // イベント購読
-            {
-                // AnimationController
-                EventBag.In(Actor.AnimationController,
-                    (entity) => entity.OnAnimationEntered += OnAnimationEntered,
-                    (entity) => entity.OnAnimationEntered -= OnAnimationEntered);
-                EventBag.In(Actor.AnimationController,
-                    (entity) => entity.OnAnimationEvent += OnAnimationEvent,
-                    (entity) => entity.OnAnimationEvent -= OnAnimationEvent);
-            }
+            // {
+            //     // AnimationController
+            //     EventBag.In(Actor.AnimationController,
+            //         (entity) => entity.OnAnimationEntered += OnAnimationEntered,
+            //         (entity) => entity.OnAnimationEntered -= OnAnimationEntered);
+            //     EventBag.In(Actor.AnimationController,
+            //         (entity) => entity.OnAnimationEvent += OnAnimationEvent,
+            //         (entity) => entity.OnAnimationEvent -= OnAnimationEvent);
+            // }
         }
 
         public override void DoUpdate(float deltaTime)
@@ -84,94 +88,6 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
             EventBus.Publish(AWCoreActorEvents.DamageReaction, Mathf.RoundToInt(hitResult.Value));
 
-        }
-
-        protected virtual void OnAnimationEntered(IAWAnimation animation)
-        {
-            ResetMotionValues();
-        }
-
-        void OnAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData)
-        {
-            // 汎用パラメータ設定イベントの場合
-            if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenPrefix, System.StringComparison.Ordinal))
-            {
-                ProcessSetGenEvent(animation, eventData);
-                return;
-            }
-
-            // switch (eventData.Name)
-            // {
-            //     case AWCoreAnimationEvents.MotionConfig:
-            //         // EventBus.Publish(ActorEvents.MotionConfig, eventData.Int);
-            //         break;
-            //     default:
-            //         Debug.Assert(false, $"Unknown animation event: {eventData.Name}");
-            //         break;
-            // }
-        }
-
-        // モーション値のリセット
-        void ResetMotionValues()
-        {
-            uint valueDirtyFlag = animationGenParamValueDirtyFlag;
-            uint factorDirtyFlag = animationGenParamFactorDirtyFlag;
-            uint modifierDirtyFlag = animationGenParamModifierDirtyFlag;
-
-            animationGenParamValueDirtyFlag = 0;
-            animationGenParamFactorDirtyFlag = 0;
-            animationGenParamModifierDirtyFlag = 0;
-
-            for (int index = 0; index < AWCoreAnimationEvents.MaxGenParamCount; index++)
-            {
-                if ((valueDirtyFlag & (1u << index)) != 0)
-                {
-                    Processor.GetGeneralParam(index).Value = 0;
-                }
-                if ((factorDirtyFlag & (1u << index)) != 0)
-                {
-                    Processor.GetGeneralParam(index).Factor = 0;
-                }
-                if ((modifierDirtyFlag & (1u << index)) != 0)
-                {
-                    Processor.GetGeneralParam(index).Modifier = 0;
-                }
-            }
-        }
-
-        void ProcessSetGenEvent(IAWAnimation animation, AWAnimationEventData eventData)
-        {
-            // SetGenValue[X] イベント
-            if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenValuePrefix, System.StringComparison.Ordinal))
-            {
-                int index = eventData.Name[AWCoreAnimationEvents.SetGenValuePrefix.Length] - 'A';
-                if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenValue event name: {eventData.Name}");
-                Processor.GetGeneralParam(index).Value = eventData.Float;
-                D.Log(CoreLogMask.Events, $"SetGenValue: {(char)('A' + index)}, value={eventData.Float}");
-                animationGenParamValueDirtyFlag |= (uint)(1u << index);
-            }
-            // SetGenFactor[X] イベント
-            else if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenFactorPrefix, System.StringComparison.Ordinal))
-            {
-                int index = eventData.Name[AWCoreAnimationEvents.SetGenFactorPrefix.Length] - 'A';
-                if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenFactor event name: {eventData.Name}");
-                Processor.GetGeneralParam(index).Factor = eventData.Float;
-                D.Log(CoreLogMask.Events, $"SetGenFactor: {(char)('A' + index)}, factor={eventData.Float}");
-                animationGenParamFactorDirtyFlag |= (uint)(1u << index);
-            }
-            // SetGenModifier[X] イベント
-            else if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenModifierPrefix, System.StringComparison.Ordinal))
-            {
-                int index = eventData.Name[AWCoreAnimationEvents.SetGenModifierPrefix.Length] - 'A';
-                if (index < 0 || index >= AWCoreAnimationEvents.MaxGenParamCount) throw new System.Exception($"Invalid SetGenModifier event name: {eventData.Name}");
-                Processor.GetGeneralParam(index).Modifier = eventData.Float;
-                D.Log(CoreLogMask.Events, $"SetGenModifier: {(char)('A' + index)}, modifier={eventData.Float}");
-                animationGenParamModifierDirtyFlag |= (uint)(1u << index);
-            }
-            else
-            {
-                Debug.Assert(false, $"Unknown SetGen event: {eventData.Name}");
-            }
         }
     }
 }

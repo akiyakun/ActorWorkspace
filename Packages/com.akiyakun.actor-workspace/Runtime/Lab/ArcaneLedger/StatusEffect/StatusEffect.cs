@@ -13,7 +13,8 @@ namespace ActorWorkspace.ArcaneLedger
         public float ElapsedTime { get; protected set; }
         public float RemainingTime { get; protected set; }
 
-        protected StatusEffectController owner = null!;
+        protected StatusEffectController controller = null!;
+        protected IAWActor Actor = null!;
 
         // Tick間隔時間(ダメージ発生間隔)
         float tickIntervalTime;
@@ -21,12 +22,13 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected UnionPrimitiveData[] GeneralParams = new UnionPrimitiveData[StatusEffectController.MaxGeneralParamCount];
 
-        public void Setup(StatusEffectController owner)
+        public void Setup(StatusEffectController controller)
         {
-            if (this.owner != null) throw new System.InvalidOperationException("Already setup");
-            this.owner = owner;
+            if (this.controller != null) throw new System.InvalidOperationException("Already setup");
+            this.controller = controller;
 
             // Id = id;
+            Actor = controller.Actor;
 
             for (int i = 0; i < GeneralParams.Length; i++)
             {
@@ -48,13 +50,17 @@ namespace ActorWorkspace.ArcaneLedger
             OnRestore();
         }
 
-        public virtual void Request(ApplyStatusEffectParams param)
+        public virtual bool Apply(ApplyStatusEffectParams param)
         {
+            // if (OnRequest(param) == false) return;
+
             Enable = 1;
             ElapsedTime = 0.0f;
             RemainingTime = param.DurationTime;
             tickIntervalTime = param.TickIntervalTime;
             tickCountdown = tickIntervalTime;
+
+            return true;
         }
 
         public void DoEnable()
@@ -104,8 +110,9 @@ namespace ActorWorkspace.ArcaneLedger
             }
         }
 
-        protected virtual void OnRestore() { }
         protected virtual void OnAwake() { }
+        protected virtual void OnRestore() { }
+        // protected virtual bool OnRequest(ApplyStatusEffectParams param) { return true; }
         protected virtual void OnEnable() { }
         protected virtual void OnDisable() { }
         protected virtual void OnPrepare() { }

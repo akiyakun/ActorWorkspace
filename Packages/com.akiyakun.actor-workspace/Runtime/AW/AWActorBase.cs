@@ -39,7 +39,7 @@ namespace ActorWorkspace
         public EventBus<string> EventBus { get; protected set; } = new();
         public VariableTable Variables { get; protected set; } = null!;
 
-        public IALProcessor? ALProcessor { get; protected set; }
+        // public IALProcessor? ALProcessor { get; protected set; }
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
