@@ -18,27 +18,20 @@ namespace ActorWorkspace.ArcaneLedger
 
         Variable factorVariable = null!;
 
-        protected override void OnRestore()
+        protected override void Awake()
         {
+            base.Awake();
+            factorVariable = Actor.Variables.Get(FactorVariableName);
+        }
+        public override void Restore()
+        {
+            base.Restore();
             factorVariable.Float = 0.0f;
         }
 
-        protected override void OnAwake()
+        public override void Prepare()
         {
-            factorVariable = Actor.Variables.Get(FactorVariableName);
-        }
-
-        protected override void OnEnable()
-        {
-        }
-
-        protected override void OnDisable()
-        {
-        }
-
-        protected override void OnPrepare()
-        {
-            OnRestore();
+            factorVariable.Float = 0.0f;
         }
 
         protected override void OnUpdate(float deltaTime)

@@ -36,9 +36,8 @@ namespace ActorWorkspace.ArcaneLedger
 
             // for (int id = 0; id < MaxStatusEffectCount; id++)
             // {
-            //     statusEffects[id] = new StatusEffectData(id);
+            //     statusEffects[id].OnEnableChanged += OnEnableChanged;
             // }
-            // processor.SetupStatusEffects(statusEffects);
         }
 
         public void Restore()
@@ -49,24 +48,24 @@ namespace ActorWorkspace.ArcaneLedger
             }
         }
 
-        public void DoPrepare()
+        public void Prepare()
         {
             for (int id = 0; id < MaxStatusEffectCount; id++)
             {
-                statusEffects[id]?.DoPrepare();
+                statusEffects[id]?.Prepare();
             }
         }
 
-        public void DoUpdate(float deltaTime)
+        public void Update(float deltaTime)
         {
-            EnableFlags = 0;
+            // EnableFlags = 0;
 
             for (int id = 0; id < MaxStatusEffectCount; id++)
             {
                 var statusEffect = statusEffects[id];
-                if (statusEffect == null) continue;
-                statusEffect.DoUpdate(deltaTime);
-                if (statusEffect.Enable > 0) EnableFlags |= (1u << id);
+                if (statusEffect == null || statusEffect.Enable == false) continue;
+                statusEffect.Update(deltaTime);
+                // if (statusEffect.Enable > 0) EnableFlags |= (1u << id);
             }
         }
 
@@ -76,6 +75,7 @@ namespace ActorWorkspace.ArcaneLedger
             Debug.Assert(statusEffect!.Id >= 0 && statusEffect.Id < MaxStatusEffectCount, "Invalid status effect ID");
             statusEffect.Setup(this);
             statusEffects[statusEffect.Id] = statusEffect;
+            statusEffect.OnEnableChanged += OnEnableChanged;
         }
 
         public void Request(int id, ApplyStatusEffectParams applyParam)
@@ -84,13 +84,25 @@ namespace ActorWorkspace.ArcaneLedger
 
             if (RandomEx.Chance(applyParam.ApplyChance) == false) return;
 
-            requestFlags|= (1u << id);
+            requestFlags |= (1u << id);
             requestParams[id] = applyParam;
 
             // FIXME: 仮
             if (statusEffects[id] != null)
             {
                 statusEffects[id].Apply(applyParam);
+            }
+        }
+
+        void OnEnableChanged(int id, bool enable)
+        {
+            if (enable)
+            {
+                EnableFlags |= (1u << id);
+            }
+            else
+            {
+                EnableFlags &= ~(1u << id);
             }
         }
 

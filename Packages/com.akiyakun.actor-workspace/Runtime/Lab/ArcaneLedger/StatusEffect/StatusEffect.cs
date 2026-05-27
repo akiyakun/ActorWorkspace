@@ -1,12 +1,17 @@
 #nullable enable
+using System.Runtime.CompilerServices;
 using afl;
 
 namespace ActorWorkspace.ArcaneLedger
 {
     public abstract class StatusEffect
     {
+        public event System.Action<int, bool>? OnEnableChanged;
+
         public abstract int Id { get; }
-        public int Enable { get; protected set; }
+
+        bool _enable;
+        public bool Enable { get => _enable; protected set => SetEnable(value);}
 
         // public uint StackableMask { get; protected set; }
 
@@ -35,26 +40,43 @@ namespace ActorWorkspace.ArcaneLedger
                 Params[i] = new UnionPrimitiveData();
             }
 
-            OnAwake();
+            Awake();
         }
 
         public virtual void Restore()
         {
-            Enable = 0;
+            Enable = false;
 
             ElapsedTime = 0.0f;
             RemainingTime = -1.0f;
             tickIntervalTime = 0.0f;
             tickCountdown = 0.0f;
 
-            OnRestore();
+            // OnRestore();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void SetEnable(bool enable)
+        {
+            if (enable == true && Enable == false)
+            {
+                _enable = true;
+                OnEnable();
+                OnEnableChanged?.Invoke(Id, _enable);
+            }
+            else if (enable == false && Enable == true)
+            {
+                _enable = false;
+                OnDisable();
+                OnEnableChanged?.Invoke(Id, _enable);
+            }
         }
 
         public virtual bool Apply(ApplyStatusEffectParams applyParam)
         {
             // if (OnRequest(param) == false) return;
 
-            Enable = 1;
+            Enable = true;
             ElapsedTime = 0.0f;
             RemainingTime = applyParam.DurationTime;
             tickIntervalTime = applyParam.TickIntervalTime;
@@ -63,27 +85,14 @@ namespace ActorWorkspace.ArcaneLedger
             return true;
         }
 
-        public void DoEnable()
+        // MEMO: 無効状態でもPrepareは呼ばれる
+        public virtual void Prepare()
         {
-            OnEnable();
         }
 
-        public void DoDisable()
+        public void Update(float deltaTime)
         {
-            Enable = 0;
-            OnDisable();
-        }
-
-        public void DoPrepare()
-        {
-            // if (Enable <= 0) return;
-            // 無効状態でもPrepareは呼ぶ
-            OnPrepare();
-        }
-
-        public void DoUpdate(float deltaTime)
-        {
-            if (Enable <= 0) return;
+            if (Enable == false) return;
 
             OnUpdate(deltaTime);
 
@@ -106,17 +115,17 @@ namespace ActorWorkspace.ArcaneLedger
                 RemainingTime -= deltaTime;
                 if (RemainingTime < 0.0f)
                 {
-                    DoDisable();
+                    Enable = false;
                 }
             }
         }
 
-        protected virtual void OnAwake() { }
-        protected virtual void OnRestore() { }
+        protected virtual void Awake() { }
+        // protected virtual void OnRestore() { }
         // protected virtual bool OnRequest(ApplyStatusEffectParams param) { return true; }
         protected virtual void OnEnable() { }
         protected virtual void OnDisable() { }
-        protected virtual void OnPrepare() { }
+        // protected virtual void OnPrepare() { }
         protected virtual void OnUpdate(float deltaTime) { }
         protected virtual void OnTick() { }
     }
