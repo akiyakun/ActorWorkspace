@@ -6,7 +6,7 @@ namespace ActorWorkspace.ArcaneLedger
     /*
         Param1:
     */
-    public abstract class MoveSpeedModifier : StatusEffect
+    public abstract class StatusEffectMoveSpeedModifier : StatusEffect
     {
         public const string DefaultMoveSpeedFactorVariableName = "StatusEffect_MoveSpeedModifier";
         public virtual string FactorVariableName => DefaultMoveSpeedFactorVariableName;
