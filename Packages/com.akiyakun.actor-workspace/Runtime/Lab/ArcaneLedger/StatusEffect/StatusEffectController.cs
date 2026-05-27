@@ -25,9 +25,10 @@ namespace ActorWorkspace.ArcaneLedger
         // IALProcessor processor;
         StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
 
-        // ビットが1のとき無効になるマスク
+        // MEMO:ビットが1のとき無効になるマスク
         public uint RequestMask { get; set; }
-
+        // RequestMaskでマスクを許可するビット
+        public uint RequestUnmask { get; set; } = 0xffffffff;
         public uint RequestFlags { get; private set; }
         ApplyStatusEffectParams[] requestParams = new ApplyStatusEffectParams[MaxStatusEffectCount];
 
@@ -68,9 +69,9 @@ namespace ActorWorkspace.ArcaneLedger
             // EnableFlags = 0;
 
             // マスクを考慮した有効なリクエストフラグ
-            uint requestBit = ~RequestMask & RequestFlags;
-            // ~1110 -> 0001
-            // 0001 & 0010 -> 0000
+            uint requestBit = ~(RequestMask & RequestUnmask) & RequestFlags;
+            // ~(1110 & 0111 = 0110) -> 1001
+            // 1001 & 0010 -> 0000
 
             for (int id = 0; id < MaxStatusEffectCount; id++)
             {
@@ -118,8 +119,9 @@ namespace ActorWorkspace.ArcaneLedger
             // }
 
             // マスクされている場合はリクエストを詰む
-            if ((RequestMask & (1u << id)) != 0)
+            if (((RequestMask & RequestUnmask) & (1u << id)) != 0)
             {
+                // (1110 & 0111 = 0110) & (0010) = 0010
                 RequestFlags |= (1u << id);
                 requestParams[id] = applyParam;
             }
