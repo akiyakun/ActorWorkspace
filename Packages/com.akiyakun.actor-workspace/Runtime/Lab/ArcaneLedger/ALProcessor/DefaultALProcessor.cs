@@ -14,7 +14,7 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected ALGeneralParam generalParam = null!;
 
-        public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController)
+        public virtual void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController)
         {
             if (this.owner != null) throw new System.InvalidOperationException("Already setup");
             this.owner = owner;
@@ -24,32 +24,26 @@ namespace ActorWorkspace.ArcaneLedger
 
             generalParam = owner.GeneralParam;
 
-            OnSetup();
+            Awake();
         }
 
-        protected virtual void OnSetup()
+        protected virtual void Awake()
         {
         }
 
-        public void Restore()
+        public virtual void Restore()
         {
         }
 
-        public void Prepare()
-        {
-            OnPrepare();
-        }
-
-        protected virtual void OnPrepare()
+        public virtual void Prepare()
         {
         }
 
-        public void DoUpdate(float deltaTime)
+        public virtual void Update(float deltaTime)
         {
-            OnUpdate(deltaTime);
         }
 
-        protected virtual void OnUpdate(float deltaTime)
+        public virtual void FixedUpdate(float deltaTime)
         {
         }
 

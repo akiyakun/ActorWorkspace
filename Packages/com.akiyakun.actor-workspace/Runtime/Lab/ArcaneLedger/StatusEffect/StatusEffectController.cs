@@ -16,6 +16,7 @@ namespace ActorWorkspace.ArcaneLedger
 
         public uint EnableFlags { get; private set; }
 
+
         ArcaneLedgerBehaviour owner;
         // IAWActor actor;
         public IAWActor Actor { get; private set; } = null!;
@@ -24,7 +25,10 @@ namespace ActorWorkspace.ArcaneLedger
         // IALProcessor processor;
         StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
 
-        uint requestFlags = 0;
+        // ビットが1のとき無効になるマスク
+        public uint RequestMask { get; set; }
+
+        public uint RequestFlags { get; private set; }
         ApplyStatusEffectParams[] requestParams = new ApplyStatusEffectParams[MaxStatusEffectCount];
 
         public StatusEffectController(ArcaneLedgerBehaviour owner)
@@ -50,6 +54,9 @@ namespace ActorWorkspace.ArcaneLedger
 
         public void Prepare()
         {
+            // RequestMask = 0xffffffff;
+            RequestMask = 0;
+
             for (int id = 0; id < MaxStatusEffectCount; id++)
             {
                 statusEffects[id]?.Prepare();
@@ -60,13 +67,33 @@ namespace ActorWorkspace.ArcaneLedger
         {
             // EnableFlags = 0;
 
+            // マスクを考慮した有効なリクエストフラグ
+            uint requestBit = ~RequestMask & RequestFlags;
+            // ~1110 -> 0001
+            // 0001 & 0010 -> 0000
+
             for (int id = 0; id < MaxStatusEffectCount; id++)
             {
                 var statusEffect = statusEffects[id];
-                if (statusEffect == null || statusEffect.Enable == false) continue;
+                if (statusEffect == null) continue;
+
+                // リクエストの処理
+                if ((requestBit & (1u << id)) != 0)
+                {
+                    RequestFlags &= ~(1u << id);
+                    statusEffect.Apply(requestParams[id]);
+                }
+
+                if (statusEffect.Enable == false) continue;
                 statusEffect.Update(deltaTime);
                 // if (statusEffect.Enable > 0) EnableFlags |= (1u << id);
             }
+        }
+
+        public StatusEffect? GetStatusEffect(int id)
+        {
+            Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
+            return statusEffects[id];
         }
 
         public void SetStatusEffect(StatusEffect statusEffect)
@@ -82,15 +109,24 @@ namespace ActorWorkspace.ArcaneLedger
         {
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
 
+            // 成功判定
             if (RandomEx.Chance(applyParam.ApplyChance) == false) return;
 
-            requestFlags |= (1u << id);
-            requestParams[id] = applyParam;
+            // if (id == 1)
+            // {
+            //     D.DebugBreak();
+            // }
 
-            // FIXME: 仮
-            if (statusEffects[id] != null)
+            // マスクされている場合はリクエストを詰む
+            if ((RequestMask & (1u << id)) != 0)
             {
-                statusEffects[id].Apply(applyParam);
+                RequestFlags |= (1u << id);
+                requestParams[id] = applyParam;
+            }
+            else
+            {
+                // 直接適用
+                statusEffects[id]?.Apply(applyParam);
             }
         }
 

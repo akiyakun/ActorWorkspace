@@ -85,7 +85,9 @@ namespace ActorWorkspace.ArcaneLedger
             return true;
         }
 
-        // MEMO: 無効状態でもPrepareは呼ばれる
+        /// <summary>
+        /// EnableがfalseのときでもPrepare()は呼ばれる仕様です
+        /// </summary>
         public virtual void Prepare()
         {
         }

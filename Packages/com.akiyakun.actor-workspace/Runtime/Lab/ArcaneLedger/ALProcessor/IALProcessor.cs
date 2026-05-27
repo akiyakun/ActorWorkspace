@@ -14,7 +14,8 @@ namespace ActorWorkspace.ArcaneLedger
         public void Restore();
 
         public void Prepare();
-        public void DoUpdate(float deltaTime);
+        public void Update(float deltaTime);
+        public void FixedUpdate(float deltaTime);
 
         // public ALGeneralParam GetGeneralParam(int paramId);
 
