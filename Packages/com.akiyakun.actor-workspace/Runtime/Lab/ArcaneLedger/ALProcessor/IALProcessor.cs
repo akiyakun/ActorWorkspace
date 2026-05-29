@@ -6,6 +6,7 @@ using afl;
 namespace ActorWorkspace.ArcaneLedger
 {
     // FIXME: 適当な名前
+    // MEMO: 基本的にはActorイベントなどよりも先にProcessorのコールバックメソッドが呼ばれる設計
     public interface IALProcessor
     {
         // public IAWActor Actor { get; }
@@ -18,6 +19,8 @@ namespace ActorWorkspace.ArcaneLedger
         public void FixedUpdate(float deltaTime);
 
         // public ALGeneralParam GetGeneralParam(int paramId);
+
+        public void OnStatusEffectChanged(uint enableFlags);
 
         public HitResult Hit(CollisionContactInfo contactInfo);
 

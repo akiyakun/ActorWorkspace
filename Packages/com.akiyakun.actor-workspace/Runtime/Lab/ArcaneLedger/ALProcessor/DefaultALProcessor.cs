@@ -47,6 +47,12 @@ namespace ActorWorkspace.ArcaneLedger
         {
         }
 
+
+        public virtual void OnStatusEffectChanged(uint enableFlags)
+        {
+        }
+
+
         public virtual HitResult Hit(CollisionContactInfo contactInfo)
         {
             return HitResult.NotHit;

@@ -22,8 +22,10 @@ namespace ActorWorkspace
         public static readonly (string, bool) SetDisplayVisibility = ("SetDisplayVisibility", default);
 
 
-
+        #region ArcaneLedger
         public static readonly (string, int) DamageReaction = ("DamageReaction", 0);
+        public static readonly (string, uint) OnStatusEffectChanged = ("OnStatusEffectChanged", 0);
+        #endregion
 
 
         public static readonly (string, CollisionContactInfo) OnInteractHurtbox1 = ("OnInteractHurtbox1", default);

@@ -29,7 +29,7 @@ namespace ActorWorkspace
         // IAWActorDisplay IAWActor.ActorDisplay => ActorDisplay as IAWActorDisplay;
         // public abstract TActorDisplay ActorDisplay { get; protected set; }
         // [SerializeField] AWActorDisplay actorDisplay = null!;
-        public AWActorDisplay ActorDisplay { get; private set;}
+        public AWActorDisplay ActorDisplay { get; private set; } = null!;
         IAWAnimationController IAWActor.AnimationController => AnimationController as IAWAnimationController;
         public TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
@@ -159,8 +159,11 @@ namespace ActorWorkspace
         // public void Terminate()
         public virtual void Dispose()
         {
-            ActorDisplay?.Dispose();
-            ActorDisplay = null!;
+            if (ActorDisplay != null)
+            {
+                ActorDisplay.Dispose();
+                ActorDisplay = null!;
+            }
 
             ActorBehaviourController?.Dispose();
             ActorBehaviourController = null!;
