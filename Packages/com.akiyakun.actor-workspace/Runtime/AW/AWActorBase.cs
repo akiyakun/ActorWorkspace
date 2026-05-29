@@ -4,7 +4,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using afl;
-using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace
 {
@@ -29,8 +28,8 @@ namespace ActorWorkspace
         public abstract TActorParam ActorParam { get; protected set; }
         // IAWActorDisplay IAWActor.ActorDisplay => ActorDisplay as IAWActorDisplay;
         // public abstract TActorDisplay ActorDisplay { get; protected set; }
-        [SerializeField] AWActorDisplay actorDisplay = null!;
-        public AWActorDisplay ActorDisplay => actorDisplay;
+        // [SerializeField] AWActorDisplay actorDisplay = null!;
+        public AWActorDisplay ActorDisplay { get; private set;}
         IAWAnimationController IAWActor.AnimationController => AnimationController as IAWAnimationController;
         public TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
@@ -68,11 +67,19 @@ namespace ActorWorkspace
             ActorCategory = category;
             Debug.Assert(ActorCategory >= 0);
 
-            Debug.Assert(actorDisplay != null, "ActorDisplay is not set in inspector");
+            // Debug.Assert(actorDisplay != null, "ActorDisplay is not set in inspector");
 
             // ActorContextProvider = awActorContextProvider;
             // Debug.Assert(awActorContextProvider != null);
 
+            // ActorDisplayの取得
+            {
+                if (GameObject.GetComponentInFirstLevelChild<AWActorDisplay>() is not AWActorDisplay actorDisplay)
+                {
+                    throw new System.Exception("AWActorDisplay component is not found.");
+                }
+                ActorDisplay = actorDisplay;
+            }
 
             // VariableTableの取得or生成
             if (GameObject.TryGetComponent<VariableTableComponent>(out var variableTableComponent))
@@ -83,6 +90,7 @@ namespace ActorWorkspace
             {
                 Variables = new VariableTable();
             }
+
 
             {
                 if (await CreateActorBehaviourController(cancellationToken) is int ret && ret < 0) return ret;
@@ -102,6 +110,10 @@ namespace ActorWorkspace
 
             {
                 if (await OnInitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
+            }
+
+            {
+                if (await ActorDisplay.InitializeAsync(this, cancellationToken) is int ret && ret < 0) return ret;
             }
 
             Restore();
@@ -147,6 +159,9 @@ namespace ActorWorkspace
         // public void Terminate()
         public virtual void Dispose()
         {
+            ActorDisplay?.Dispose();
+            ActorDisplay = null!;
+
             ActorBehaviourController?.Dispose();
             ActorBehaviourController = null!;
 

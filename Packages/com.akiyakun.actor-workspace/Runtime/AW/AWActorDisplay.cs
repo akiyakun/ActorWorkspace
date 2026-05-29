@@ -1,4 +1,6 @@
 #nullable enable
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using afl;
 
@@ -7,7 +9,7 @@ namespace ActorWorkspace
     // アクターの表示のルート
     // 全体をスケールしたり反転したりするよう
     // MonoBehaviour前提
-    public class AWActorDisplay : MonoBehaviour
+    public class AWActorDisplay : MonoBehaviour, System.IDisposable
     {
         [SerializeField] GameObject main;
 
@@ -22,24 +24,30 @@ namespace ActorWorkspace
 
         public bool IsVisibility
         {
-            get => actor.AnimationController.IsVisibility;
-            set => actor.AnimationController.IsVisibility = value;
+            get => Actor.AnimationController.IsVisibility;
+            set => Actor.AnimationController.IsVisibility = value;
         }
 
-        IAWActor actor = null!;
+        protected IAWActor Actor { get; private set; } = null!;
 
-        public virtual void Awake()
+        // Actorの初期化処理の最後に呼ばれます
+        public virtual async UniTask<int> InitializeAsync(IAWActor actor, CancellationToken cancellationToken)
         {
-            actor = gameObject.GetComponentInParent<IAWActor>();
-            if (actor == null) throw new System.Exception("IAWActor is not found.");
+            Actor = actor;
 
-            Debug.Assert(main != null, $"Main is not assigned. ActorId={actor.ActorId}, name={actor.GameObject.name}");
+            Debug.Assert(main != null, $"Main is not assigned. ActorId={Actor.ActorId}, name={Actor.GameObject.name}");
 
             if (ForceUnitScale == true)
             {
                 Debug.Assert(transform.localScale == Vector3.one, "ForceUnitScale is true. Scale is forced to (1,1,1).");
                 transform.localScale = Vector3.one;
             }
+
+            return await UniTask.FromResult(GeneralReturnCode.Succeeded);
+        }
+
+        public virtual void Dispose()
+        {
         }
 
         // public virtual async UniTask<int> InitializeAsync(IAWActor actor, SpineAnimationController spineAnimationController, CancellationToken cancellationToken)
