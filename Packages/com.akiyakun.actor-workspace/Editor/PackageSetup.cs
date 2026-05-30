@@ -27,6 +27,9 @@ namespace ActorWorkspace.Editor
         {
             Debug.Log("Start PackageSetup in ActorWorkspace...");
 
+            // 先にaflのPackageSetupを完了させる
+            // afl.Editor.PackageSetup.DoPackageSetup();
+
             // External~ のパスを作成
             var externalPath = Path.GetFullPath(ActorWorkspace.Environment.PackageRootPath) + "External~/";
 

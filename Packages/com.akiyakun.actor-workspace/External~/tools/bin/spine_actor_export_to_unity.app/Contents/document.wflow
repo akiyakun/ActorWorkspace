@@ -102,12 +102,10 @@ end run</string>
 						<string>0</string>
 					</dict>
 				</dict>
-				<key>conversionLabel</key>
-				<integer>0</integer>
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>608.500000:495.000000</string>
+				<string>608.500000:315.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -170,9 +168,12 @@ end run</string>
 #echo "$0"
 
 # AppleScriptから$1に実行時のディレクトリパスが渡される
+# このときFinderでbinフォルダを開いている状態(タイトルにbinと表示されている状態)で実行する必要があります。
+# ダメな例として、toolsフォルダを開いた状態でbinフォルダを折りたたみで開いている状態ではtoolsがカレントになってしまいます。
 #echo "$1"
-# カレンとディレクトを変更
+# binフォルダにカレントディレクトを変更
 cd "$1"
+cd ..
 #pwd
 
 # 引数を1個捨てる(AppleScriptで追加した分)
@@ -180,7 +181,11 @@ shift 1
 #echo "$@"
 
 # エクスポーター実行
-./spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@"
+if [ -f "./bin/spine_export_setting.json" ]; then
+	./bin/spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@" --spine_export_setting "./bin/spine_export_setting.json"
+else
+	./bin/spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@"
+fi
 </string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
@@ -291,12 +296,10 @@ shift 1
 						<string>4</string>
 					</dict>
 				</dict>
-				<key>conversionLabel</key>
-				<integer>0</integer>
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>608.500000:857.000000</string>
+				<string>608.500000:803.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -395,12 +398,10 @@ end run</string>
 						<string>0</string>
 					</dict>
 				</dict>
-				<key>conversionLabel</key>
-				<integer>0</integer>
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>608.500000:1102.000000</string>
+				<string>608.500000:1048.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -410,14 +411,14 @@ end run</string>
 	</array>
 	<key>connectors</key>
 	<dict>
-		<key>3D440630-FAEE-4E33-A274-9D76D8D388E3</key>
+		<key>DCECCB6F-2D4B-4FD4-B66D-834B4A39F728</key>
 		<dict>
 			<key>from</key>
 			<string>BF32A70C-E83B-4883-91ED-20B764E7D472 - BF32A70C-E83B-4883-91ED-20B764E7D472</string>
 			<key>to</key>
 			<string>2D0826BC-9102-4283-A065-8ECB5992A5B5 - 2D0826BC-9102-4283-A065-8ECB5992A5B5</string>
 		</dict>
-		<key>8773E25A-3742-4DB1-9260-8F5FC0E5F8DF</key>
+		<key>E9742E06-2ECF-4D93-827F-451FAD2036F7</key>
 		<dict>
 			<key>from</key>
 			<string>1BC0126E-E785-4FEB-A31E-144610D8347D - 1BC0126E-E785-4FEB-A31E-144610D8347D</string>

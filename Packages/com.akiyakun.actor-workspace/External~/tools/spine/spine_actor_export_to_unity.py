@@ -152,7 +152,7 @@ def parse_args():
 def main():
   args = parse_args()
   export_dir = args.export_dir
-  spine_export_settings_file = args.spine_export_setting
+  spine_export_settings_file = os.path.abspath(args.spine_export_setting)
 
   # Tkinterのルートウィンドウを非表示で生成
   root = tk.Tk()
