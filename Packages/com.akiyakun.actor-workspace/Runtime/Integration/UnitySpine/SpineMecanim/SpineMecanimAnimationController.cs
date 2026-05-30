@@ -55,6 +55,7 @@ namespace ActorWorkspace.UnitySpine
         SkeletonMecanim skeletonMecanim;
         Animator animator;
         SkeletonMecanimRootMotion skeletonMecanimRootMotion;
+        RigidbodyAdapter rigidbody;
         AnimatorStateEvent animatorStateEvent;
         IAWAnimationEventDecoder<UnityEngine.AnimationEvent> animationEventDecoder;
 
@@ -66,14 +67,13 @@ namespace ActorWorkspace.UnitySpine
 
         void OnPhysicsUpdateRootMotionOverride(SkeletonRootMotionBase component, Vector2 translation, float rotation)
         {
-            var actor = skeletonMecanimRootMotion.rigidBody2D.gameObject.GetComponent<IAWActor>();
-            var rigidBody = skeletonMecanimRootMotion.rigidBody2D;
-
             if (UseRootMotion == false || RootMotionStatus == false)
             {
-                // rigidBody.MovePosition(actor.ActorParam.GetPosition());
                 return;
             }
+
+            // FIXME:
+            var actor = rigidbody.gameObject.GetComponent<IAWActor>();
 
             // Debug.Log($"OnPhysicsUpdateRootMotionOverride: translation={translation}, rotation={rotation}");
 
@@ -83,7 +83,7 @@ namespace ActorWorkspace.UnitySpine
             // actor.ActorParam.SetPosition(pos);
 
             // 向きを合わせる
-            if (rigidBody.transform.lossyScale.x <= 0.0f) translation.x = -translation.x;
+            if (rigidbody.transform.lossyScale.x <= 0.0f) translation.x = -translation.x;
 
             if (IsNullOfUpdateOverride)
             {
@@ -92,8 +92,8 @@ namespace ActorWorkspace.UnitySpine
                 if (ApplyRootMotionPositionX) pos.x += translation.x;
                 if (ApplyRootMotionPositionY) pos.y += translation.y;
 
-                rigidBody.MovePosition(pos);
-                rigidBody.MoveRotation(rigidBody.rotation * rotation);
+                rigidbody.MovePosition(pos);
+                rigidbody.MoveRotationZ(rigidbody.RotationZ * rotation);
 
                 // actor.ActorParam.SetPosition(rigidBody.position);
             }
@@ -114,6 +114,20 @@ namespace ActorWorkspace.UnitySpine
 
             skeletonMecanimRootMotion = skeletonMecanim.GetComponent<SkeletonMecanimRootMotion>();
             if (skeletonMecanimRootMotion == null) throw new System.Exception("skeletonMecanimRootMotion component not found");
+
+            // Rigidbodyの取得
+            if (skeletonMecanimRootMotion.rigidBody != null)
+            {
+                rigidbody = new RigidbodyAdapter(skeletonMecanimRootMotion.rigidBody);
+            }
+            else if (skeletonMecanimRootMotion.rigidBody2D != null)
+            {
+                rigidbody = new RigidbodyAdapter(skeletonMecanimRootMotion.rigidBody2D);
+            }
+            else
+            {
+                throw new System.Exception($"RigidBody component not found. name={skeletonMecanim.gameObject.name}");
+            }
 
             skeletonMecanimRootMotion.PhysicsUpdateRootMotionOverride += OnPhysicsUpdateRootMotionOverride;
 
@@ -732,7 +746,7 @@ namespace ActorWorkspace.UnitySpine
                 skeletonMecanimRootMotion.enabled = false;
 
                 // skeletonMecanimRootMotion.rigidBody2D.transform.position = before;
-                skeletonMecanimRootMotion.rigidBody2D.transform.position += delta;
+                rigidbody.transform.position += delta;
 
                 // リセット
                 // accumulatedDeltaPosition = Vector3.zero;
@@ -751,9 +765,9 @@ namespace ActorWorkspace.UnitySpine
 
             if (enable == false)
             {
-                var pos = skeletonMecanimRootMotion.rigidBody2D.transform.position;
+                var pos = rigidbody.transform.position;
                 pos.y += animator.deltaPosition.y;
-                skeletonMecanimRootMotion.rigidBody2D.transform.position = pos;
+                rigidbody.transform.position = pos;
             }
 
             InvokeRootMotionChanged();
