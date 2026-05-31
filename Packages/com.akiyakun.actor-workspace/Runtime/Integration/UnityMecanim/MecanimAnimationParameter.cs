@@ -18,8 +18,10 @@ namespace ActorWorkspace
 
             // Triggerのリストを作成
             {
-                foreach (var param in animator.parameters)
+                AnimatorControllerParameter[] parameter = animator.parameters;
+                for (int i = 0; i < parameter.Length; i++)
                 {
+                    var param = parameter[i];
                     if (param.type == AnimatorControllerParameterType.Trigger)
                     {
                         triggerList.Add(param);
@@ -30,8 +32,10 @@ namespace ActorWorkspace
 
         public void ResetAll()
         {
-            foreach (var param in animator.parameters)
+            AnimatorControllerParameter[] parameter = animator.parameters;
+            for (int i = 0; i < parameter.Length; i++)
             {
+                var param = parameter[i];
                 switch (param.type)
                 {
                     case AnimatorControllerParameterType.Float:
