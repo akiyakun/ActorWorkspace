@@ -126,11 +126,19 @@ namespace ActorWorkspace.UnitySpine
             return null;
         }
 
+        protected TAnimation? GetAnimationImpl(string name)
+        {
+            if (animationHashMap.TryGetValue(Utility.StringToHashId(name), out TAnimation value)) return value;
+            Debug.LogWarning($"GetAnimation: Not found name={name}");
+            return null;
+        }
+
 
         public abstract void SetEmptyAnimation(AWAnimationOption option = default);
 
         public abstract IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default);
-        public IAWTrack? SetAnimation(string name, AWAnimationOption option = default) => SetAnimation(Utility.StringToHashId(name), option);
+        public abstract IAWTrack? SetAnimation(string name, AWAnimationOption option = default);
+        // public IAWTrack? SetAnimation(string name, AWAnimationOption option = default) => SetAnimation(Utility.StringToHashId(name), option);
 
         // FIXME; spine
         // public abstract void SetEmptyAnimation(int trackIndex, float mixDuration = -1.0f);

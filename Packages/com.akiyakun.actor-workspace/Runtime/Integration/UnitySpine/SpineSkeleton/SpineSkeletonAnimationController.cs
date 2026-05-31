@@ -137,6 +137,11 @@ namespace ActorWorkspace.UnitySpine
             return track;
         }
 
+        public override IAWTrack? SetAnimation(string name, AWAnimationOption option = default)
+        {
+            return SetAnimation(Utility.StringToHashId(name), option);
+        }
+
 #if false
         public override IAWTrack? SetAnimation(int hashId, bool loop = false, int trackNum = 0)
         {

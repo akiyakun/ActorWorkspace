@@ -300,37 +300,43 @@ namespace ActorWorkspace.UnitySpine
             option.Immediate == true のとき
                 対象のステートを直接再生します。
             option.Immediate == false のとき
-                ステートと同名のInt型パラメータを1に設定します。
+                ステートと同名のTrigger型パラメータを1に設定します。
          */
         public override IAWTrack? SetAnimation(int nameHash, AWAnimationOption option = default)
         {
             SpineMecanimAnimation? animationImpl = GetAnimationImpl(nameHash);
-            if (animationImpl == null)
-            {
-                Debug.Assert(false, $"Cast error.");
-                return null;
-            }
+            if (animationImpl == null) return null;
 
-            // Debug.Log($"SetAnimation: Name={animationImpl.Name}, Immediate={option.Immediate}, Track={option.Track}");
-
-            // AnimationSetting(animationImpl);
-
-            if (IsPlaying == false)
-            {
-                animator.enabled = true;
-            }
+            if (IsPlaying == false) animator.enabled = true;
 
             if (option.Immediate == true)
             {
                 animator.Play(nameHash, layer: option.Track);
             }
-            // if (option.Parameter == true)
             else
             {
-                // ステートと同名のInt型パラメータを1に設定します
-                // animator.SetInteger(animationImpl.stateOptionInfo.StateNameHash, 1);
-                AnimationParameter.SetInt(animationImpl.stateOptionInfo.StateNameHash, 1);
-                // return trackList[option.Track];
+                AnimationParameter.SetTrigger(animationImpl.stateOptionInfo.StateNameHash);
+            }
+
+            var track = trackList[option.Track];
+            track.Set(animationImpl);
+            return track;
+        }
+
+        public override IAWTrack? SetAnimation(string name, AWAnimationOption option = default)
+        {
+            SpineMecanimAnimation? animationImpl = GetAnimationImpl(name);
+            if (animationImpl == null) return null;
+
+            if (IsPlaying == false) animator.enabled = true;
+
+            if (option.Immediate == true)
+            {
+                animator.Play(name, layer: option.Track);
+            }
+            else
+            {
+                AnimationParameter.SetTrigger(animationImpl.stateOptionInfo.StateName);
             }
 
             var track = trackList[option.Track];
@@ -512,6 +518,8 @@ namespace ActorWorkspace.UnitySpine
         // Mecanimのステートに入ったときのコールバック
         void OnHandleEntered(AnimatorStateOptionInfo info)
         {
+            // Debug.Log($"OnHandleEntered: State={info.StateName}, RootMotion={info.HasOptionFlag(AnimatorStateOptionFlag.RootMotion)}");
+
             // MEMO: 1Frame目のイベントが実行されている場合ここで抜けることになる
             if (currentStateNameHash == info.StateNameHash) return;
 
