@@ -87,7 +87,8 @@ namespace ActorWorkspace.UnitySpine
 
             if (IsNullOfUpdateOverride)
             {
-                var pos = actor.ActorParam.GetPosition();
+                // var pos = actor.ActorParam.GetPosition();
+                var pos = actor.GameObject.transform.position;
 
                 if (ApplyRootMotionPositionX) pos.x += translation.x;
                 if (ApplyRootMotionPositionY) pos.y += translation.y;

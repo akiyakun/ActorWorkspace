@@ -25,7 +25,7 @@ namespace ActorWorkspace
         public abstract TActorContextProvider ActorContextProvider { get; protected set; }
 
         IAWActorParam IAWActor.ActorParam => ActorParam as IAWActorParam;
-        public abstract TActorParam ActorParam { get; protected set; }
+        public TActorParam ActorParam { get; private set; }
         // IAWActorDisplay IAWActor.ActorDisplay => ActorDisplay as IAWActorDisplay;
         // public abstract TActorDisplay ActorDisplay { get; protected set; }
         // [SerializeField] AWActorDisplay actorDisplay = null!;
@@ -93,6 +93,11 @@ namespace ActorWorkspace
 
 
             {
+                ActorParam = CreateActorParam();
+                if (ActorParam == null) throw new System.Exception("CreateActorParam returned null.");
+            }
+
+            {
                 if (await CreateActorBehaviourController(cancellationToken) is int ret && ret < 0) return ret;
             }
 
@@ -120,6 +125,8 @@ namespace ActorWorkspace
 
             return GeneralReturnCode.Succeeded;
         }
+
+        protected abstract TActorParam CreateActorParam();
 
         protected virtual async UniTask<int> CreateActorBehaviourController(CancellationToken cancellationToken)
         {

@@ -13,8 +13,8 @@ namespace ActorWorkspace
 
         public void Restore();
 
-        public Vector3 GetPosition();
-        public void SetPosition(Vector3 position);
+        // public Vector3 GetPosition();
+        // public void SetPosition(Vector3 position);
 
     }
 }

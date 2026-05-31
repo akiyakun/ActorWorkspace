@@ -8,15 +8,15 @@ using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
-    public class SpineActorBase<TActorContextProvider, TActorParam>
+    public abstract class SpineActorBase<TActorContextProvider, TActorParam>
         : AWActorBase<TActorContextProvider, TActorParam, IAWAnimationController, SpineSkin>
         where TActorContextProvider : AWActorContextProvider
-        where TActorParam : class, IAWActorParam, new()
+        where TActorParam : class, IAWActorParam
         // where TActorDisplay : SpineActorDisplay, new()
     {
         public override TActorContextProvider ActorContextProvider { get; protected set; } = null!;
 
-        public override TActorParam ActorParam { get; protected set; } = new();
+        // public override TActorParam ActorParam { get; protected set; }
         // public override TActorDisplay ActorDisplay { get; protected set; } = null!;
         // public override IAWAnimationController AnimationController { get; protected set; } = null!;
         public override IReadOnlyList<SpineSkin> SkinList => skinList;
