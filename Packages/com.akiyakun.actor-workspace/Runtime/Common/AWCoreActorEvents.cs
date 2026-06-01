@@ -17,6 +17,7 @@ namespace ActorWorkspace
 
         #region Behaviour
         public static readonly (string, bool) OnGround = ("OnGround", default);
+        public static readonly string OnDead = "OnDead";
         #endregion
 
         public static readonly (string, bool) SetDisplayVisibility = ("SetDisplayVisibility", default);
