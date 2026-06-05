@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 import subprocess
 import time
+from datetime import datetime, timezone
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -34,6 +35,7 @@ def deep_merge(a: dict, b: dict) -> dict:
             a[k] = v
     return a
 
+
 # by AI
 def merge_json_files(path_a: str, path_b: str, output_path: str = None):
     with open(path_a, "r", encoding="utf-8") as fa:
@@ -48,6 +50,47 @@ def merge_json_files(path_a: str, path_b: str, output_path: str = None):
     with open(save_path, "w", encoding="utf-8") as fo:
         json.dump(merged, fo, ensure_ascii=False, indent=2)
     print(f"Saved: {save_path}")
+
+
+# by AI
+def add_timestamp_to_exported_json(output_path: str, spine_path: str):
+  timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+  spine_filename = os.path.splitext(os.path.basename(spine_path))[0]
+  json_path = os.path.join(output_path, f"{spine_filename}.json")
+
+  if not os.path.isfile(json_path):
+    print(f"Timestamp target not found: {json_path}")
+    return
+
+  try:
+    with open(json_path, "r", encoding="utf-8") as f:
+      original = f.read()
+
+    newline = "\r\n" if "\r\n" in original else "\n"
+    lines = original.splitlines()
+
+    if len(lines) == 0:
+      print(f"Skip (empty file): {json_path}")
+      return
+
+    if lines[0].strip() != "{":
+      raise ValueError(f"Unexpected json header: {json_path}")
+
+    # indent = "  "
+    indent = ""
+    lines.insert(1, f'{indent}"exportTimestamp": "{timestamp}",')
+
+    new_text = newline.join(lines)
+    if original.endswith("\n") or original.endswith("\r\n"):
+      new_text += newline
+
+    with open(json_path, "w", encoding="utf-8", newline="") as f:
+      f.write(new_text)
+
+    print(f"Timestamp added: {json_path}")
+  except Exception as e:
+    print(f"Timestamp add failed: {json_path} ({e})")
+    raise e
 
 
 # e.g. spine_dir_path
@@ -258,6 +301,10 @@ def main():
         text=True,                   # 出力を文字列として取得
         check=True
       )
+
+      # エクスポートしたjsonにタイムスタンプを追加する
+      add_timestamp_to_exported_json(output_path, info.spine_path)
+
     except subprocess.CalledProcessError as e:
       messagebox.showerror(msgbox_title, f"エクスポート失敗: {info.spine_dir_path}\n\n{e.stderr}")
       sys.exit(1)
