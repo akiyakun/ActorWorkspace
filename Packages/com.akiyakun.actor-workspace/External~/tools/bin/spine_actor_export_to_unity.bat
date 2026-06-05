@@ -11,4 +11,4 @@ set SPINE_PATH=C:¥Program Files¥Spine¥Spine.exe
 
 .¥bin¥spine_actor_export_to_unity.exe --spine_path "%SPINE_PATH%" --inputs %*
 
-pause
+@REM pause
