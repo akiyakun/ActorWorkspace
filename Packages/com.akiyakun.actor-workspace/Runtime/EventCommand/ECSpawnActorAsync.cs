@@ -13,21 +13,19 @@ namespace ActorWorkspace.EventCommand
         public override int Id => (int)AWEventCommandId.SpawnActorAsync;
         public override EventCommandExecuteMode ExecuteMode => EventCommandExecuteMode.Default;
 
-        AWEventCommandFactory? awEventCommandFactory;
+        IAWActorManager actorManager;
 
 #nullable disable
         protected ECSpawnActorAsync() { }
 #nullable enable
 
-        public ECSpawnActorAsync(AWEventCommandFactory awEventCommandFactory)
+        public ECSpawnActorAsync(IAWActorManager actorManager)
         {
-            this.awEventCommandFactory = awEventCommandFactory;
+            this.actorManager = actorManager;
         }
 
         public override void Start(EventCommandParam param = default)
         {
-            var actorManager = awEventCommandFactory!.ActorManager;
-
             State = EventCommandState.Running;
 
             if (param.UserData is ECSpawnActor.SpawnOption option)

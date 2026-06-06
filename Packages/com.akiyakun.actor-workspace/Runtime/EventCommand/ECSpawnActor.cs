@@ -21,27 +21,27 @@ namespace ActorWorkspace.EventCommand
         }
         static SpawnOption spawnOption = new SpawnOption();
 
-        AWEventCommandFactory? awEventCommandFactory;
+        protected IAWActorManager ActorManager { get; }
 
 #nullable disable
         protected ECSpawnActor() { }
 #nullable enable
 
-        public ECSpawnActor(AWEventCommandFactory awEventCommandFactory)
+        public ECSpawnActor(IAWActorManager actorManager)
         {
-            this.awEventCommandFactory = awEventCommandFactory;
+            ActorManager = actorManager;
         }
 
         public override void Start(EventCommandParam param = default)
         {
             if (param.UserData is SpawnOption option)
             {
-                SpawnFromPool(awEventCommandFactory!.ActorManager,
+                SpawnFromPool(ActorManager,
                     param.Param1.Int, param.Param2.Int, parent: option.Parent, position: option.Position);
             }
             else
             {
-                SpawnFromPool(awEventCommandFactory!.ActorManager,
+                SpawnFromPool(ActorManager,
                     param.Param1.Int, param.Param2.Int, parent: null, position: Vector3.zero);
             }
         }

@@ -1,20 +1,16 @@
 #nullable enable
-using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using afl.EventDirector;
-using ActorWorkspace;
 
 namespace ActorWorkspace.EventCommand
 {
     public class AWEventCommandFactory : EventCommandFactory
     {
         IAWActorManager actorManager;
-        public IAWActorManager ActorManager => actorManager;
+        // public IAWActorManager ActorManager => actorManager;
 
-#nullable disable
-        private AWEventCommandFactory() {}
-#nullable enable
-
-        public AWEventCommandFactory(IAWActorManager actorManager) : base()
+        public AWEventCommandFactory(IAWActorManager actorManager)
         {
             this.actorManager = actorManager;
         }
@@ -29,15 +25,16 @@ namespace ActorWorkspace.EventCommand
             return id switch
             {
                 (int)AWEventCommandId.AddToActorPool => new ECAddToActorPool(actorManager),
-                (int)AWEventCommandId.SpawnActorAsync => new ECSpawnActorAsync(this),
+                (int)AWEventCommandId.SpawnActorAsync => new ECSpawnActorAsync(actorManager),
                 _ => throw new System.ArgumentOutOfRangeException(
                     nameof(id), $"AWEventCommandFactory: Invalid AWEventCommandId={id}, Enum={((AWEventCommandId)id).ToString()}"),
             };
         }
 
-        protected override void PrecreateImmediateCommands()
+        protected override async UniTask<int> PrecreateImmediateCommandsAsync(CancellationToken cancellationToken)
         {
-            AddImmediateCommand(new ECSpawnActor(this));
+            AddImmediateCommand(new ECSpawnActor(actorManager));
+            return await base.PrecreateImmediateCommandsAsync(cancellationToken);
         }
 
         public override int ParseCommandId(string str)
