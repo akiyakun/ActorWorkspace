@@ -13,22 +13,26 @@ namespace ActorWorkspace
     public abstract class ActorFactoryBase : IAWActorFactory
     {
         // From IAWActorFactory
-        public event System.Action<IAWActor> OnCreated = null!;
-        public event System.Action<IAWActor> OnRelease = null!;
+        public event System.Action<IAWActor>? OnCreated;
+        public event System.Action<IAWActor>? OnRelease;
 
         protected AssetLoader AssetLoader { get; set; }
-        protected AWActorContextProvider ActorContextProvider { get; set; }
+        // protected AWActorContextProvider ActorContextProvider { get; set; }
+        protected AssetRepositoryCategorize AssetRepositoryCategorize { get; }
 
 #nullable disable
         private ActorFactoryBase() { }
 #nullable enable
 
-        public ActorFactoryBase(AWActorContextProvider awActorContextProvider)
+        // public ActorFactoryBase(AWActorContextProvider awActorContextProvider)
+        public ActorFactoryBase(AssetRepositoryCategorize assetRepositoryCategorize)
         {
             AssetLoader = new AssetLoader();
 
-            ActorContextProvider = awActorContextProvider;
-            Debug.Assert(awActorContextProvider != null);
+            // ActorContextProvider = awActorContextProvider;
+            // Debug.Assert(awActorContextProvider != null);
+
+            AssetRepositoryCategorize = assetRepositoryCategorize;
         }
 
         // public virtual void Dispose()
@@ -78,7 +82,7 @@ namespace ActorWorkspace
                 return null;
             }
 
-            var repository = ActorContextProvider.AssetRepositoryCategorize.Get(category);
+            var repository = AssetRepositoryCategorize.Get(category);
             if (repository == null)
             {
                 Debug.Assert(repository != null, $"ActorFactory.GetAssetModel(): repository is null. category={category}");

@@ -7,29 +7,29 @@ namespace ActorWorkspace.Tests
 {
     public class StubAWActorFactory : IAWActorFactory
     {
-        public event System.Action<IAWActor> OnCreated = null!;
-        public event System.Action<IAWActor> OnRelease = null!;
+        public event System.Action<IAWActor>? OnCreated;
+        public event System.Action<IAWActor>? OnRelease;
 
-        AWActorContextProvider contextProvider = null!;
+        // AWActorContextProvider contextProvider = null!;
 
-        private StubAWActorFactory() {}
+        // private StubAWActorFactory() {}
 
-        public StubAWActorFactory(AWActorContextProvider contextProvider)
-        {
-            this.contextProvider = contextProvider;
-            Debug.Assert(contextProvider != null);
-        }
+        // public StubAWActorFactory(AWActorContextProvider contextProvider)
+        // {
+        //     this.contextProvider = contextProvider;
+        //     Debug.Assert(contextProvider != null);
+        // }
 
         public UniTask<IAWActor?> CreateAsync(ActorCreateParam param, CancellationToken cancellationToken = default)
         {
-            var actor = new StubAWActor(contextProvider, param.Id, param.Category);
+            var actor = new StubAWActor(param.Id, param.Category);
             OnCreated?.Invoke(actor);
             return UniTask.FromResult<IAWActor?>(actor);
         }
 
         public IAWActor? Create(ActorCreateParam param)
         {
-            var actor = new StubAWActor(contextProvider, param.Id, param.Category);
+            var actor = new StubAWActor(param.Id, param.Category);
             OnCreated?.Invoke(actor);
             return actor;
         }

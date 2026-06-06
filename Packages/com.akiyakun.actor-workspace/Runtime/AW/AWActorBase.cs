@@ -9,9 +9,9 @@ namespace ActorWorkspace
 {
     // 実装時にこのクラスを継承すると手間が省けます
     // 継承は必須ではありません
-    public abstract class AWActorBase<TActorContextProvider, TActorParam, TAnimationController, TSkin>
+    public abstract class AWActorBase<TActorParam, TAnimationController, TSkin>
         : MonoBehaviour, IAWActor
-        where TActorContextProvider : AWActorContextProvider
+        // where TActorContextProvider : AWActorContextProvider
         where TActorParam : class, IAWActorParam
         // where TActorDisplay : class, IAWActorDisplay
         where TAnimationController : class, IAWAnimationController
@@ -21,8 +21,8 @@ namespace ActorWorkspace
         public int ActorCategory { get; protected set; }
         public GameObject GameObject => this.gameObject;
 
-        AWActorContextProvider IAWActor.ActorContextProvider => ActorContextProvider as AWActorContextProvider;
-        public abstract TActorContextProvider ActorContextProvider { get; protected set; }
+        // AWActorContextProvider IAWActor.ActorContextProvider => ActorContextProvider as AWActorContextProvider;
+        // public abstract TActorContextProvider ActorContextProvider { get; protected set; }
 
         IAWActorParam IAWActor.ActorParam => ActorParam as IAWActorParam;
         public TActorParam ActorParam { get; private set; }
@@ -59,8 +59,7 @@ namespace ActorWorkspace
         protected AWActorBase() { }
 #nullable enable
 
-        public async UniTask<int> InitializeAsync(
-            AWActorContextProvider awActorContextProvider, int id, int category, CancellationToken cancellationToken)
+        public async UniTask<int> InitializeAsync(int id, int category, CancellationToken cancellationToken)
         {
             ActorId = id;
             Debug.Assert(ActorId > 0);
@@ -110,7 +109,7 @@ namespace ActorWorkspace
             }
 
             {
-                if (await InnerInitializeAsync(awActorContextProvider, cancellationToken) is int ret && ret < 0) return ret;
+                if (await InnerInitializeAsync(cancellationToken) is int ret && ret < 0) return ret;
             }
 
             {
@@ -156,7 +155,7 @@ namespace ActorWorkspace
         // {
         //     return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         // }
-        protected abstract UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken);
+        protected abstract UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken);
 
         protected virtual async UniTask<int> OnInitializeAsync(CancellationToken cancellationToken)
         {

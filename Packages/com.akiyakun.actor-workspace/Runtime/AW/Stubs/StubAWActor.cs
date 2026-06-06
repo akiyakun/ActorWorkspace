@@ -12,7 +12,7 @@ namespace ActorWorkspace.Tests
         public int ActorCategory { get; set; }
         public GameObject GameObject => null!;
 
-        public AWActorContextProvider ActorContextProvider { get; set; } = null!;
+        // public AWActorContextProvider ActorContextProvider { get; set; } = null!;
 
         public IAWActorParam ActorParam { get; set; } = null!;
         [SerializeField] public AWActorDisplay actorDisplay = null!;
@@ -38,12 +38,12 @@ namespace ActorWorkspace.Tests
         {
         }
 
-        public StubAWActor(AWActorContextProvider awActorContextProvider, int id, int category)
+        public StubAWActor(int id, int category)
         {
             ActorId = id;
             ActorCategory = category;
 
-            ActorContextProvider = awActorContextProvider;
+            // ActorContextProvider = awActorContextProvider;
 
             ActorParam = new StubAWActorParam();
             // ActorDisplay = new FakeAWActorDisplay();

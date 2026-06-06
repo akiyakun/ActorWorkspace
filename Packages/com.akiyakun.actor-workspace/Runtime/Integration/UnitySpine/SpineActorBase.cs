@@ -8,13 +8,13 @@ using afl;
 
 namespace ActorWorkspace.UnitySpine
 {
-    public abstract class SpineActorBase<TActorContextProvider, TActorParam>
-        : AWActorBase<TActorContextProvider, TActorParam, IAWAnimationController, SpineSkin>
-        where TActorContextProvider : AWActorContextProvider
+    public abstract class SpineActorBase<TActorParam>
+        : AWActorBase<TActorParam, IAWAnimationController, SpineSkin>
+        // where TActorContextProvider : AWActorContextProvider
         where TActorParam : class, IAWActorParam
         // where TActorDisplay : SpineActorDisplay, new()
     {
-        public override TActorContextProvider ActorContextProvider { get; protected set; } = null!;
+        // public override TActorContextProvider ActorContextProvider { get; protected set; } = null!;
 
         // public override TActorParam ActorParam { get; protected set; }
         // public override TActorDisplay ActorDisplay { get; protected set; } = null!;
@@ -61,10 +61,10 @@ namespace ActorWorkspace.UnitySpine
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
-        protected override async UniTask<int> InnerInitializeAsync(AWActorContextProvider awActorContextProvider, CancellationToken cancellationToken)
+        protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
-            ActorContextProvider = (TActorContextProvider)awActorContextProvider;
-            if (ActorContextProvider == null) return GeneralReturnCode.Failed;
+            // ActorContextProvider = (TActorContextProvider)awActorContextProvider;
+            // if (ActorContextProvider == null) return GeneralReturnCode.Failed;
 
             // AnimationControllerの初期化
             {

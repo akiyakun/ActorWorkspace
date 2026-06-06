@@ -9,7 +9,7 @@ namespace ActorWorkspace.InAppDebug
     {
         public AssetRepositoryCategorize AssetRepositories { get; private set; }
 
-        public AWActorContextProvider ActorContextProvider { get; private set; }
+        // public AWActorContextProvider ActorContextProvider { get; private set; }
         public IAWActorFactory ActorFactory { get; private set; }
         public IAWActorManager ActorManager { get; private set; }
 
@@ -20,19 +20,19 @@ namespace ActorWorkspace.InAppDebug
             AssetRepositories = new();
             AssetRepositories.AddCategory(0, new afl.MasterData.Tests.StubAssetRepository());
 
-            ActorContextProvider = new AWActorContextProvider(AssetRepositories);
-            ActorFactory = new Tests.StubAWActorFactory(ActorContextProvider);
+            // ActorContextProvider = new AWActorContextProvider(AssetRepositories);
+            ActorFactory = new Tests.StubAWActorFactory();
             ActorManager = new AWActorManager<IAWActor>(ActorFactory);
         }
 
         public ActorWorkspaceFormContextProvider(AssetRepositoryCategorize assetRepositories,
-            AWActorContextProvider actorContextProvider, IAWActorFactory actorFactory, IAWActorManager actorManager)
+            IAWActorFactory actorFactory, IAWActorManager actorManager)
         {
             AssetRepositories = assetRepositories;
             Debug.Assert(assetRepositories != null);
 
-            ActorContextProvider = actorContextProvider;
-            Debug.Assert(actorContextProvider != null);
+            // ActorContextProvider = actorContextProvider;
+            // Debug.Assert(actorContextProvider != null);
 
             ActorFactory = actorFactory;
             Debug.Assert(actorFactory != null);
