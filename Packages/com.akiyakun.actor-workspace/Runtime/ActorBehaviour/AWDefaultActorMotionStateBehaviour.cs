@@ -9,7 +9,7 @@ namespace Project.ActorBehaviour
     public abstract class AWDefaultActorMotionStateBehaviour<TActor> : AWActorBehaviour<TActor>
         where TActor : class, IAWActor
     {
-        public override UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
+        public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update;
 
         float stateElapsedTime;
 

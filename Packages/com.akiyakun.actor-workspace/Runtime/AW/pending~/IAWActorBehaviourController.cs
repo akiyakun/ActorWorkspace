@@ -15,7 +15,7 @@ namespace ActorWorkspace
 
         public void DoUpdate(float deltaTime);
         public void DoLateUpdate(float deltaTime);
-        public void DoFixedUpdate();
+        public void DoFixedUpdate(float deltaTime);
 
         public T? Add<T>()
             where T : IAWActorBehaviour, new();

@@ -10,7 +10,7 @@ namespace ActorWorkspace.ActorBehaviour
     {
         public const string BTTaskConfiguratorVariableName = "BTTaskConfigurator";
 
-        public override UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
+        public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update;
 
         BTTaskConfigurator? taskConfigurator;
         IBTTaskController? taskController;

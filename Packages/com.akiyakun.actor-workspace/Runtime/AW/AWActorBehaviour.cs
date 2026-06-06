@@ -21,12 +21,12 @@ namespace ActorWorkspace
 
         #region IUpdateElement
         public bool ElementActive { get; set; }
-        public int ElementPriority { get; set; } = 0;
-        public virtual UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Manual;
+        public int ElementPriority { get; protected set; } = 0;
+        public virtual UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Manual;
         // public abstract UpdateFlags UpdateFlags { get; set; }
         public virtual void DoUpdate(float deltaTime) { }
         public virtual void DoLateUpdate(float deltaTime) { }
-        public virtual void DoFixedUpdate() { }
+        public virtual void DoFixedUpdate(float deltaTime) { }
         #endregion
 
         // Factory method

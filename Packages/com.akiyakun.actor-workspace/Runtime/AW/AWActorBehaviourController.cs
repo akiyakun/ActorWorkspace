@@ -55,9 +55,9 @@ namespace ActorWorkspace
             updater.DoLateUpdate(deltaTime);
         }
 
-        public virtual void DoFixedUpdate()
+        public virtual void DoFixedUpdate(float deltaTime)
         {
-            updater.DoFixedUpdate(/*deltaTime*/);// FIXME
+            updater.DoFixedUpdate(deltaTime);
         }
 
         public virtual T? Add<T>()

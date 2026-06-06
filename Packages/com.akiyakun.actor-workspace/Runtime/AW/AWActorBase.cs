@@ -201,9 +201,9 @@ namespace ActorWorkspace
         }
 
         // From IUpdateElement
-        public virtual void DoFixedUpdate()
+        public virtual void DoFixedUpdate(float deltaTime)
         {
-            ActorBehaviourController.DoFixedUpdate();
+            ActorBehaviourController.DoFixedUpdate(deltaTime);
         }
 
         public virtual void SetSkin(int skinIndex)

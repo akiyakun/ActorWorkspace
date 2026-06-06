@@ -30,7 +30,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     {
         public abstract IALProcessor Processor { get; }
 
-        public override UpdateFlags UpdateFlags { get; set; } = UpdateFlags.Update;
+        public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update;
 
         public ALGeneralParam GeneralParam { get; } = new ALGeneralParam();
 
