@@ -198,7 +198,7 @@ namespace ActorWorkspace
 
                 // 同期的にプールを1つ追加
                 // AddToPool(id, category);
-                return Spawn(id, category, autoCreate: false);
+                return Spawn(id, category, parent, autoCreate: false);
             }
 
             if (stack == null) return null;
@@ -207,6 +207,7 @@ namespace ActorWorkspace
             actor.Restore();
 
             // UnityEngine.SceneManagement.SceneManager.GetActiveScene().
+            if (parent != null) actor.GameObject.transform.SetParent(parent.transform);
 
             if (updateElementManager.Add(actor) == false)
             {
@@ -246,6 +247,7 @@ namespace ActorWorkspace
         {
             D.Log(CoreLogMask.Lifecycle, $"AWActorManager.OnRemoveElement(): {element.GetType().Name}");
             element.GameObject.SetActive(false);
+            element.GameObject.transform.SetParent(gameObject.transform);
             actorFactory.Release(element);
         }
 
