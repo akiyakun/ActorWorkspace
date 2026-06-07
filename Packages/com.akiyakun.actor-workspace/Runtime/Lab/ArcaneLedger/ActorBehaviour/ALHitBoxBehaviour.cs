@@ -14,12 +14,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             return unchecked(++currentSerialNumber);
         }
 
-        public override void Restore()
+        public override void OnRestore()
         {
 
         }
 
-        public override void DoAwake()
+        public override void OnAwake()
         {
             var folderObject = Variables.Get(AWCoreVariableKey.HitBoxFolder).GetGameObject();
             if (folderObject != null)

@@ -19,14 +19,14 @@ namespace Project.ActorBehaviour
         }
         uint resetDirtyFlag = 0;
 
-        public override void Restore()
+        public override void OnRestore()
         {
             ResetAnimationParams();
 
             // Actor.AnimationController.SetAnimation(ActorMotionNames.Idle, loop: true, immediate: true);
         }
 
-        public override void DoAwake()
+        public override void OnAwake()
         {
             // イベントの購読
             {
@@ -59,7 +59,7 @@ namespace Project.ActorBehaviour
             }
         }
 
-        public override void DoUpdate(float deltaTime)
+        public override void OnUpdate(float deltaTime)
         {
             stateElapsedTime += deltaTime;
             // Actor.AnimationController.AnimationParameter.SetFloat(ActorMotionParams.StateElapsedTime, stateElapsedTime);

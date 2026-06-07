@@ -38,7 +38,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         StatusEffectController statusEffectController = null!;
 
 
-        public override void Restore()
+        public override void OnRestore()
         {
             motionValueController.Restore();
             statusEffectController.Restore();
@@ -46,7 +46,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             GeneralParam.Restore();
         }
 
-        public override void DoAwake()
+        public override void OnAwake()
         {
             motionValueController = new MotionValueController(this);
             statusEffectController = new StatusEffectController(this);
@@ -65,7 +65,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             // }
         }
 
-        public override void DoUpdate(float deltaTime)
+        public override void OnUpdate(float deltaTime)
         {
             statusEffectController.Prepare();
             Processor.Prepare();

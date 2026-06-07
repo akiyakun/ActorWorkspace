@@ -68,7 +68,7 @@ namespace ActorWorkspace
             behaviour.Initialize(actor);
 
             if (updater.Add(behaviour) == false) return null;
-            behaviour.DoAwake();
+            behaviour.Awake();
             OnBehaviourAdded?.Invoke(behaviour);
             return behaviour;
         }
@@ -83,7 +83,7 @@ namespace ActorWorkspace
         void OnRemoveBehaviour(IAWActorBehaviour behaviour)
         {
             OnBehaviourRemoved?.Invoke(behaviour);
-            behaviour.DoDestroy();
+            behaviour.Destroy();
             behaviour.Terminate();
         }
 

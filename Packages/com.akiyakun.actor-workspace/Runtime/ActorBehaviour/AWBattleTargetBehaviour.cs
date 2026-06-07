@@ -16,7 +16,7 @@ namespace ActorWorkspace.ActorBehaviour
         // {
         // }
 
-        public override void DoAwake()
+        public override void OnAwake()
         {
             battleTargetSelector = CreateTargetSelector();
             if (battleTargetSelector == null) throw new System.Exception();

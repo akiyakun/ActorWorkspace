@@ -15,11 +15,11 @@ namespace ActorWorkspace.ActorBehaviour
         BTTaskConfigurator? taskConfigurator;
         IBTTaskController? taskController;
 
-        public override void Restore()
+        public override void OnRestore()
         {
         }
 
-        public override void DoAwake()
+        public override void OnAwake()
         {
             // Debug.Log($"AWBTTaskControllerBridgeBehaviour DoAwake ActorId={Actor.ActorId}");
             taskConfigurator = GetTaskConfigurator();
@@ -32,11 +32,11 @@ namespace ActorWorkspace.ActorBehaviour
             }
         }
 
-        public override void DoDestroy()
+        public override void OnDestroy()
         {
         }
 
-        public override void DoUpdate(float deltaTime)
+        public override void OnUpdate(float deltaTime)
         {
             taskController?.DoUpdate(deltaTime);
         }

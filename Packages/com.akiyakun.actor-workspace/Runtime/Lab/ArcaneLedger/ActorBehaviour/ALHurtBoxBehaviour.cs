@@ -10,12 +10,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     {
         ArcaneLedgerBehaviour processor = null!;
 
-        public override void Restore()
+        public override void OnRestore()
         {
 
         }
 
-        public override void DoAwake()
+        public override void OnAwake()
         {
             processor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>()!;
             if (processor == null) throw new System.Exception("ALHurtBoxBehaviour DoAwake: ArcaneLedgerBehaviour not found in ActorBehaviourController");

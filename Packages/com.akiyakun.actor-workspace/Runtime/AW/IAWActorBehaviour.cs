@@ -21,8 +21,9 @@ namespace ActorWorkspace
         // 初期状態に戻す
         public void Restore();
 
-        public void DoAwake();
-        public void DoDestroy();
+        public void Awake();
+        public void Start();
+        public void Destroy();
 
     }
 }
