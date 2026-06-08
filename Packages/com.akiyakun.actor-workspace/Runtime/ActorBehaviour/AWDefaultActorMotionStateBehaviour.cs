@@ -19,14 +19,14 @@ namespace Project.ActorBehaviour
         }
         uint resetDirtyFlag = 0;
 
-        public override void OnRestore()
+        public override void Restore()
         {
             ResetAnimationParams();
-
             // Actor.AnimationController.SetAnimation(ActorMotionNames.Idle, loop: true, immediate: true);
+            base.Restore();
         }
 
-        public override void OnAwake()
+        public override void Awake()
         {
             // イベントの購読
             {
@@ -57,12 +57,15 @@ namespace Project.ActorBehaviour
                 //     (entity) => entity.Unsubscribe(ActorEvents.OnFall, OnFall));
 
             }
+
+            base.Awake();
         }
 
-        public override void OnUpdate(float deltaTime)
+        public override void DoUpdate(float deltaTime)
         {
             stateElapsedTime += deltaTime;
             // Actor.AnimationController.AnimationParameter.SetFloat(ActorMotionParams.StateElapsedTime, stateElapsedTime);
+            base.DoUpdate(deltaTime);
         }
 
         // アニメーションパラメーターのリセット

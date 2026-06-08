@@ -7,6 +7,8 @@ namespace ActorWorkspace
 {
     // MEMO:
     // MonoBehaviourぽく使いたいのでメソッド名も似せてあります
+    // ベースクラスのメソッド呼び出しを忘れてしまうことがあるので、
+    // Do系とOn系で分けています、ベースクラスなどはDo系をoverrideするとよいでしょう。
     public abstract class AWActorBehaviour<TActor> : IAWActorBehaviour
         where TActor : class, IAWActor
     {
@@ -24,8 +26,8 @@ namespace ActorWorkspace
         public int ElementPriority { get; protected set; } = 0;
         public virtual UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Manual;
         // public abstract UpdateFlags UpdateFlags { get; set; }
-        public virtual void DoLateUpdate(float deltaTime) { }
-        public virtual void DoFixedUpdate(float deltaTime) { }
+        // public virtual void DoLateUpdate(float deltaTime) { }
+        // public virtual void DoFixedUpdate(float deltaTime) { }
         #endregion
 
         bool isFirstUpdate = true;
@@ -52,6 +54,7 @@ namespace ActorWorkspace
         public virtual void Initialize(IAWActor actor)
         {
             Actor = (TActor)actor;
+            Debug.Assert(Actor != null);
         }
 
         public virtual void Terminate()
@@ -60,20 +63,20 @@ namespace ActorWorkspace
         }
 
         // From IActorBehaviour
-        public void Restore()
+        public virtual void Restore()
         {
             OnRestore();
             isFirstUpdate = true;
         }
 
         // From IActorBehaviour
-        public void Awake() => OnAwake();
+        public virtual void Awake() => OnAwake();
 
         // From IActorBehaviour
-        public void Start() => OnStart();
+        public virtual void Start() => OnStart();
 
         // From IUpdateElement
-        public void DoUpdate(float deltaTime)
+        public virtual void DoUpdate(float deltaTime)
         {
             if (isFirstUpdate == true)
             {
@@ -83,8 +86,30 @@ namespace ActorWorkspace
             OnUpdate(deltaTime);
         }
 
+        // From IUpdateElement
+        public virtual void DoLateUpdate(float deltaTime)
+        {
+            if (isFirstUpdate == true)
+            {
+                isFirstUpdate = false;
+                Start();
+            }
+            OnLateUpdate(deltaTime);
+        }
+
+        // From IUpdateElement
+        public virtual void DoFixedUpdate(float deltaTime)
+        {
+            if (isFirstUpdate == true)
+            {
+                isFirstUpdate = false;
+                Start();
+            }
+            OnFixedUpdate(deltaTime);
+        }
+
         // From IActorBehaviour
-        public void Destroy()
+        public virtual void Destroy()
         {
             OnDestroy();
             EventBag?.Dispose();
@@ -94,6 +119,8 @@ namespace ActorWorkspace
         public virtual void OnAwake() {}
         public virtual void OnStart() {}
         public virtual void OnUpdate(float deltaTime) {}
+        public virtual void OnLateUpdate(float deltaTime) {}
+        public virtual void OnFixedUpdate(float deltaTime) {}
         public virtual void OnDestroy() {}
 
     }

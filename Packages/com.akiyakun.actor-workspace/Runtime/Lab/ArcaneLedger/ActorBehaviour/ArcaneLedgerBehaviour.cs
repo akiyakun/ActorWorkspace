@@ -74,10 +74,9 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             Processor.Update(deltaTime);
         }
 
-        public override void DoLateUpdate(float deltaTime)
-        {
-
-        }
+        // public override void OnLateUpdate(float deltaTime)
+        // {
+        // }
 
         public void ContactWithHurtBox(CollisionContactInfo contactInfo)
         {
