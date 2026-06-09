@@ -146,8 +146,13 @@ namespace ActorWorkspace.UnitySpine
                 for (int i = 0; i < states.Count; i++)
                 {
                     var state = states[i];
+
+                    if (animationHashMap.TryAdd(state.StateNameHash, new SpineMecanimAnimation(state, skeletonMecanim)) == false)
+                    {
+                        throw new System.Exception($"AnimationControllerに同前のステートが存在します: name={skeletonMecanim.gameObject.name}, StateName={state.StateName}");
+                    }
+
                     D.Log(CoreLogMask.Verbose, $"State: StateFullPath={state.StateFullPath}, StateName={state.StateName}, StateNameHash={state.StateNameHash}");
-                    animationHashMap.Add(state.StateNameHash, new SpineMecanimAnimation(state, skeletonMecanim));
                 }
 
                 animatorStateEvent.GenerateHashMap();
