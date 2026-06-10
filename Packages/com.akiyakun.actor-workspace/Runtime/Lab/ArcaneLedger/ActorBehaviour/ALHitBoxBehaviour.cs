@@ -45,7 +45,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         void OnActivatingFromFollower(IAWFollower follower)
         {
-            Debug.Log($"ALHitBoxBehaviour OnFollowerActiveChanged: {follower}");
+            // Debug.Log($"ALHitBoxBehaviour OnFollowerActiveChanged: {follower}");
 
             ALColliderExtraInfo extraInfo = follower.GameObject.GetComponent<ALColliderExtraInfo>();
             if (extraInfo == null)
