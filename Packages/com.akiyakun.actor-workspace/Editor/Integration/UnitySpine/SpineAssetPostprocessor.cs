@@ -424,6 +424,10 @@ namespace ActorWorkspace.Editor.UnitySpine
                 }
             }
 
+            // AnimationClipはcontrollerファイルのサブアセットのため、
+            // clipだけでなく親のanimatorControllerもSetDirtyしないと.controllerファイルが保存されない
+            EditorUtility.SetDirty(animatorController);
+
             // AssetDatabase.SaveAssets();
         }
 
