@@ -12,7 +12,7 @@ namespace ActorWorkspace.ActorBehaviour
     // Events:
     // OnFacingDirection2DChangedを発行します。
     //
-    public abstract class AWFacingDirection2DBehaviour : AWActorBehaviour<IAWActor>
+    public class AWFacingDirection2DBehaviour : AWActorBehaviour<IAWActor>
     {
         public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update;// | UpdateFlags.LateUpdate;
 
