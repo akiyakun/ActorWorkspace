@@ -39,7 +39,8 @@ namespace ActorWorkspace
         public virtual void Restore()
         {
             var list = updater.ReadOnlyList;
-            for (int i = 0; i < list.Count; i++)
+            int count = list.Count;
+            for (int i = 0; i < count; i++)
             {
                 list[i].Restore();
             }

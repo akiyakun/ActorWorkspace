@@ -49,7 +49,6 @@ namespace ActorWorkspace
 
         public EventBag EventBag { get; private set; } = new();
 
-
 #if UNITY_EDITOR
         // デバッグ確認用
         [Disable] public List<string> debugActorBehaviours = new();
