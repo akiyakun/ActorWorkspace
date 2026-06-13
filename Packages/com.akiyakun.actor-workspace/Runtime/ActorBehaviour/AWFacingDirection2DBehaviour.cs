@@ -7,10 +7,10 @@ namespace ActorWorkspace.ActorBehaviour
     // 2Dの向き(左、右)の振る舞い
     //
     // Variables:
-    // FacingDirection2Dを使用します。
+    // FacingDirection2D を使用します。
     //
     // Events:
-    // OnFacingDirection2DChangedを発行します。
+    // OnFacingDirection2DChanged を発行します。
     //
     public class AWFacingDirection2DBehaviour : AWActorBehaviour<IAWActor>
     {
@@ -19,17 +19,17 @@ namespace ActorWorkspace.ActorBehaviour
         Variable facingDirection2D = null!;
         FacingDirection2D prevFacingDirection2D;
 
+        public override void OnAwake()
+        {
+            facingDirection2D = Variables.Get(AWCoreVariableKey.FacingDirection2D);
+            if (facingDirection2D == null) throw new System.Exception();
+        }
+
         public override void OnRestore()
         {
             prevFacingDirection2D = GetFacingDirection();
             facingDirection2D.Int = (int)prevFacingDirection2D;
             Actor.EventBus.Publish(AWCoreActorEvents.OnFacingDirection2DChanged, (int)prevFacingDirection2D);
-        }
-
-        public override void OnAwake()
-        {
-            facingDirection2D = Variables.Get(AWCoreVariableKey.FacingDirection2D);
-            if (facingDirection2D == null) throw new System.Exception();
         }
 
         public override void OnUpdate(float deltaTime)

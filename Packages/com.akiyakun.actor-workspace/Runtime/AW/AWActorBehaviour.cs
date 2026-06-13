@@ -63,14 +63,14 @@ namespace ActorWorkspace
         }
 
         // From IActorBehaviour
+        public virtual void Awake() => OnAwake();
+
+        // From IActorBehaviour
         public virtual void Restore()
         {
             OnRestore();
             isFirstUpdate = true;
         }
-
-        // From IActorBehaviour
-        public virtual void Awake() => OnAwake();
 
         // From IActorBehaviour
         public virtual void Start() => OnStart();

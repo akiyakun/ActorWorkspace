@@ -6,14 +6,15 @@ namespace ActorWorkspace.Tests
 {
     public class StubAWActorParam : IAWActorParam
     {
-        public Vector3 Position;
+        // public Vector3 Position;
+        public Vector3 ForwardDirection { get; set; }
 
         public void Restore()
         {
         }
 
-        public Vector3 GetPosition() => Position;
-        public void SetPosition(Vector3 position) => Position = position;
+        // public Vector3 GetPosition() => Position;
+        // public void SetPosition(Vector3 position) => Position = position;
 
     }
 }
