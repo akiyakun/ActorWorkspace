@@ -15,9 +15,11 @@ namespace ActorWorkspace
         public static readonly (string, bool) SetEnableInput = ("SetEnableInput", default);
         #endregion
 
-        #region Behaviour
+        #region ActorBehaviour
         public static readonly (string, bool) OnGround = ("OnGround", default);
         public static readonly string OnDead = "OnDead";
+
+        public static readonly (string, int) OnFacingDirection2DChanged = ("OnFacingDirection2DChanged", default);
         #endregion
 
         public static readonly (string, bool) SetDisplayVisibility = ("SetDisplayVisibility", default);
