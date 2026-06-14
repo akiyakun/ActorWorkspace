@@ -21,8 +21,10 @@ namespace ActorWorkspace.ActorBehaviour
 
         public override void OnAwake()
         {
-            facingDirection2D = Variables.Get(AWCoreVariableKey.FacingDirection2D);
-            if (facingDirection2D == null) throw new System.Exception();
+            if (Variables.TryGet(AWCoreVariableKey.FacingDirection2D, out facingDirection2D) == false)
+            {
+                throw new System.Exception($"AWFacingDirection2DBehaviour: Missing variable {AWCoreVariableKey.FacingDirection2D}");
+            }
         }
 
         public override void OnRestore()
