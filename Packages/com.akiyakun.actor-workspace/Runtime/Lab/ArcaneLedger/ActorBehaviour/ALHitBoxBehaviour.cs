@@ -29,7 +29,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 {
                     var follower = followers[i];
 
-                    var extraInfo = follower.GameObject.AddComponent<ALColliderExtraInfo>();
+                    var extraInfo = follower.GameObject.AddComponent<ALColliderAttachmentData>();
                     extraInfo.Actor = Actor;
                     if (Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>() is ArcaneLedgerBehaviour behaviour)
                     {
@@ -47,7 +47,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         {
             // Debug.Log($"ALHitBoxBehaviour OnFollowerActiveChanged: {follower}");
 
-            ALColliderExtraInfo extraInfo = follower.GameObject.GetComponent<ALColliderExtraInfo>();
+            ALColliderAttachmentData extraInfo = follower.GameObject.GetComponent<ALColliderAttachmentData>();
             if (extraInfo == null)
             {
                 Debug.Assert(false, $"ALHitBoxBehaviour OnFollowerActiveChanged: ALColliderExtraInfo component not found in {follower.GameObject.name}");

@@ -28,7 +28,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 {
                     var follower = followers[i];
 
-                    var extraInfo = follower.GameObject.AddComponent<ALColliderExtraInfo>();
+                    var extraInfo = follower.GameObject.AddComponent<ALColliderAttachmentData>();
                     extraInfo.Actor = Actor;
                     // if (Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>() is ArcaneLedgerBehaviour behaviour)
                     {
