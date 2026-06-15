@@ -24,7 +24,7 @@ namespace ActorWorkspace.EventCommand
             Debug.Assert(actorManager != null);
         }
 
-        public override void Start(EventCommandParam param = default)
+        public override void Start(IEventContext? context, EventCommandParam param)
         {
             // if (string.IsNullOrEmpty(param.String)) throw new System.ArgumentException();
             State = EventCommandState.Running;

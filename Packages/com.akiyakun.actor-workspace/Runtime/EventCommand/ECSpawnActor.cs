@@ -32,7 +32,7 @@ namespace ActorWorkspace.EventCommand
             ActorManager = actorManager;
         }
 
-        public override void Start(EventCommandParam param = default)
+        public override void Start(IEventContext? context, EventCommandParam param)
         {
             if (param.UserData is SpawnOption option)
             {
