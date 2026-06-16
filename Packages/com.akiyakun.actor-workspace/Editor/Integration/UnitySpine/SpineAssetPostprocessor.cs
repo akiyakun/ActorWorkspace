@@ -314,6 +314,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             var asset = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(animatorController));
             AnimationClip[] clips = System.Array.FindAll(asset, obj => obj is AnimationClip).Cast<AnimationClip>().ToArray();
 
+            bool hasChanges = false;
             foreach (var clip in clips)
             {
                 // Spineアニメーションを名前で検索
@@ -321,7 +322,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 if (spineAnim == null) continue;
 
                 // 既存のイベントを取得
-                var existingEvents = AnimationUtility.GetAnimationEvents(clip);
+                // var existingEvents = AnimationUtility.GetAnimationEvents(clip);
                 var newEvents = new List<AnimationEvent>();
 
                 // SpineアニメーションのタイムラインからEventTimelineを探索
@@ -415,18 +416,19 @@ namespace ActorWorkspace.Editor.UnitySpine
                     }
                 }
 
-                // イベントを更新
-                if (newEvents.Count > 0)
-                {
-                    AnimationUtility.SetAnimationEvents(clip, newEvents.ToArray());
-                    EditorUtility.SetDirty(clip);
-                    // Debug.Log($"[SpineEventImporter] Updated {newEvents.Count} events for {clip.name}");
-                }
+                // イベントを更新（イベントが0件になった場合もクリアするため条件なしで常に呼ぶ）
+                AnimationUtility.SetAnimationEvents(clip, newEvents.ToArray());
+                EditorUtility.SetDirty(clip);
+                hasChanges = true;
+                // Debug.Log($"[SpineEventImporter] Updated {newEvents.Count} events for {clip.name}");
             }
 
             // AnimationClipはcontrollerファイルのサブアセットのため、
             // clipだけでなく親のanimatorControllerもSetDirtyしないと.controllerファイルが保存されない
-            EditorUtility.SetDirty(animatorController);
+            if (hasChanges)
+            {
+                EditorUtility.SetDirty(animatorController);
+            }
 
             // AssetDatabase.SaveAssets();
         }
