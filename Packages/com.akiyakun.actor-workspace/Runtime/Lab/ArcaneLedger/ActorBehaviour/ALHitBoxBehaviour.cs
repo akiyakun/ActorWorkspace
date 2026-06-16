@@ -50,7 +50,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             ALColliderAttachmentData extraInfo = follower.GameObject.GetComponent<ALColliderAttachmentData>();
             if (extraInfo == null)
             {
-                Debug.Assert(false, $"ALHitBoxBehaviour OnFollowerActiveChanged: ALColliderExtraInfo component not found in {follower.GameObject.name}");
+                Debug.Assert(false, $"ALHitBoxBehaviour OnFollowerActiveChanged: ALColliderAttachmentData component not found in {follower.GameObject.name}");
                 return;
             }
 
