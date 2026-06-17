@@ -43,7 +43,7 @@ namespace ActorWorkspace.EventCommand
             else
             {
                 EvaluateAsync(actorManager, param.Param1.Int, param.Param2.Int,
-                    null, Vector3.zero, 0, GetCancellationToken()).Forget();
+                    null, Vector3.zero, param.Param3.Int, GetCancellationToken()).Forget();
             }
         }
 
@@ -52,6 +52,8 @@ namespace ActorWorkspace.EventCommand
             CancellationToken cancellationToken)
         {
             Debug.Log($"[ECSpawnActorAsync] EvaluateAsync start. {id}:{Name}, category={category}, parent={parent}, position={position}");
+
+            // await UniTask.Delay(3000, cancellationToken: cancellationToken);
 
             await actorManager.AddToPoolAsync(id: id, category: category, count: 1, cancellationToken: cancellationToken);
 

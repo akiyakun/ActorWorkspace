@@ -230,6 +230,17 @@ namespace ActorWorkspace
         // From IAWActorManager
         public virtual IReadOnlyList<IAWActor> GetActorList() => updateElementManager.ReadOnlyList;
 
+        public virtual List<IAWActor> GetActorListAtCluster(int cluster)
+        {
+            var ret = new List<IAWActor>();
+            var list = updateElementManager.ReadOnlyList;
+            int count = list.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (list[i].ActorParam.Cluster == cluster) ret.Add(list[i]);
+            }
+            return ret;
+        }
 
         // protected virtual void OnCreatedFromFactory(IAWActor actor)
         // {

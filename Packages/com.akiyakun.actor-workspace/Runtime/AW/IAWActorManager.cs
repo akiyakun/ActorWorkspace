@@ -25,6 +25,9 @@ namespace ActorWorkspace
 
         // アクティブなActorのリストを取得
         public IReadOnlyList<IAWActor> GetActorList();
+
+        // clusterのActorのリストを取得
+        public List<IAWActor> GetActorListAtCluster(int cluster);
     }
 }
 #nullable restore
