@@ -37,7 +37,7 @@ namespace ActorWorkspace.EventCommand
             ActorManager = actorManager;
         }
 
-        public override void Start(IEventContext? context, EventCommandParam param)
+        public override void Start(IEventContext context, EventCommandParam param)
         {
             SetState(EventCommandState.Running);
 
@@ -82,6 +82,7 @@ namespace ActorWorkspace.EventCommand
             actor.ActorParam.Cluster = cluster;
             actor.GameObject.transform.position = position;
             actor.GameObject.SetActive(true);
+            actor.EventBus.Publish(AWCoreActorEvents.Spawn);
 
             return actor;
         }

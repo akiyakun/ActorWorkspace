@@ -10,6 +10,7 @@ namespace ActorWorkspace.EventCommand
         AddToActorPool,
         SpawnActor,
         SpawnActorAsync,
+        DespawnActor,
 
         _ImmediateBegin,
         _ImmediateEnd,

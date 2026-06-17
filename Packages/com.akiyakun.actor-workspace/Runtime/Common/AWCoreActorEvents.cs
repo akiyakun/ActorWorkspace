@@ -16,6 +16,9 @@ namespace ActorWorkspace
         #endregion
 
         #region ActorBehaviour
+        public static readonly string Spawn = "Spawn";
+        public static readonly string Despawn = "Despawn";
+
         public static readonly (string, bool) OnGround = ("OnGround", default);
         public static readonly string OnDead = "OnDead";
 

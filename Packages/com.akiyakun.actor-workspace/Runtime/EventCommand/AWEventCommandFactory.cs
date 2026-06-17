@@ -34,7 +34,7 @@ namespace ActorWorkspace.EventCommand
 
         protected override async UniTask<int> PrecreateImmediateCommandsAsync(CancellationToken cancellationToken)
         {
-            // AddImmediateCommand(new ECSpawnActor(actorManager));
+            AddImmediateCommand(new ECDespawnActor(actorManager));
             return await base.PrecreateImmediateCommandsAsync(cancellationToken);
         }
 
