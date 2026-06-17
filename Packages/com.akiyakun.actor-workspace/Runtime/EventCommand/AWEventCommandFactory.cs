@@ -38,15 +38,9 @@ namespace ActorWorkspace.EventCommand
             return await base.PrecreateImmediateCommandsAsync(cancellationToken);
         }
 
-        public override int ParseCommandId(string str)
+        public override int ParseCommandId(string str, ref EventCommandParam param)
         {
-            if (System.Enum.TryParse<AWEventCommandId>(str, out var commandId) == true)
-            {
-                // return System.Convert.ToInt32(commandId);
-                return (int)commandId;
-            }
-
-            return (int)CoreEventCommandId.Undefined;
+            return ParseCommandId<AWEventCommandId>(str, ref param);
         }
     }
 }
