@@ -6,6 +6,8 @@ namespace ActorWorkspace.Tests
 {
     public class StubAWActorParam : IAWActorParam
     {
+        public int Cluster { get; set; }
+
         // public Vector3 Position;
         public Vector3 ForwardDirection { get; set; }
 

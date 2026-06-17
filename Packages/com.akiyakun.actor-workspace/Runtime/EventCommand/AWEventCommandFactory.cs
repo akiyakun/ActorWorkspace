@@ -25,6 +25,7 @@ namespace ActorWorkspace.EventCommand
             return id switch
             {
                 (int)AWEventCommandId.AddToActorPool => new ECAddToActorPool(actorManager),
+                (int)AWEventCommandId.SpawnActor => new ECSpawnActor(actorManager),
                 (int)AWEventCommandId.SpawnActorAsync => new ECSpawnActorAsync(actorManager),
                 _ => throw new System.ArgumentOutOfRangeException(
                     nameof(id), $"AWEventCommandFactory: Invalid AWEventCommandId={id}, Enum={((AWEventCommandId)id).ToString()}"),
@@ -33,7 +34,7 @@ namespace ActorWorkspace.EventCommand
 
         protected override async UniTask<int> PrecreateImmediateCommandsAsync(CancellationToken cancellationToken)
         {
-            AddImmediateCommand(new ECSpawnActor(actorManager));
+            // AddImmediateCommand(new ECSpawnActor(actorManager));
             return await base.PrecreateImmediateCommandsAsync(cancellationToken);
         }
 

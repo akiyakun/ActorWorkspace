@@ -9,6 +9,7 @@ namespace ActorWorkspace
     public interface IAWActorParam
     {
         // public GameObject GameObject { get; }
+        public int Cluster { get; set; }
 
         // public Vector3 Position { get; set; }
         public Vector3 ForwardDirection { get; }
