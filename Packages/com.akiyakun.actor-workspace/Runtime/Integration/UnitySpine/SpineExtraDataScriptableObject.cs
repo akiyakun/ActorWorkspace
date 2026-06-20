@@ -20,7 +20,7 @@ namespace ActorWorkspace.UnitySpine
         public class FolderInfo : IAWAttachmentInfo
         {
             // From IAWAttachmentInfo
-            public string AttachmentName => folderName;
+            public string AttachmentFolderName => folderName;
 
             [SerializeField] string folderName = "";
             public string FolderName => folderName;

@@ -19,21 +19,23 @@ namespace ActorWorkspace.UnitySpine
         // public event System.Action<IAWAnimation, Vector2, float> OnUpdateOverride;
         // protected virtual void InvokeUpdateOverride(IAWAnimation animation, Vector2 translation, float rotation) => OnUpdateOverride?.Invoke(animation, translation, rotation);
         public event IAWAnimationController.UpdateOverrideDelegate OnUpdateOverride = null!;
-        protected virtual void InvokeUpdateOverride(IAWAnimationController controller, Vector2 translation, float rotation) => OnUpdateOverride?.Invoke(controller, translation, rotation);
+        protected void InvokeUpdateOverride(IAWAnimationController controller, Vector2 translation, float rotation) => OnUpdateOverride?.Invoke(controller, translation, rotation);
         protected bool IsNullOfUpdateOverride => OnUpdateOverride == null;
 
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
-        protected virtual void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
+        protected void InvokeAnimationEntered(IAWAnimation animation) => OnAnimationEntered?.Invoke(animation);
         public event System.Action<IAWAnimation> OnAnimationComplete = null!;
-        protected virtual void InvokeAnimationComplete(IAWAnimation animation) => OnAnimationComplete?.Invoke(animation);
+        protected void InvokeAnimationComplete(IAWAnimation animation) => OnAnimationComplete?.Invoke(animation);
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
-        protected virtual void InvokeAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
+        protected void InvokeAnimationEvent(IAWAnimation animation, AWAnimationEventData eventData) => OnAnimationEvent?.Invoke(animation, eventData);
 
+        public event System.Action<GameObject, string> OnCreatedAttachmentFolder = null!;
+        protected void InvokeCreatedAttachmentFolder(GameObject folderObject, string folderName) => OnCreatedAttachmentFolder?.Invoke(folderObject, folderName);
         public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment = null!;
-        protected virtual void InvokeCreatedAttachment(GameObject attachmentObject, IAWAttachmentInfo attachmentInfo) => OnCreatedAttachment?.Invoke(attachmentObject, attachmentInfo);
+        protected void InvokeCreatedAttachment(GameObject attachmentObject, IAWAttachmentInfo attachmentInfo) => OnCreatedAttachment?.Invoke(attachmentObject, attachmentInfo);
 
         public event System.Action<IAWAnimationController> OnRootMotionChanged = null!;
-        protected virtual void InvokeRootMotionChanged() => OnRootMotionChanged?.Invoke(this);
+        protected void InvokeRootMotionChanged() => OnRootMotionChanged?.Invoke(this);
         #endregion
 
         public abstract IAWAnimationParameter AnimationParameter { get; protected set; }
@@ -173,11 +175,11 @@ namespace ActorWorkspace.UnitySpine
             // CreateBoneFollowers(parent, skeletonRenderer);
             // CreatePointFollowers(parent, skeletonRenderer);
 
-            // Folderの処理
+            // Folderの生成
             {
                 foreach (var info in ExtraData.Folders)
                 {
-                    CreateFolders(parent, skeletonRenderer, info);
+                    CreateFolder(parent, skeletonRenderer, info);
                 }
             }
 
@@ -257,7 +259,7 @@ namespace ActorWorkspace.UnitySpine
         }
 
 
-        protected void CreateFolders(Transform root, SkeletonRenderer skeletonRenderer,
+        protected void CreateFolder(Transform root, SkeletonRenderer skeletonRenderer,
             SpineExtraDataScriptableObject.FolderInfo folderInfo)
         {
             var folderSetting = UnitySpineSettings.Instance.GetFolderSetting(folderInfo.FolderName);
@@ -269,6 +271,8 @@ namespace ActorWorkspace.UnitySpine
 
             // Folderオブジェクトの作成
             Transform parent = ExtraDataUtility.CreateFolderObject(folderSetting.FolderName, root).transform;
+            // コールバック
+            InvokeCreatedAttachmentFolder(parent.gameObject, folderSetting.FolderName);
 
             // Spineのアタッチメントボーン直下のノード名リストを回す
             foreach (var info in folderInfo.Attachments)

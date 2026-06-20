@@ -16,6 +16,7 @@ namespace ActorWorkspace.Tests
         public event System.Action<IAWAnimation> OnAnimationEntered = null!;
         public event System.Action<IAWAnimation> OnAnimationComplete = null!;
         public event System.Action<IAWAnimation, AWAnimationEventData> OnAnimationEvent = null!;
+        public event System.Action<GameObject, string> OnCreatedAttachmentFolder = null!;
         public event System.Action<GameObject, IAWAttachmentInfo> OnCreatedAttachment = null!;
         public event System.Action<IAWAnimationController> OnRootMotionChanged = null!;
 
