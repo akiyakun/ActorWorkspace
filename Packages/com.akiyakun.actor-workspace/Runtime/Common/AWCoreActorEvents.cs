@@ -1,6 +1,7 @@
 #nullable enable
 using UnityEngine;
 using afl;
+using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace
 {
@@ -30,7 +31,10 @@ namespace ActorWorkspace
 
         #region ArcaneLedger
         public static readonly (string, int) DamageReaction = ("DamageReaction", 0);
-        public static readonly (string, uint) OnStatusEffectChanged = ("OnStatusEffectChanged", 0);
+
+        public static readonly (string, int id) RevokeStatusEffect = ("RevokeStatusEffect", 0);
+        public static readonly (string, ApplyStatusEffectParams) RequestStatusEffect = ("RequestStatusEffect", default);
+        public static readonly (string, uint enableFlags) OnStatusEffectChanged = ("OnStatusEffectChanged", 0);
         #endregion
 
 

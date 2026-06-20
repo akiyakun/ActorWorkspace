@@ -5,6 +5,9 @@ namespace ActorWorkspace.ArcaneLedger
 {
     public struct ApplyStatusEffectParams
     {
+        // ステータス効果Id
+        public int Id;
+
         // 成功率(0-1)
         public float ApplyChance;
 

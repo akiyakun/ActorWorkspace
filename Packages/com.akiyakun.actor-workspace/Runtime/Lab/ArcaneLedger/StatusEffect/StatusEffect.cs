@@ -58,13 +58,13 @@ namespace ActorWorkspace.ArcaneLedger
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void SetEnable(bool enable)
         {
-            if (enable == true && Enable == false)
+            if (enable == true && _enable == false)
             {
                 _enable = true;
                 OnEnable();
                 OnEnableChanged?.Invoke(Id, _enable);
             }
-            else if (enable == false && Enable == true)
+            else if (enable == false && _enable == true)
             {
                 _enable = false;
                 OnDisable();

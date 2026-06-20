@@ -14,6 +14,8 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected ALGeneralParam generalParam = null!;
 
+        protected EventBag eventBag = new();
+
         public virtual void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController)
         {
             if (this.owner != null) throw new System.InvalidOperationException("Already setup");
@@ -29,6 +31,15 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected virtual void Awake()
         {
+            // Events
+            {
+                eventBag.In(actor.EventBus,
+                    (entity) => entity.Subscribe(AWCoreActorEvents.RevokeStatusEffect, RevokeStatusEffect),
+                    (entity) => entity.Unsubscribe(AWCoreActorEvents.RevokeStatusEffect, RevokeStatusEffect));
+                eventBag.In(actor.EventBus,
+                    (entity) => entity.Subscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffect),
+                    (entity) => entity.Unsubscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffect));
+            }
         }
 
         public virtual void Restore()
@@ -85,6 +96,16 @@ namespace ActorWorkspace.ArcaneLedger
 
         //     //  statusEffects[(int)StatusEffectId.Freeze] = new StatusEffectFreeze();
         // }
+
+        protected virtual void RevokeStatusEffect(int id)
+        {
+            statusEffectController.Revoke(id);
+        }
+
+        protected virtual void RequestStatusEffect(ApplyStatusEffectParams param)
+        {
+            statusEffectController.Request(param);
+        }
 
     }
 }

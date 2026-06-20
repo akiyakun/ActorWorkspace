@@ -32,6 +32,8 @@ namespace ActorWorkspace.ArcaneLedger
         public uint RequestFlags { get; private set; }
         ApplyStatusEffectParams[] requestParams = new ApplyStatusEffectParams[MaxStatusEffectCount];
 
+        // EventBag eventBag = new();
+
         public StatusEffectController(ArcaneLedgerBehaviour owner)
         {
             this.owner = owner;
@@ -42,6 +44,13 @@ namespace ActorWorkspace.ArcaneLedger
             // for (int id = 0; id < MaxStatusEffectCount; id++)
             // {
             //     statusEffects[id].OnEnableChanged += OnEnableChanged;
+            // }
+
+            // Events
+            // {
+            //     eventBag.In(Actor.EventBus,
+            //         (entity) => entity.Subscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffectChanged),
+            //         (entity) => entity.Unsubscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffectChanged));
             // }
         }
 
@@ -91,12 +100,14 @@ namespace ActorWorkspace.ArcaneLedger
             }
         }
 
+        // ステータス効果クラスを取得
         public StatusEffect? GetStatusEffect(int id)
         {
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
             return statusEffects[id];
         }
 
+        // ステータス効果クラスを設定
         public void SetStatusEffect(StatusEffect statusEffect)
         {
             Debug.Assert(statusEffect! != null, "Effect is null");
@@ -106,8 +117,18 @@ namespace ActorWorkspace.ArcaneLedger
             statusEffect.OnEnableChanged += OnEnableChanged;
         }
 
-        public void Request(int id, ApplyStatusEffectParams applyParam)
+        // Dispel
+        public void Revoke(int id)
         {
+            Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
+
+            statusEffects[id]?.Restore();
+
+        }
+
+        public void Request(ApplyStatusEffectParams applyParam)
+        {
+            int id = applyParam.Id;
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
 
             // 成功判定
