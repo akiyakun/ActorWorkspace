@@ -7,9 +7,14 @@ using ActorWorkspace;
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     // コライダーがアタッチされたオブジェクトから必要な情報を保持・取得するためのコンポーネント
-    public class ALColliderAttachmentData : MonoBehaviour, IALColliderAttachmentData
+    //
+    // See also: EMCollisionExtraData.cs
+    [DisallowMultipleComponent]
+    public class ALCollisionExtraData : MonoBehaviour, IALCollisionExtraData
     {
-        #region IALColliderAttachmentData
+        [Header("通常コンポーネント版のIALCollisionExtraData実装")]
+
+        #region IALCollisionExtraData
         public IAWActor? Actor { get; set; }
         public IALProcessor? ALProcessor { get; set; }
 
@@ -27,6 +32,14 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public object? UserData { get; set; }
         #endregion
+
+
+#if UNITY_EDITOR
+        // [Space(10)]
+        [Header("Debug")]
+        [SerializeField] bool debugBreakPause = false;
+        public bool DebugBreakPause { get => debugBreakPause; set => debugBreakPause = value; }
+#endif
     }
 }
 #nullable restore

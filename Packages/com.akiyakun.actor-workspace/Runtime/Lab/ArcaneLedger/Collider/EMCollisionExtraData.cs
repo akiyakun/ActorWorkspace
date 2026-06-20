@@ -5,28 +5,36 @@ using afl.Service.Effects;
 
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
-    public class EMColliderAttachmentData : EffectModifierComponent, IALColliderAttachmentData
+    // EffectModifier版のIALCollisionExtraData実装
+    //
+    // See also: ALCollisionExtraData.cs
+    [DisallowMultipleComponent]
+    public class EMCollisionExtraData : EffectModifierComponent, IALCollisionExtraData
     {
+        [Header("EffectModifier版のIALCollisionExtraData実装")]
+        [Space(10)]
+        [SerializeField] int intValue;
+
         protected override bool EnableValidateInPrefabMode { get; } = false;
         public override UpdateFlags UpdateFlags => UpdateFlags.Manual;
 
 
-        #region IALColliderAttachmentData
+        #region IALCollisionExtraData
         public IAWActor? Actor { get; protected set; }
         public IALProcessor? ALProcessor { get; protected set; }
 
         public uint SerialNumber { get; protected set; }
 
-        [SerializeField] int intValue;
-        public int IntValue { get => intValue; protected set => intValue = value; }
+        // [SerializeField] int intValue;
+        public virtual int IntValue { get => intValue; protected set => intValue = value; }
 
         [SerializeField] float floatValue;
-        public float FloatValue { get => floatValue; protected set => floatValue = value; }
+        public virtual float FloatValue { get => floatValue; protected set => floatValue = value; }
 
         [SerializeField] string stringValue = string.Empty;
-        public string StringValue { get => stringValue; protected set => stringValue = value; }
+        public virtual string StringValue { get => stringValue; protected set => stringValue = value; }
 
-        public object? UserData { get; protected set; }
+        public virtual object? UserData { get; protected set; }
         #endregion
 
 
@@ -49,13 +57,21 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public override void OnPrepareToPlay()
         {
             Actor = Effect.Option.UserData as IAWActor;
-            // ALProcessor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>()?.Processor;
+            ALProcessor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>().Processor;
             SerialNumber = ColliderSerialNumberGenerator.GetNext();
         }
 
         protected override void Evaluate(float deltaTime)
         {
         }
+
+
+#if UNITY_EDITOR
+        // [Space(10)]
+        [Header("Debug")]
+        [SerializeField] bool debugBreakPause = false;
+        public bool DebugBreakPause { get => debugBreakPause; set => debugBreakPause = value; }
+#endif
     }
 }
 #nullable restore

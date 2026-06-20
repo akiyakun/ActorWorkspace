@@ -7,7 +7,7 @@ using ActorWorkspace;
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     // コライダーがアタッチされたオブジェクトから必要な情報を保持・取得するためのインターフェース
-    public interface IALColliderAttachmentData
+    public interface IALCollisionExtraData
     {
         public IAWActor? Actor { get; }
         public IALProcessor? ALProcessor { get; }
@@ -18,6 +18,10 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public float FloatValue { get; }
         public string StringValue { get; }
         public object? UserData { get; }
+
+#if UNITY_EDITOR
+        public bool DebugBreakPause { get; set; }
+#endif
     }
 }
 #nullable restore
