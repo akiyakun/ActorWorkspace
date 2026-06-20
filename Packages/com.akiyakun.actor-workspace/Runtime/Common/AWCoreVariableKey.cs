@@ -1,7 +1,7 @@
 
 namespace ActorWorkspace
 {
-    public static class AWCoreVariableKey
+    public interface AWCoreVariableKeys
     {
         #region Extra Data Folders
         public const string AnchorFolder = "AnchorFolder";
@@ -17,5 +17,6 @@ namespace ActorWorkspace
         public const string FacingDirection2D = "FacingDirection2D";
         public const string ForwardDirection = "ForwardDirection";
         #endregion
+
     }
 }
