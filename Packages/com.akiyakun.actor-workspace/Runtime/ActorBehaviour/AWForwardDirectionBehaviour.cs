@@ -17,7 +17,7 @@ namespace ActorWorkspace.ActorBehaviour
 
         public override void OnAwake()
         {
-            forwardDirection = Variables.Get(AWCoreVariableKey.ForwardDirection);
+            forwardDirection = Variables.Get(AWCoreVariableKeys.ForwardDirection);
             if (forwardDirection == null) throw new System.Exception();
         }
 

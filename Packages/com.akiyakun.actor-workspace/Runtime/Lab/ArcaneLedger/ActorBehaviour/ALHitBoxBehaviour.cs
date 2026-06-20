@@ -21,7 +21,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void OnAwake()
         {
-            var folderObject = Variables.Get(AWCoreVariableKey.HitBoxFolder).GetGameObject();
+            var folderObject = Variables.Get(AWCoreVariableKeys.HitBoxFolder).GetGameObject();
             if (folderObject != null)
             {
                 var followers = folderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);

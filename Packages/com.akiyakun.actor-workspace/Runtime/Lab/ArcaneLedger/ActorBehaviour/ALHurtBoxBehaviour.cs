@@ -20,9 +20,10 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             processor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>()!;
             if (processor == null) throw new System.Exception("ALHurtBoxBehaviour DoAwake: ArcaneLedgerBehaviour not found in ActorBehaviourController");
 
-            var folderObject = Variables.Get(AWCoreVariableKey.HurtBoxFolder).GetGameObject();
+            var folderObject = Variables.Get(AWCoreVariableKeys.HurtBoxFolder).GetGameObject();
             if (folderObject != null)
             {
+                // GetComponentsInChildren()は自身も含む
                 var followers = folderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);
                 for (int i = 0; i < followers.Length; i++)
                 {
