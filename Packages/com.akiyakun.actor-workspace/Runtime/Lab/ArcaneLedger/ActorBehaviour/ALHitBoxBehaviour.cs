@@ -8,6 +8,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     public class ALHitBoxBehaviour : AWActorBehaviour<IAWActor>
     {
+        // FIXME: ここじゃない
         static uint currentSerialNumber = 0;
         public static uint GetNextSerialNumber()
         {
@@ -21,8 +22,23 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void OnAwake()
         {
+            // CollisionDetector
+            // {
+            //     var collisionDetector = Variables.Get(AWCoreVariableKeys.MainCollisionDetector).GetComponent<CollisionDetector>();
+            //     if (collisionDetector == null) throw new System.Exception($"ALHitBoxBehaviour DoAwake: CollisionDetector not found in variable {AWCoreVariableKeys.MainCollisionDetector}");
+            //     EventBag.In(collisionDetector,
+            //         (entity) => entity.OnCollision += OnCollision,
+            //         (entity) => entity.OnCollision -= OnCollision);
+            // }
+
+            // FolderObject
             var folderObject = Variables.Get(AWCoreVariableKeys.HitBoxFolder).GetGameObject();
-            if (folderObject != null)
+            if (folderObject == null)
+            {
+                ElementActive = false;
+                return;
+            }
+
             {
                 var followers = folderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);
                 for (int i = 0; i < followers.Length; i++)
@@ -36,6 +52,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                         extraInfo.ALProcessor = behaviour.Processor;
                     }
 
+                    // HitBox発生イベント
                     EventBag.In(follower,
                         (entity) => entity.OnActivating += OnActivatingFromFollower,
                         (entity) => entity.OnActivating -= OnActivatingFromFollower);
@@ -54,6 +71,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 return;
             }
 
+            // シリアル番号を振る
             extraInfo.SerialNumber = GetNextSerialNumber();
             // Debug.Log($"{currentSerialNumber}");
 

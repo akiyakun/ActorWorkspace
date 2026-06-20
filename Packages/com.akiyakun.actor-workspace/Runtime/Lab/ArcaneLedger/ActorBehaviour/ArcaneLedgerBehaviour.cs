@@ -78,6 +78,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // {
         // }
 
+        // Call from ALHurtBoxBehaviour
         public void ContactWithHurtBox(CollisionContactInfo contactInfo)
         {
             // me: ステータスの取得
