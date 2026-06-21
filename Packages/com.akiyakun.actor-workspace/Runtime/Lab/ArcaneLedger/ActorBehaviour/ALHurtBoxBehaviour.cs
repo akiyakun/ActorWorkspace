@@ -67,7 +67,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             // 対象のレイヤー以外なら抜ける
             if (info.Other.HasLayerFromMask(LayerMask) == false) return;
 
-            Debug.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}\nOther: {info.Other.GetHierarchyPath()}");
+            // Debug.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}\nOther: {info.Other.GetHierarchyPath()}");
 
 #if UNITY_EDITOR
             var extraData = info.Other.GetComponent<EMCollisionExtraData>();

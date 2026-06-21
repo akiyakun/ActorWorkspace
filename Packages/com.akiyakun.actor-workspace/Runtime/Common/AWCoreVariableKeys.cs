@@ -14,6 +14,7 @@ namespace ActorWorkspace
 
 
         #region ActorBehaviour
+        public const string TargetSelector = "TargetSelector";
         public const string MainCollisionDetector = "MainCollisionDetector";
         public const string FacingDirection2D = "FacingDirection2D";
         public const string ForwardDirection = "ForwardDirection";

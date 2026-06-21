@@ -8,8 +8,8 @@ namespace ActorWorkspace.ActorBehaviour
     {
         public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update;// | UpdateFlags.LateUpdate;
 
-        ITargetSelector battleTargetSelector = null!;
-        public ITargetSelector TargetSelector => battleTargetSelector;
+        ITargetSelector targetSelector = null!;
+        // public ITargetSelector TargetSelector => battleTargetSelector;
 
         TargetSelectingData? targetSelectingData;
 
@@ -17,27 +17,26 @@ namespace ActorWorkspace.ActorBehaviour
         // {
         // }
 
-        public override void OnAwake()
+        public override void Awake()
         {
-            battleTargetSelector = CreateTargetSelector();
-            if (battleTargetSelector == null) throw new System.Exception();
+            base.Awake();
 
-            // TargetSelectingData を取得
-            // TargetSelectingData からターゲット洗濯方法をしとく
+            targetSelector = BuildTargetSelector();
+            if (targetSelector == null) throw new System.Exception();
+
+            // Variableの設定
+            {
+                var variable = Actor.Variables.Get(AWCoreVariableKeys.TargetSelector);
+                if (variable == null) throw new System.Exception();
+                variable.SetNativeObject(targetSelector);
+            }
         }
 
-        protected abstract ITargetSelector CreateTargetSelector();
+        protected abstract ITargetSelector BuildTargetSelector();
 
-        public override void OnUpdate(float deltaTime)
-        {
-
-        }
-
-        // protected GameObject? FindTarget()
+        // public override void OnUpdate(float deltaTime)
         // {
-
         // }
-
     }
 }
 #nullable restore
