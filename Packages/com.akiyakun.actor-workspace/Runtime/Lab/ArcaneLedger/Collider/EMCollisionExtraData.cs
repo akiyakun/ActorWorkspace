@@ -57,8 +57,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public override void OnPrepareToPlay()
         {
             Actor = Effect.Option.UserData as IAWActor;
-            ALProcessor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>().Processor;
-            SerialNumber = ColliderSerialNumberGenerator.GetNext();
+            if (Actor != null)
+            {
+                ALProcessor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>().Processor;
+                SerialNumber = ColliderSerialNumberGenerator.GetNext();
+            }
         }
 
         protected override void Evaluate(float deltaTime)
