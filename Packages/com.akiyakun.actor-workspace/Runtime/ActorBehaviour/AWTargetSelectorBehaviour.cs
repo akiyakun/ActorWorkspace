@@ -11,7 +11,7 @@ namespace ActorWorkspace.ActorBehaviour
         ITargetSelector targetSelector = null!;
         // public ITargetSelector TargetSelector => battleTargetSelector;
 
-        TargetSelectingData? targetSelectingData;
+        // TargetSelectingData? targetSelectingData;
 
         // public override void Restore()
         // {
