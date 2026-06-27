@@ -24,36 +24,33 @@ namespace ActorWorkspace.Editor.UnitySpine
         [MenuItem("CONTEXT/SkeletonDataAsset/AW再インポート", false, 0)]
         static void MenuReImport(MenuCommand menuCommand)
         {
-            reImportGard = true;
-            targetList = new()
+            var targetList = new List<AssetInfo>()
             {
                 new AssetInfo(AssetDatabase.GetAssetPath(menuCommand.context), false)
             };
-            OnDelayCall();
+            OnDelayCall(targetList);
             Debug.Log("[SpineAssetPostprocessor] AW再インポート完了");
         }
 
         [MenuItem("CONTEXT/SkeletonDataAsset/AW更新インポート", false, 1)]
         static void MenuUpdateImport(MenuCommand menuCommand)
         {
-            reImportGard = true;
-            targetList = new()
+            var targetList = new List<AssetInfo>()
             {
                 new AssetInfo(AssetDatabase.GetAssetPath(menuCommand.context), true)
             };
-            OnDelayCall();
+            OnDelayCall(targetList);
             Debug.Log("[SpineAssetPostprocessor] AW更新インポート完了");
         }
 
         public static void ReImport(List<string> paths, bool isUpdate = true)
         {
-            reImportGard = true;
-            targetList = new();
+            var targetList = new List<AssetInfo>();
             foreach (var path in paths)
             {
                 targetList.Add(new AssetInfo(path, isUpdate));
             };
-            OnDelayCall();
+            OnDelayCall(targetList);
             Debug.Log("[SpineAssetPostprocessor] 再インポート完了");
         }
 
@@ -68,20 +65,22 @@ namespace ActorWorkspace.Editor.UnitySpine
                 IsUpdate = isUpdate;
             }
         }
-        static List<AssetInfo>? targetList;
-        static List<string>? extraJsonList;
-        static bool reImportGard = false;
+        // List<AssetInfo>? targetList;
+        // static List<string>? extraJsonList;
+        static int reImportGard;
 
 
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            if (reImportGard) return;
-            reImportGard = true;
+            // if (reImportGard) return;
+            // reImportGard++;
+
+            List<AssetInfo> targetList = new();
 
             try
             {
-                targetList = new();
-                extraJsonList = new();
+                // targetList = new();
+                // extraJsonList = new();
 
                 foreach (string path in importedAssets)
                 {
@@ -112,6 +111,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                         continue;
                     }
 
+                    /* エクスポートしたときSpineの.jsonに日付時間を付与するようにしたので必要なくなった
                     // extra_data.jsonのみ更新された場合の検知
                     if (path.EndsWith(SpineUtilityEditor.ExtraDataJsonFileName) == true)
                     {
@@ -125,13 +125,10 @@ namespace ActorWorkspace.Editor.UnitySpine
                         // Debug.Log($"[SpineAssetPostprocessor] Imported Spine ExtraData JSON: {skeletonDataPath}");
                         continue;
                     }
-
-
-                    // アセットのタイプでフィルタリング
-
-                    //*/
+                    */
                 }// foreach
 
+                /*
                 // extra_data.jsonのみ更新された場合の検知
                 if (targetList.Count == 0 && extraJsonList.Count > 0)
                 {
@@ -140,33 +137,36 @@ namespace ActorWorkspace.Editor.UnitySpine
                         Debug.LogError($"[SpineAssetPostprocessor] extra_data.jsonのみ変更した場合、更新インポートされないので.spineファイルに何かしら変更を加えて更新が検知されるようにしてもう一度インポートを行なってください。 Path: {extraJsonPath}");
                     }
                 }
+                */
             }
             finally
             {
-                if (targetList != null && targetList.Count > 0)
+                if (targetList.Count > 0)
                 {
-                    EditorApplication.delayCall -= OnDelayCall;
-                    EditorApplication.delayCall += OnDelayCall;
-                }
-                else
-                {
-                    targetList = null;
-                    extraJsonList = null;
-                    reImportGard = false;
+                    OnDelayCall(targetList);
                 }
             }
 
         }
 
-        static void OnDelayCall()
+        static void OnDelayCall(List<AssetInfo> targetList)
         {
-            ProcessPendingAssetsAsync().Forget();
+            ProcessPendingAssetsAsync(targetList).Forget();
         }
 
-        static async UniTask ProcessPendingAssetsAsync()
+        static async UniTask ProcessPendingAssetsAsync(List<AssetInfo> targetList)
         {
             // EditorUtility.DisplayProgressBar("Spine", "Importing files...", 0f);
-            // await UniTask.Delay(5000, DelayType.Realtime);
+
+            await EUtility.WaitForEditor();
+
+            // 前のForget処理が完了するまでビジーループで待機
+            while (reImportGard != 0)
+            {
+                await UniTask.Yield();
+            }
+            reImportGard++;
+
 
             try
             {
@@ -186,7 +186,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 AssetDatabase.SaveAssets();
 
                 targetList?.Clear();
-                reImportGard = false;
+                reImportGard--;
 
                 // 必ずプログレスバーをクリア
                 EditorUtility.ClearProgressBar();
