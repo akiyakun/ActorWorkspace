@@ -13,6 +13,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public IALProcessor? ALProcessor { get; }
 
         public uint SerialNumber { get; }
+        public uint Flags { get; }
 
         public int IntValue { get; }
         public float FloatValue { get; }

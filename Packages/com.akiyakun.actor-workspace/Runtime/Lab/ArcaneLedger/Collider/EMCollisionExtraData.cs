@@ -15,6 +15,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         [Space(10)]
         [SerializeField] int intValue;
 
+        [SerializeField] uint flags;
+
         protected override bool EnableValidateInPrefabMode { get; } = false;
         public override UpdateFlags UpdateFlags => UpdateFlags.Manual;
 
@@ -24,6 +26,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public IALProcessor? ALProcessor { get; protected set; }
 
         public uint SerialNumber { get; protected set; }
+        public uint Flags => flags;
 
         // [SerializeField] int intValue;
         public virtual int IntValue { get => intValue; protected set => intValue = value; }

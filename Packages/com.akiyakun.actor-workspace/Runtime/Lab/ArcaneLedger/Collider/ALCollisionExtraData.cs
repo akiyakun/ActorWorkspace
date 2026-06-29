@@ -21,6 +21,9 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         [SerializeField, Disable] uint serialNumber = 0;
         public uint SerialNumber { get => serialNumber; set => serialNumber = value; }
 
+        [SerializeField] uint flags;
+        public uint Flags { get => flags; set => flags = value; }
+
         [SerializeField] int intValue;
         public int IntValue { get => intValue; set => intValue = value; }
 
