@@ -1,9 +1,8 @@
-using System;
-using UnityEngine;
+#nullable enable
 
 namespace ActorWorkspace
 {
-    public class AWCoreAnimationEvents
+    public static class AWCoreAnimationEvents
     {
         public const string MotionConfig = "MotionConfig";
         public const string Audio = "Audio";
@@ -24,16 +23,21 @@ namespace ActorWorkspace
         public const string DisableRootMotionRotationEnd = "DisableRootMotionRotationEnd";
 
 
+        #region General Events
+        public const int MaxGeneralEventCount = 'Z' - 'A' + 1;
+        public const string SetGeneralEventPrefix = "GeneralEvent";
+        #endregion// General Events
 
 
-
-        #region General parameter events
+        #region General Parameter Events
         public const int MaxGenParamCount = 'Z' - 'A' + 1;
         public const string SetGenPrefix = "SetGen";
         public const string SetGenValuePrefix = SetGenPrefix + "Value";
         public const string SetGenFactorPrefix = SetGenPrefix + "Factor";
         public const string SetGenDeltaPrefix = SetGenPrefix + "Delta";
-        #endregion
+        #endregion// General Parameter Events
 
     }
 }
+
+#nullable restore
