@@ -520,6 +520,19 @@ namespace ActorWorkspace.UnitySpine
             return trackList[trackIndex];
         }
 
+        public float GetAnimationClipLength(string clipName)
+        {
+            var clips = animator.runtimeAnimatorController.animationClips;
+            for (int i = 0; i < clips.Length; i++)
+            {
+                if (clips[i].name == clipName)
+                {
+                    return clips[i].length;
+                }
+            }
+            return 0.0f;
+        }
+
 
         // Mecanimのステートに入ったときのコールバック
         void OnHandleEntered(AnimatorStateOptionInfo info)

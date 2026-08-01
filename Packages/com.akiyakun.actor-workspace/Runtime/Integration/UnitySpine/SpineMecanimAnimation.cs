@@ -14,10 +14,10 @@ namespace ActorWorkspace.UnitySpine
         SkeletonMecanim skeletonMecanim;
         public SkeletonMecanim SkeletonMecanim => skeletonMecanim;
 
-        Spine.Animation? spineAnimation;
-        public PlayableGraph playableGraph;
-        public AnimationClip? animationClip;
-        public AnimationClipPlayable animationClipPlayable;
+        // Spine.Animation? spineAnimation;
+        // public PlayableGraph playableGraph;
+        // public AnimationClip? animationClip;
+        // public AnimationClipPlayable animationClipPlayable;
 
         public AnimatorStateOptionInfo stateOptionInfo;
 
@@ -30,22 +30,22 @@ namespace ActorWorkspace.UnitySpine
             Name = stateOptionInfo.StateName;
         }
 
-        public SpineMecanimAnimation(AnimatorStateOptionInfo stateOptionInfo, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation,
-            PlayableGraph playableGraph, AnimationClip animationClip, AnimationClipPlayable animationClipPlayable)
-        {
-            this.skeletonMecanim = skeletonMecanim;
-            Debug.Assert(skeletonMecanim != null);
+        // public SpineMecanimAnimation(AnimatorStateOptionInfo stateOptionInfo, SkeletonMecanim skeletonMecanim, Spine.Animation? spineAnimation,
+        //     PlayableGraph playableGraph, AnimationClip animationClip, AnimationClipPlayable animationClipPlayable)
+        // {
+        //     this.skeletonMecanim = skeletonMecanim;
+        //     Debug.Assert(skeletonMecanim != null);
 
-            this.spineAnimation = spineAnimation;
-            // Debug.Assert(spineAnimation != null);
+        //     this.spineAnimation = spineAnimation;
+        //     // Debug.Assert(spineAnimation != null);
 
-            this.playableGraph = playableGraph;
-            this.animationClip = animationClip;
-            this.animationClipPlayable = animationClipPlayable;
+        //     this.playableGraph = playableGraph;
+        //     this.animationClip = animationClip;
+        //     this.animationClipPlayable = animationClipPlayable;
 
-            this.stateOptionInfo = stateOptionInfo;
-            Name = stateOptionInfo.StateName;
-        }
+        //     this.stateOptionInfo = stateOptionInfo;
+        //     Name = stateOptionInfo.StateName;
+        // }
 
         // From IAWAnimation
         // public void Stop()
