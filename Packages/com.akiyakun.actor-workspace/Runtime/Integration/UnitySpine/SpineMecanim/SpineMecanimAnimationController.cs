@@ -52,6 +52,8 @@ namespace ActorWorkspace.UnitySpine
             set => SetRootMotionRotation(value);
         }
 
+        public Animator Animator => animator;
+
         SkeletonMecanim skeletonMecanim;
         Animator animator;
         SkeletonMecanimRootMotion skeletonMecanimRootMotion;
