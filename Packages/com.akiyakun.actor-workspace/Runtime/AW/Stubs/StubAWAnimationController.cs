@@ -115,6 +115,11 @@ namespace ActorWorkspace.Tests
         {
             return track;
         }
+
+        public GameObject? GetFollowObject(string name)
+        {
+            return null;
+        }
     }
 }
 #nullable restore

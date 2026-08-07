@@ -77,6 +77,11 @@ namespace ActorWorkspace
         public bool ApplyRootMotionPositionY { get; set; }
         public bool ApplyRootMotionRotation { get; set; }
         #endregion
+
+
+        #region ExtraData
+        public GameObject? GetFollowObject(string name);
+        #endregion
     }
 }
 #nullable restore
