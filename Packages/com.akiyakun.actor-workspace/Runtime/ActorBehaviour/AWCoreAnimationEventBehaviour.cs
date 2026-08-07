@@ -12,7 +12,7 @@ namespace ActorWorkspace.ActorBehaviour
     {
         public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Manual;
 
-        protected Dictionary<string, System.Action> eventActions = new();
+        protected Dictionary<string, System.Action<AWAnimationEventData>> eventActions = new();
 
         public override void OnRestore()
         {
@@ -33,7 +33,7 @@ namespace ActorWorkspace.ActorBehaviour
             }
         }
 
-        protected void AddEventAction(string eventName, System.Action action)
+        protected void AddEventAction(string eventName, System.Action<AWAnimationEventData> action)
         {
             eventActions.Add(eventName, action);
         }
@@ -53,7 +53,7 @@ namespace ActorWorkspace.ActorBehaviour
 
             if (eventActions.TryGetValue(eventData.Name, out var action))
             {
-                action?.Invoke();
+                action?.Invoke(eventData);
             }
             else
             {
