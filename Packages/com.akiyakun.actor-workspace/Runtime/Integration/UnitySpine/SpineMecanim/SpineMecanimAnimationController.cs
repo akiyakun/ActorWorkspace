@@ -53,6 +53,7 @@ namespace ActorWorkspace.UnitySpine
         }
 
         public Animator Animator => animator;
+        public AnimatorStateEvent AnimatorStateEvent => animatorStateEvent;
 
         SkeletonMecanim skeletonMecanim;
         Animator animator;

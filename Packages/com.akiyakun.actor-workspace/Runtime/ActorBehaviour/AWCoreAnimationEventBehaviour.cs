@@ -29,7 +29,7 @@ namespace ActorWorkspace.ActorBehaviour
 
             // Adds event actions
             {
-                // eventActions.Add(AWCoreAnimationEvents.Effect, () => OnEffectEvent());
+                // AddEventAction(AWCoreAnimationEvents.Effect, (eventData) => OnEffectEvent());
             }
         }
 
@@ -60,20 +60,6 @@ namespace ActorWorkspace.ActorBehaviour
                 Debug.Assert(false, $"Unknown animation event: {eventData.Name}");
             }
 
-            // switch (eventData.Name)
-            // {
-            //     // AWCoreAnimationEvents
-
-            //     case AWCoreAnimationEvents.MotionConfig:
-            //         EventBus.Publish(ActorEvents.MotionConfig, eventData.Int);
-            //         break;
-            //     case AWCoreAnimationEvents.Audio:
-            //         EventBus.Publish(ActorEvents.Audio, eventData.Int);
-            //         break;
-            //     default:
-            //         Debug.Assert(false, $"Unknown animation event: {eventData.Name}");
-            //         break;
-            // }
         }
     }
 }
