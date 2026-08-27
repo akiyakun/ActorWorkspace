@@ -17,6 +17,19 @@ namespace ActorWorkspace
         where TAnimationController : class, IAWAnimationController
         where TSkin : class, IAWSkin
     {
+        // FIXME:
+        public bool IsInView
+        {
+            get => ActorDisplay.gameObject.activeSelf;
+            set
+            {
+                if (ActorDisplay.gameObject.activeSelf != value)
+                {
+                    ActorDisplay.gameObject.SetActive(value);
+                }
+            }
+        }
+
         public int ActorId { get; protected set; }
         public int ActorCategory { get; protected set; }
         public GameObject GameObject => this.gameObject;

@@ -8,6 +8,9 @@ namespace ActorWorkspace.Tests
 {
     public class StubAWActor : IAWActor
     {
+        // FIXME:
+        public bool IsInView { get; set; } = true;
+
         public int ActorId { get; set; }
         public int ActorCategory { get; set; }
         public GameObject GameObject => null!;

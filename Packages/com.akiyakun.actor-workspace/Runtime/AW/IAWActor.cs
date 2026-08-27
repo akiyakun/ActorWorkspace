@@ -8,6 +8,9 @@ namespace ActorWorkspace
 {
     public interface IAWActor : IUpdateElement, System.IDisposable
     {
+        // FIXME:
+        public bool IsInView { get; set; }
+
         public int ActorId { get; }
         public int ActorCategory { get; }
         public GameObject GameObject { get; }
