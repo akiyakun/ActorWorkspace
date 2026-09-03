@@ -62,7 +62,10 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             Actor = Effect.Option.UserData as IAWActor;
             if (Actor != null)
             {
-                ALProcessor = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>().Processor;
+                var alb = Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>();
+                if (alb == null) throw new System.Exception("ActorBehaviourControllerにArcaneLedgerBehaviourが存在しません。");
+
+                ALProcessor = alb.Processor;
                 SerialNumber = ColliderSerialNumberGenerator.GetNext();
             }
         }

@@ -64,10 +64,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         void OnCollision(CollisionContactInfo info)
         {
+            // D.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}\nOther: {info.Other.GetHierarchyPath()}", ColorEx.LightBlue);
+            // int o = info.Other.gameObject.layer;
             // 対象のレイヤー以外なら抜ける
             if (info.Other.HasLayerFromMask(LayerMask) == false) return;
 
-            // Debug.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}\nOther: {info.Other.GetHierarchyPath()}");
+            D.Log($"ALHurtBoxBehaviour OnCollision: EventType={info.EventType}\nOther: {info.Other.GetHierarchyPath()}", ColorEx.LightBlue);
 
 #if UNITY_EDITOR
             var extraData = info.Other.GetComponent<EMCollisionExtraData>();

@@ -11,7 +11,7 @@ namespace ActorWorkspace
     // MonoBehaviour前提
     public class AWActorDisplay : MonoBehaviour, System.IDisposable
     {
-        [SerializeField] GameObject main;
+        [SerializeField] GameObject main = null!;
 
         // FIXME:
 #if UNITY_EDITOR
