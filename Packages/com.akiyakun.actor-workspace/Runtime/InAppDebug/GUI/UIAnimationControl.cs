@@ -12,6 +12,7 @@ namespace ActorWorkspace.InAppDebug
     {
         [SerializeField] GameObject speedControl;
         TMP_InputField speedInputField;
+        Slider speedSlider;
 
         [SerializeField] GameObject mixControl;
         TMP_InputField mixInputField;
@@ -36,6 +37,12 @@ namespace ActorWorkspace.InAppDebug
         protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
             speedInputField = speedControl.GetComponent<TMP_InputField>("InputField");
+            speedSlider = speedControl.GetComponent<Slider>("Slider");
+            speedSlider.minValue = 0.1f;
+            speedSlider.maxValue = 2.0f;
+            speedSlider.wholeNumbers = false;
+            speedSlider.SetValueWithoutNotify(1.0f);
+            speedInputField.SetTextWithoutNotify("100");
 
             mixInputField = mixControl.GetComponent<TMP_InputField>("InputField");
             loopToggle = mixControl.GetComponent<Toggle>("Loop");
@@ -44,7 +51,8 @@ namespace ActorWorkspace.InAppDebug
 
             // イベント登録
             {
-                speedControl.GetComponent<Slider>("Slider").onValueChanged.AddListener(OnSpeedSliderValueChanged);
+                speedSlider.onValueChanged.AddListener(OnSpeedSliderValueChanged);
+                speedInputField.onEndEdit.AddListener(OnSpeedInputEndEdit);
                 speedControl.GetComponent<Button>("Reset").onClick.AddListener(OnSpeedReset);
 
                 mixControl.GetComponent<Slider>("Slider").onValueChanged.AddListener(OnMixSliderValueChanged);
@@ -73,7 +81,8 @@ namespace ActorWorkspace.InAppDebug
         {
             // イベント解除
             {
-                speedControl.GetComponent<Slider>("Slider").onValueChanged.RemoveListener(OnSpeedSliderValueChanged);
+                speedSlider.onValueChanged.RemoveListener(OnSpeedSliderValueChanged);
+                speedInputField.onEndEdit.RemoveListener(OnSpeedInputEndEdit);
                 speedControl.GetComponent<Button>("Reset").onClick.RemoveListener(OnSpeedReset);
 
                 mixControl.GetComponent<Toggle>("Loop").onValueChanged.RemoveListener(OnLoopToggleChanged);
@@ -90,7 +99,8 @@ namespace ActorWorkspace.InAppDebug
 
         void ResetUI(IAWActor actor)
         {
-            OnSpeedReset();
+            // 時間倍率はアクターの切り替えをまたいで保持する。
+            OnSpeedSliderValueChanged(speedSlider.value);
             OnMixSliderValueChanged(0.25f);
             OnLoopToggleChanged(IsLoop);
             ResetTrackControl();
@@ -141,15 +151,30 @@ namespace ActorWorkspace.InAppDebug
 
         public void ChangeTrack(float speed, float mix)
         {
-            speedControl.GetComponentInChildren<Slider>().value = speed;
+            speedSlider.SetValueWithoutNotify(speed);
+            speedInputField.SetTextWithoutNotify(Mathf.RoundToInt(speed * 100.0f).ToString());
             mixControl.GetComponentInChildren<Slider>().value = mix;
         }
 
 
         void OnSpeedSliderValueChanged(float value)
         {
-            speedInputField.text = Mathf.RoundToInt(value * 100.0f).ToString();
+            value = Mathf.Clamp(value, 0.1f, 2.0f);
+            speedSlider.SetValueWithoutNotify(value);
+            speedInputField.SetTextWithoutNotify(Mathf.RoundToInt(value * 100.0f).ToString());
             OnSpeedValueChanged?.Invoke(value);
+        }
+
+        void OnSpeedInputEndEdit(string text)
+        {
+            if (float.TryParse(text, out float percent) && float.IsNaN(percent) == false && float.IsInfinity(percent) == false)
+            {
+                OnSpeedSliderValueChanged(percent / 100.0f);
+            }
+            else
+            {
+                OnSpeedSliderValueChanged(speedSlider.value);
+            }
         }
 
         void OnSpeedReset()

@@ -1,14 +1,15 @@
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using System.Threading;
-using Cysharp.Threading.Tasks;
+using ActorWorkspace.MasterData;
 using afl;
 using afl.MasterData;
+using afl.Service.Effects;
 using afl.UI;
+using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 using TMPro;
-using ActorWorkspace.MasterData;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace ActorWorkspace.InAppDebug
 {
@@ -26,12 +27,21 @@ namespace ActorWorkspace.InAppDebug
 
         public event System.Action<IAWActor> OnCreatedActor;
         public event System.Action<IAWActor> OnRemoveActor;
+        public event System.Action<float> OnSpeedChanged;
 
         UIAnimationList uiAnimationList;
         UISkinControl uiSkinControl;
         UIAnimationControl uiAnimationControl;
         UIPlayListControl uiPlayListControl;
-        public GameObject openAssetDialog;
+        UIListView assetListView;
+        ScrollRect assetListScrollRect;
+        Button openButton;
+        Button flipButton;
+        Button loadAssetButton;
+        GameObject openAssetDialog;
+        Vector2 assetListScrollPosition = new Vector2(0.0f, 1.0f);
+        bool assetListCreated;
+        float playbackSpeed = 1.0f;
 
         EventBag eventBag = new();
         bool loadActorRequesting;
@@ -39,7 +49,6 @@ namespace ActorWorkspace.InAppDebug
 
         class TrackInfo
         {
-            public float Speed = 1.0f;
             public float Mix = 0.25f;
         }
         List<TrackInfo> trackInfoList = ListEx.Create<TrackInfo>(16);
@@ -78,13 +87,24 @@ namespace ActorWorkspace.InAppDebug
             {
                 ActorCamera = Form.VariableTable.Get("ActorCamera").GetComponent<Camera>();
                 openAssetDialog = Form.VariableTable.Get("OpenAssetDialog").GetGameObject();
+                // 遅れて実行される Awake が初回の Open を打ち消さないよう、表示はこの View で管理する。
+                var activator = openAssetDialog.GetComponent<ObjectActivator>();
+                if (activator != null) activator.enabled = false;
+                openAssetDialog.SetActive(false);
+                assetListView = openAssetDialog.GetComponent<UIListView>("UIListView");
+                assetListScrollRect = assetListView.GetComponentInChildren<ScrollRect>(includeInactive: true);
 
-                var openButton = Form.VariableTable.Get("OpenButton").GetComponent<Button>();
+                openButton = Form.VariableTable.Get("OpenButton").GetComponent<Button>();
                 eventBag.In(openButton,
                     (entity) => entity.onClick.AddListener(OnOpenAsset),
                     (entity) => entity.onClick.RemoveListener(OnOpenAsset));
 
-                var loadAssetButton = Form.VariableTable.Get("LoadAssetButton").GetComponent<Button>();
+                flipButton = Form.VariableTable.Get("FlipButton").GetComponent<Button>();
+                eventBag.In(flipButton,
+                    (entity) => entity.onClick.AddListener(OnFilpActor),
+                    (entity) => entity.onClick.RemoveListener(OnFilpActor));
+
+                loadAssetButton = Form.VariableTable.Get("LoadAssetButton").GetComponent<Button>();
                 eventBag.In(loadAssetButton,
                     (entity) => entity.onClick.AddListener(OnLoadAsset),
                     (entity) => entity.onClick.RemoveListener(OnLoadAsset));
@@ -186,6 +206,13 @@ namespace ActorWorkspace.InAppDebug
         protected override void InnerTerminate()
         {
             eventBag.Dispose();
+            uiAnimationList.OnClickEntity -= OnClickEntityFromAnimationList;
+            uiSkinControl.OnSkinChanged -= OnSkinChanged;
+            uiAnimationControl.OnSpeedValueChanged -= OnSpeedValueChanged;
+            uiAnimationControl.OnMixValueChanged -= OnMixValueChanged;
+            uiAnimationControl.OnLoopValueChanged -= OnLoopValueChanged;
+            uiAnimationControl.OnActiveTrackChanged -= OnActiveTrackChanged;
+            uiAnimationControl.OnRootMotionValueChanged -= OnRootMotionValueChanged;
         }
 
         // 全てのアセットのリストを生成して返します
@@ -226,111 +253,150 @@ namespace ActorWorkspace.InAppDebug
 
         void OnOpenAsset()
         {
-            var listView = openAssetDialog.GetComponent<UIListView>("UIListView");
+            if (openAssetDialog.activeSelf) return;
 
-            // リストをクリア
-            listView.Clear();
-
-            // UIリストを作成
-            var allList = GetAllAssetList();
-            foreach (var info in allList)
+            // 一覧を再生成せず、選択状態とスクロール位置を保持する。
+            if (assetListCreated == false)
             {
-                var entity = listView.AddEntity();
-                entity.UserData = info;
-                entity.name = info.Name;
-                entity.GetComponentInChildren<TMP_Text>().text = info.Name;
-                // entity.OnEntityEvent(UIEntityEvent.Type.Open);
-                entity.SetStay();
+                assetListView.Clear();
+                foreach (var info in GetAllAssetList())
+                {
+                    var entity = assetListView.AddEntity();
+                    entity.UserData = info;
+                    entity.name = info.Name;
+                    entity.GetComponentInChildren<TMP_Text>().text = info.Name;
+                    entity.SetStay();
+                }
+                assetListCreated = true;
             }
 
+            openAssetDialog.GetComponent<UIEntityRootGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
+            Canvas.ForceUpdateCanvases();
+            assetListScrollRect.StopMovement();
+            assetListScrollRect.normalizedPosition = assetListScrollPosition;
+        }
+
+        void OnFilpActor()
+        {
+            if (ContextProvider.CurrentWorkingActorContext.Actor == null) return;
+
+            var actor = ContextProvider.CurrentWorkingActorContext.Actor;
+            // 左を向いていたら
+            if (actor.ActorDisplay.transform.localScale.x < 0.0f)
             {
-                // openAssetDialog.SetActive(true);
-                openAssetDialog.GetComponent<UIEntityRootGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
+                // 右を向かせる
+                actor.ActorDisplay.SetScaleSign(ValueSignType.PositiveX);
+            }
+            // 左
+            else if (actor.ActorDisplay.transform.localScale.x > 0.0f)
+            {
+                // 左を向かせる
+                actor.ActorDisplay.SetScaleSign(ValueSignType.NegativeX);
             }
         }
 
         void OnLoadAsset()
         {
-            var listView = openAssetDialog.GetComponent<UIListView>("UIListView");
-            if (listView.SelectedEntity == null) return;
-
-            var assetInfo = listView.SelectedEntity.UserData as ActorAssetInfo;
-            Debug.Assert(assetInfo != null);
-
-            {
-                var group = openAssetDialog.GetComponent<UIEntityRootGroup>();
-                group.SetCloseComplateAtInactive(true);
-                group.SendEntityEvent(UIEntityEvent.Type.Close);
-                // openAssetDialog.SetActive(false);
-            }
+            if (loadActorRequesting || assetListView.SelectedEntity == null) return;
+            if (assetListView.SelectedEntity.UserData is not ActorAssetInfo assetInfo) return;
 
             LoadActorRequest(assetInfo.AssetModel.Id, assetInfo.Category);
         }
 
         public void LoadActorRequest(int id, int category)
         {
-            // FIXME: 削除処理ちゃんと書く
-            if (ContextProvider.CurrentWorkingActorContext.Actor is IAWActor actor)
-            {
-                OnRemoveActor?.Invoke(actor);
-                actor.ElementActive = false;
-                // ContextProvider.ActorManager.Remove(actor);
-                ContextProvider.CurrentWorkingActorContext.Reset();
-            }
+            if (loadActorRequesting) return;
+            LoadSelectedActorAsync(new ActorCreateParam(id, category, Vector3.zero), ((UIForm)Form).destroyCancellationToken).Forget();
+        }
 
-            // FIXME:
-            LoadActorAsync(new ActorCreateParam(id, category, Vector3.zero), ((UIForm)Form).destroyCancellationToken).Forget();
+        async UniTask LoadSelectedActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
+        {
+            int ret = await LoadActorAsync(param, cancellationToken);
+            if (ret < 0 || cancellationToken.IsCancellationRequested || openAssetDialog.activeSelf == false) return;
+
+            assetListScrollRect.StopMovement();
+            assetListScrollPosition = assetListScrollRect.normalizedPosition;
+            var group = openAssetDialog.GetComponent<UIEntityRootGroup>();
+            group.SetCloseComplateAtInactive(true);
+            group.SendEntityEvent(UIEntityEvent.Type.Close);
         }
 
         public async UniTask<int> LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
         {
-            if (loadActorRequesting == true)
-            {
-                Debug.Assert(loadActorRequesting == false);
-                return GeneralReturnCode.Failed;
-            }
+            if (loadActorRequesting) return GeneralReturnCode.Failed;
+            if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
 
             loadActorRequesting = true;
+            loadAssetButton.interactable = false;
+            var previousActor = ContextProvider.CurrentWorkingActorContext.Actor;
+            IAWActor actor = null;
+            bool committed = false;
 
-            if (ContextProvider.CurrentWorkingActorContext.IsValid)
+            try
             {
-                ContextProvider.ActorFactory.Release(ContextProvider.CurrentWorkingActorContext.Actor);
-                // ContextProvider.CurrentWorkingActorContext.Reset();
-                ContextProvider.CurrentWorkingActorContext = null;
+                // 読込と UI の準備が成功するまで前のアクターを表示しておく。
+                actor = await ContextProvider.ActorFactory.CreateAsync(param, cancellationToken: cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
+                if (actor == null) return GeneralReturnCode.Failed;
+
+                actor.GameObject.SetActive(true);
+                var monoBehaviour = actor.ActorDisplay.GetComponentsInChildren<MonoBehaviour>();
+                foreach (var mb in monoBehaviour)
+                {
+                    if (mb.GetType().FullName == "BehaviorDesigner.Runtime.BehaviorTree")
+                    {
+                        mb.enabled = false;
+                    }
+                }
+                ContextProvider.CurrentWorkingActorContext.Set(actor);
+                currentTrackIndex = 0;
+                ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.ResetUI, actor);
+                OnCreatedActor?.Invoke(actor);
+                committed = true;
+
+                if (previousActor != null)
+                {
+                    previousActor.ElementActive = false;
+                    previousActor.GameObject.SetActive(false);
+                    OnRemoveActor?.Invoke(previousActor);
+                    ContextProvider.ActorFactory.Release(previousActor);
+                }
+
+                return GeneralReturnCode.Succeeded;
             }
-
-            // SkeletonAnimation skeletonAnimation = null;
-
-            // skeletonAnimation = ActorAssetDatabase.CreateActorAsset(assetLocator).GetComponent<SkeletonAnimation>();
-            IAWActor actor = await ContextProvider.ActorFactory.CreateAsync(param, cancellationToken: cancellationToken);
-            // skeletonAnimation = actor.GameObject.GetComponent<SkeletonAnimation>();
-            if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
-            Debug.Assert(actor != null);
-            actor.GameObject.SetActive(true);
-
-            // マネージャーに追加
-            // ContextProvider.ActorManager.Add(actor);
-
-            // コールバック呼び出し
-            OnCreatedActor?.Invoke(actor);
-
-            // ContextProvider.CurrentWorkingActorContext = new();
-            // ContextProvider.CurrentWorkingActorContext.GameObject = skeletonAnimation.gameObject;
-            ContextProvider.CurrentWorkingActorContext.Set(actor);
-
-            // UIをリセット
-            // uiAnimationList.ResetUI(actor);
-            // uiAnimationControl.ResetUI(loop: uiAnimationControl.IsLoop);
-            // uiSkinControl.ResetUI(actor);
-            // uiPlayListControl.ResetUI(actor);
-            ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.ResetUI, actor);
-
-            // Debug.Assert(Form != null);
-            // Debug.Assert(Form.GameObject != null);
-            // Form.GameObject.GetComponent<UIEntityGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
-
-            loadActorRequesting = false;
-            return GeneralReturnCode.Succeeded;
+            catch (System.OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                return GeneralReturnCode.Canceled;
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogWarning($"ActorWorkspace: Failed to load actor. {exception}");
+                return GeneralReturnCode.Failed;
+            }
+            finally
+            {
+                try
+                {
+                    if (committed == false)
+                    {
+                        ContextProvider.CurrentWorkingActorContext.Actor = previousActor;
+                        if (actor != null)
+                        {
+                            actor.ElementActive = false;
+                            actor.GameObject.SetActive(false);
+                            ContextProvider.ActorFactory.Release(actor);
+                        }
+                    }
+                }
+                finally
+                {
+                    loadActorRequesting = false;
+                    if (loadAssetButton != null) 
+                    {
+                        loadAssetButton.interactable = true;
+                    }
+                }
+            }
         }
 
 
@@ -404,8 +470,6 @@ namespace ActorWorkspace.InAppDebug
                 // skeletonAnimation.AnimationState.AddAnimation(
                 //     currentTrackIndex, animation: animation, loop: uiAnimationControl.IsLoop, delay: 0.0f);
 
-                track.TimeScale = trackInfoList[currentTrackIndex].Speed;
-
                 uiAnimationControl.TrackAnimationChanged(currentTrackIndex, true);
 
             }
@@ -432,19 +496,17 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnSpeedValueChanged(float value)
         {
-            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-            var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
-            if (track == null) return;
-            track.TimeScale = value;
-            trackInfoList[currentTrackIndex].Speed = value;
-            // Debug.Log($"OnSpeedValueChanged: trackEntry.TimeScale={trackEntry.TimeScale}, value={value}");
+            playbackSpeed = Mathf.Clamp(value, 0.1f, 2.0f);
+            OnSpeedChanged?.Invoke(playbackSpeed);
         }
 
         public void OnMixValueChanged(float value)
         {
+            trackInfoList[currentTrackIndex].Mix = value;
+            if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
             // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
+            if (track == null) return;
             // TrackごとにMixを設定するようなことはできない
             // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
             // stateData.DefaultMix = value;
@@ -455,12 +517,13 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnLoopValueChanged(bool value)
         {
+            if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
             // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             // if (trackEntry == null) return;
             var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
-            if (track.Animation != null)
+            if (track != null && track.Animation != null)
             {
                 animationController.SetAnimation(Utility.StringToHashId(track.Animation.Name), value, currentTrackIndex);
             }
@@ -476,7 +539,7 @@ namespace ActorWorkspace.InAppDebug
 
             // UI変更
             uiAnimationControl.ChangeTrack(
-                trackInfoList[currentTrackIndex].Speed, trackInfoList[currentTrackIndex].Mix);
+                playbackSpeed, trackInfoList[currentTrackIndex].Mix);
 
             var uiListView = uiAnimationList.gameObject.GetComponent<UIListView>("UIListView");
 
