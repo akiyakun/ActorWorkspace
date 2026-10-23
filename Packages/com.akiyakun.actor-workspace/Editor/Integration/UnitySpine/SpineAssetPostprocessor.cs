@@ -54,6 +54,27 @@ namespace ActorWorkspace.Editor.UnitySpine
             Debug.Log("[SpineAssetPostprocessor] 再インポート完了");
         }
 
+        // SpineExtraDataの有無で更新/新規を判定する
+        // (.jsonインポート時・一括再インポート時・メニュー表示で共通のルール)
+        public static bool IsUpdateImport(string skeletonDataAssetPath)
+        {
+            return SpineUtilityEditor.IsSpineExtraDataExists(skeletonDataAssetPath);
+        }
+
+        // 更新/新規をパスごとに自動判定し、1バッチで再インポートする
+        public static void ReImportAuto(IEnumerable<string> paths)
+        {
+            var targetList = new List<AssetInfo>();
+            foreach (var path in paths)
+            {
+                targetList.Add(new AssetInfo(path, IsUpdateImport(path)));
+            }
+            if (targetList.Count == 0) return;
+
+            OnDelayCall(targetList);
+            Debug.Log($"[SpineAssetPostprocessor] 再インポートを開始: {targetList.Count} 件");
+        }
+
         class AssetInfo
         {
             public string Path;
@@ -95,7 +116,7 @@ namespace ActorWorkspace.Editor.UnitySpine
 
                         // SkeletonDataAssetが更新されたことにするためこちらのパスをAddする
                         string skeletonDataPath = SpineUtilityEditor.GetSkeletonDataPath(path);
-                        targetList.Add(new AssetInfo(skeletonDataPath, SpineUtilityEditor.IsSpineExtraDataExists(skeletonDataPath)));
+                        targetList.Add(new AssetInfo(skeletonDataPath, IsUpdateImport(skeletonDataPath)));
                         Debug.Log($"[SpineAssetPostprocessor] Imported Spine SkeletonDataAsset(.json): {skeletonDataPath}");
                         continue;
                     }
@@ -177,7 +198,21 @@ namespace ActorWorkspace.Editor.UnitySpine
                 foreach (var assetInfo in targetList)
                 {
                     EditorUtility.DisplayProgressBar("Spine", $"Importing files...\n{assetInfo.Path}", progress);
-                    await Process(assetInfo);
+
+                    // 1件の失敗でバッチの残りを取りこぼさないよう、アセット単位で例外を握って次へ進む
+                    // (Spine側のクリップ再生成だけが走り、イベントがSpine標準形式のまま残るのを防ぐ)
+                    try
+                    {
+                        await Process(assetInfo);
+                    }
+                    catch (Exception e)
+                    {
+                        // エラーフラグは Process() 側で管理する(コア処理が完了していれば解除済み)
+                        var context = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetInfo.Path);
+                        Debug.LogError($"[SpineAssetPostprocessor] Import failed: {assetInfo.Path}", context);
+                        Debug.LogException(e, context);
+                    }
+
                     progress += span;
                 }
             }
@@ -215,11 +250,14 @@ namespace ActorWorkspace.Editor.UnitySpine
             // 追加情報用ScriptableObjectの作成・取得と内容クリア
             SpineExtraDataScriptableObject spineExtraData = CreateSpineExtraDataAsset(assetInfo.Path, out bool isCreated);
 
+            // コア処理(クリップ再生成・イベント変換・Folder収集)が終わるまではエラー扱いにしておく
+            // 途中で例外が出た場合はこの状態のまま保存され、実行時に SetupForExtraData が検知する
+            spineExtraData.IsImportError = true;
+            EditorUtility.SetDirty(spineExtraData);
+
             // エラーや警告が出ていないかチェック
             if (ErrorCheck(assetInfo) == false)
             {
-                spineExtraData.IsImportError = true;
-                EditorUtility.SetDirty(spineExtraData);
                 AssetDatabase.SaveAssets();
                 Debug.LogError($"[SpineAssetPostprocessor] Import error. {assetInfo.Path}");
                 return;
@@ -245,6 +283,12 @@ namespace ActorWorkspace.Editor.UnitySpine
             // SpineイベントのInt/Float/Stringすべてをインポート
             ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
 
+            // ここまで成功すればゲームから使える状態なのでエラーを解除する
+            // プロジェクト側コールバックの失敗はログに出すだけで、エラーフラグには反映しない
+            // (例: Enemy 専用の処理が Enemy 以外のアセットで失敗しても、そのアセットが実行時に使えなくなるのを防ぐ)
+            spineExtraData.IsImportError = false;
+            EditorUtility.SetDirty(spineExtraData);
+
             // コールバック
             if (UnitySpineSettings.Instance.ImportCallback != null)
             {
@@ -259,9 +303,6 @@ namespace ActorWorkspace.Editor.UnitySpine
                     await UnitySpineSettings.Instance.ImportCallback.OnNewImported(assetInfo.Path, skeletonDataAsset, spineExtraData);
                 }
             }
-
-            spineExtraData.IsImportError = false;
-            EditorUtility.SetDirty(spineExtraData);
 
             AssetDatabase.SaveAssets();
 
