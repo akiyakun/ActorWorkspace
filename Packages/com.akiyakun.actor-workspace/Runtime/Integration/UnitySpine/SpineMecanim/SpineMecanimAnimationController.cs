@@ -320,7 +320,9 @@ namespace ActorWorkspace.UnitySpine
 
             if (option.Immediate == true)
             {
-                animator.Play(nameHash, layer: option.Track);
+                // MEMO: 非アクティブな GameObject の Animator に Play() すると警告が出て無視される
+                //       （アクティブになると初期ステートから再生される）ので、アクティブなときだけ呼ぶ
+                if (animator.gameObject.activeInHierarchy) animator.Play(nameHash, layer: option.Track);
             }
             else
             {
@@ -341,7 +343,8 @@ namespace ActorWorkspace.UnitySpine
 
             if (option.Immediate == true)
             {
-                animator.Play(name, layer: option.Track);
+                // MEMO: SetAnimation(int nameHash, ...) と同じ理由でアクティブなときだけ呼ぶ
+                if (animator.gameObject.activeInHierarchy) animator.Play(name, layer: option.Track);
             }
             else
             {
