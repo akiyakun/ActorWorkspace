@@ -72,7 +72,9 @@ namespace ActorWorkspace.EventCommand
                         Param2 = { Int = category },
                         Param3 = { Int = cluster },
                         UserData = spawnOption
-                    }
+                    },
+                    // このコマンドと同じ時計で動かす(タイムラインを止めたときに一緒に止まるように)
+                    clock: Clock
                 );
                 handles.Add(handle);
 

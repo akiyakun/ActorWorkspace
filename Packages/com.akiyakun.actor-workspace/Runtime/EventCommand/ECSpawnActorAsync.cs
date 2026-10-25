@@ -56,6 +56,8 @@ namespace ActorWorkspace.EventCommand
             // await UniTask.Delay(3000, cancellationToken: cancellationToken);
 
             await actorManager.AddToPoolAsync(id: id, category: category, count: 1, cancellationToken: cancellationToken);
+            // 生成中に止められた
+            if (cancellationToken.IsCancellationRequested) return;
 
             var actor = actorManager.Spawn(id: id, category: category, parent: parent);
             if (actor == null)
