@@ -75,6 +75,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             Debug.Log($"[SpineAssetPostprocessor] 再インポートを開始: {targetList.Count} 件");
         }
 
+        [Serializable]
         class AssetInfo
         {
             public string Path;
@@ -86,6 +87,18 @@ namespace ActorWorkspace.Editor.UnitySpine
                 IsUpdate = isUpdate;
             }
         }
+
+        // 処理待ちリストの保存用(JsonUtilityはListを直接シリアライズできないため)
+        [Serializable]
+        class PendingList
+        {
+            public List<AssetInfo> Items = new();
+        }
+
+        // 処理待ちリストをドメインリロードを跨いで保持するためのSessionStateキー
+        // (エディタ終了時には自動でクリアされる)
+        const string PendingListSessionKey = "ActorWorkspace.SpineAssetPostprocessor.PendingList";
+
         // List<AssetInfo>? targetList;
         // static List<string>? extraJsonList;
         static int reImportGard;
@@ -172,14 +185,80 @@ namespace ActorWorkspace.Editor.UnitySpine
 
         static void OnDelayCall(List<AssetInfo> targetList)
         {
-            ProcessPendingAssetsAsync(targetList).Forget();
+            AddPendingList(targetList);
+            ProcessPendingAssetsAsync().Forget();
         }
 
-        static async UniTask ProcessPendingAssetsAsync(List<AssetInfo> targetList)
+        // ドメインリロードで消えたインポートキューを再開する
+        // (初回起動時の一括インポートや処理中の再コンパイルでドメインリロードが起きると、
+        //  実行中のUniTaskが消滅して残りのアセットが未変換のまま残るため)
+        [InitializeOnLoadMethod]
+        static void ResumePendingAssets()
+        {
+            if (LoadPendingList().Count == 0) return;
+
+            // UniTaskのエディタループ初期化より先に呼ばれる可能性があるためdelayCallで遅らせる
+            EditorApplication.delayCall += () =>
+            {
+                // Play Mode突入時のドメインリロードでは再開しない(終了時のリロードで改めて再開される)
+                if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+
+                var pendingList = LoadPendingList();
+                if (pendingList.Count == 0) return;
+
+                Debug.Log($"[SpineAssetPostprocessor] 中断されたSpineインポートを再開: {pendingList.Count} 件");
+                ProcessPendingAssetsAsync().Forget();
+            };
+        }
+
+        static List<AssetInfo> LoadPendingList()
+        {
+            var json = SessionState.GetString(PendingListSessionKey, "");
+            if (string.IsNullOrEmpty(json)) return new List<AssetInfo>();
+
+            try
+            {
+                var pendingList = JsonUtility.FromJson<PendingList>(json);
+                return pendingList?.Items ?? new List<AssetInfo>();
+            }
+            catch (Exception e)
+            {
+                // 壊れた保存データでセッション中ずっと例外が出続けないよう、読めなければ破棄する
+                Debug.LogError($"[SpineAssetPostprocessor] 処理待ちリストの読み込みに失敗したため破棄します: {e.Message}");
+                SessionState.EraseString(PendingListSessionKey);
+                return new List<AssetInfo>();
+            }
+        }
+
+        static void SavePendingList(List<AssetInfo> list)
+        {
+            if (list.Count == 0)
+            {
+                SessionState.EraseString(PendingListSessionKey);
+                return;
+            }
+            SessionState.SetString(PendingListSessionKey, JsonUtility.ToJson(new PendingList() { Items = list }));
+        }
+
+        // 処理待ちリストへ追加して保存
+        static void AddPendingList(List<AssetInfo> targetList)
+        {
+            var pendingList = LoadPendingList();
+            pendingList.AddRange(targetList);
+            SavePendingList(pendingList);
+        }
+
+        static async UniTask ProcessPendingAssetsAsync()
         {
             // EditorUtility.DisplayProgressBar("Spine", "Importing files...", 0f);
 
             await EUtility.WaitForEditor();
+
+            // コンパイル・インポート中はアセットのロードに失敗することがあるため待機
+            while (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                await UniTask.Yield();
+            }
 
             // 前のForget処理が完了するまでビジーループで待機
             while (reImportGard != 0)
@@ -191,12 +270,28 @@ namespace ActorWorkspace.Editor.UnitySpine
 
             try
             {
-                if (targetList == null) return;
-
-                float span = 1.0f / targetList.Count;
-                float progress = 0.0f;
-                foreach (var assetInfo in targetList)
+                int processedCount = 0;
+                var attemptCounts = new Dictionary<string, int>();
+                while (true)
                 {
+                    // 実行中に追加された分も含めて、毎回SessionStateから取り直す
+                    var pendingList = LoadPendingList();
+                    if (pendingList.Count == 0) break;
+
+                    var assetInfo = pendingList[0];
+
+                    // 処理中の再インポートで同じアセットが積み直され続けた場合の安全弁
+                    int attempts = attemptCounts.TryGetValue(assetInfo.Path, out var count) ? count + 1 : 1;
+                    attemptCounts[assetInfo.Path] = attempts;
+                    if (attempts > 3)
+                    {
+                        Debug.LogError($"[SpineAssetPostprocessor] 同じアセットが繰り返し積まれるため処理を打ち切ります: {assetInfo.Path}");
+                        pendingList.RemoveAll(t => t.Path == assetInfo.Path);
+                        SavePendingList(pendingList);
+                        continue;
+                    }
+
+                    float progress = (float)processedCount / (processedCount + pendingList.Count);
                     EditorUtility.DisplayProgressBar("Spine", $"Importing files...\n{assetInfo.Path}", progress);
 
                     // 1件の失敗でバッチの残りを取りこぼさないよう、アセット単位で例外を握って次へ進む
@@ -213,14 +308,20 @@ namespace ActorWorkspace.Editor.UnitySpine
                         Debug.LogException(e, context);
                     }
 
-                    progress += span;
+                    // 処理済み(失敗含む)の1件を除去して保存
+                    // (途中でドメインリロードが起きた場合は、残りが ResumePendingAssets() から再開される)
+                    pendingList = LoadPendingList();
+                    int index = pendingList.FindIndex(t => t.Path == assetInfo.Path);
+                    if (index >= 0) pendingList.RemoveAt(index);
+                    SavePendingList(pendingList);
+
+                    processedCount++;
                 }
             }
             finally
             {
                 AssetDatabase.SaveAssets();
 
-                targetList?.Clear();
                 reImportGard--;
 
                 // 必ずプログレスバーをクリア
@@ -302,6 +403,11 @@ namespace ActorWorkspace.Editor.UnitySpine
                 {
                     await UnitySpineSettings.Instance.ImportCallback.OnNewImported(assetInfo.Path, skeletonDataAsset, spineExtraData);
                 }
+
+                // コールバック中のawaitで保留中のインポートが走ると、SetDirty済みの状態が先に書き出されて
+                // dirtyフラグが消え、コールバックによる変更(DefaultApplyRootMotion等)が保存されないことがあるため、
+                // コールバック後に改めてSetDirtyする
+                EditorUtility.SetDirty(spineExtraData);
             }
 
             AssetDatabase.SaveAssets();
