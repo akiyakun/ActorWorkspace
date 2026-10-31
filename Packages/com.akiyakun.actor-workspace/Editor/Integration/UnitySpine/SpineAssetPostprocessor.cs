@@ -95,9 +95,10 @@ namespace ActorWorkspace.Editor.UnitySpine
             public List<AssetInfo> Items = new();
         }
 
-        // 処理待ちリストをドメインリロードを跨いで保持するためのSessionStateキー
-        // (エディタ終了時には自動でクリアされる)
-        const string PendingListSessionKey = "ActorWorkspace.SpineAssetPostprocessor.PendingList";
+        // 処理待ちリストの保存先(プロジェクトフォルダからの相対パス)
+        // ドメインリロードだけでなくエディタの終了も跨げるよう、SessionStateではなくLibraryに置く
+        // (処理の途中でエディタが終わると、SpineExtraDataがエラー状態のまま残るため)
+        const string PendingListFilePath = "Library/ActorWorkspace.SpineAssetPostprocessor.PendingList.json";
 
         // List<AssetInfo>? targetList;
         // static List<string>? extraJsonList;
@@ -189,12 +190,15 @@ namespace ActorWorkspace.Editor.UnitySpine
             ProcessPendingAssetsAsync().Forget();
         }
 
-        // ドメインリロードで消えたインポートキューを再開する
+        // ドメインリロードやエディタの終了で中断したインポートキューを再開する
         // (初回起動時の一括インポートや処理中の再コンパイルでドメインリロードが起きると、
         //  実行中のUniTaskが消滅して残りのアセットが未変換のまま残るため)
         [InitializeOnLoadMethod]
         static void ResumePendingAssets()
         {
+            // 保存先はプロセス間で共有されるため、インポートワーカーやCI(どちらもバッチモード)では再開しない
+            if (Application.isBatchMode) return;
+
             if (LoadPendingList().Count == 0) return;
 
             // UniTaskのエディタループ初期化より先に呼ばれる可能性があるためdelayCallで遅らせる
@@ -204,6 +208,10 @@ namespace ActorWorkspace.Editor.UnitySpine
                 if (EditorApplication.isPlayingOrWillChangePlaymode) return;
 
                 var pendingList = LoadPendingList();
+
+                // 前回の起動から持ち越した分は、ブランチの切り替えなどでアセットが消えていることがある
+                pendingList.RemoveAll(t => File.Exists(t.Path) == false);
+                SavePendingList(pendingList);
                 if (pendingList.Count == 0) return;
 
                 Debug.Log($"[SpineAssetPostprocessor] 中断されたSpineインポートを再開: {pendingList.Count} 件");
@@ -213,19 +221,18 @@ namespace ActorWorkspace.Editor.UnitySpine
 
         static List<AssetInfo> LoadPendingList()
         {
-            var json = SessionState.GetString(PendingListSessionKey, "");
-            if (string.IsNullOrEmpty(json)) return new List<AssetInfo>();
+            if (File.Exists(PendingListFilePath) == false) return new List<AssetInfo>();
 
             try
             {
-                var pendingList = JsonUtility.FromJson<PendingList>(json);
+                var pendingList = JsonUtility.FromJson<PendingList>(File.ReadAllText(PendingListFilePath));
                 return pendingList?.Items ?? new List<AssetInfo>();
             }
             catch (Exception e)
             {
-                // 壊れた保存データでセッション中ずっと例外が出続けないよう、読めなければ破棄する
+                // 壊れた保存データで例外が出続けないよう、読めなければ破棄する
                 Debug.LogError($"[SpineAssetPostprocessor] 処理待ちリストの読み込みに失敗したため破棄します: {e.Message}");
-                SessionState.EraseString(PendingListSessionKey);
+                File.Delete(PendingListFilePath);
                 return new List<AssetInfo>();
             }
         }
@@ -234,10 +241,10 @@ namespace ActorWorkspace.Editor.UnitySpine
         {
             if (list.Count == 0)
             {
-                SessionState.EraseString(PendingListSessionKey);
+                File.Delete(PendingListFilePath);
                 return;
             }
-            SessionState.SetString(PendingListSessionKey, JsonUtility.ToJson(new PendingList() { Items = list }));
+            File.WriteAllText(PendingListFilePath, JsonUtility.ToJson(new PendingList() { Items = list }));
         }
 
         // 処理待ちリストへ追加して保存
@@ -274,7 +281,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                 var attemptCounts = new Dictionary<string, int>();
                 while (true)
                 {
-                    // 実行中に追加された分も含めて、毎回SessionStateから取り直す
+                    // 実行中に追加された分も含めて、毎回保存先から取り直す
                     var pendingList = LoadPendingList();
                     if (pendingList.Count == 0) break;
 
@@ -309,7 +316,7 @@ namespace ActorWorkspace.Editor.UnitySpine
                     }
 
                     // 処理済み(失敗含む)の1件を除去して保存
-                    // (途中でドメインリロードが起きた場合は、残りが ResumePendingAssets() から再開される)
+                    // (途中でドメインリロードやエディタの終了が起きた場合は、残りが ResumePendingAssets() から再開される)
                     pendingList = LoadPendingList();
                     int index = pendingList.FindIndex(t => t.Path == assetInfo.Path);
                     if (index >= 0) pendingList.RemoveAt(index);
