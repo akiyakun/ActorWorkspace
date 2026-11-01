@@ -1,6 +1,5 @@
 using ActorWorkspace.MasterData;
 using afl;
-using afl.MasterData;
 using afl.Service.Effects;
 using afl.UI;
 using Cysharp.Threading.Tasks;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -50,6 +50,44 @@ namespace ActorWorkspace.InAppDebug
             public float Mix = 0.25f;
         }
         List<TrackInfo> trackInfoList = ListEx.Create<TrackInfo>(16);
+
+        // アクターの輪郭が見やすいよう、黒ではなく灰色にする
+        static readonly Color ActorBackgroundColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+
+        public enum ViewMode
+        {
+            Single = 0,
+            Catalog,
+        }
+        public ViewMode CurrentViewMode { get; private set; } = ViewMode.Single;
+
+        public ActorCatalogView CatalogView { get; private set; }
+
+        Vector3 cameraHomePosition;
+        // actorCamera の映像が表示されている範囲
+        RectTransform actorViewRect;
+        // Single View に戻ったときに読み込むアクター
+        ActorCreateParam? lastActorParam;
+        // Single View でだけ使うパネル
+        List<GameObject> singleViewPanels = new();
+
+        UIMenuBar.Item openMenuItem;
+        UIMenuBar.Item flipMenuItem;
+        UIMenuBar.Item singleViewMenuItem;
+        UIMenuBar.Item catalogViewMenuItem;
+
+        List<Button> singleViewToolButtons = new();
+        List<Button> catalogToolButtons = new();
+        List<Button> categoryToolButtons = new();
+        Button previousPageToolButton;
+        TMP_Text pageLabel;
+        Button nextPageToolButton;
+
+        // 読み込みの途中は、表示を切り替えられない
+        public bool IsBusy => loadActorRequesting || CatalogView.IsLoading;
+
+        // Single View で表示しているアクター
+        public IAWActor WorkingActor => ContextProvider.CurrentWorkingActorContext.Actor;
 
         // From IAsyncInitializable
         // public bool IsInitialized { get; protected set; }
@@ -118,9 +156,18 @@ namespace ActorWorkspace.InAppDebug
                 // MEMO: 250810 何か変更して刺激を与えないとカメラ描画を始めてくれない(???)
                 ActorCamera.enabled = false;
                 ActorCamera.enabled = true;
+                ActorCamera.backgroundColor = ActorBackgroundColor;
 
                 var cameraControlArea = Form.Root.transform.Find("CameraControlArea").GetComponent<CameraControlArea>();
                 cameraControlArea.SetSourceCamera(ActorCamera);
+
+                // 一覧のアクターのクリック
+                // MEMO: ドラッグしたときはカメラの移動なので、クリックにはならない
+                var clickEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
+                cameraControlArea.gameObject.AddComponent<EventTrigger>().triggers.Add(clickEntry);
+                eventBag.In(clickEntry.callback,
+                    (entity) => entity.AddListener(OnClickActorView),
+                    (entity) => entity.RemoveListener(OnClickActorView));
             }
 
             // UIカメラの設定
@@ -178,6 +225,20 @@ namespace ActorWorkspace.InAppDebug
             //     if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             // }
 
+            // 一覧表示
+            {
+                singleViewPanels.Add(uiAnimationList.gameObject);
+                singleViewPanels.Add(uiSkinControl.gameObject);
+                singleViewPanels.Add(uiAnimationControl.gameObject);
+                singleViewPanels.Add(uiPlayListControl.gameObject);
+
+                cameraHomePosition = ActorCamera.transform.position;
+                actorViewRect = FindActorViewRect();
+                CatalogView = new ActorCatalogView(ContextProvider, ActorCamera, actorViewRect, pageLabel.font);
+
+                UpdateViewModeUI();
+            }
+
             // var form = gameObject.GetComponent<IUIForm>();
             // int ret = await form.InitializeAsync(cancellationToken: cancellationToken);
             // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
@@ -208,6 +269,7 @@ namespace ActorWorkspace.InAppDebug
                 ContextProvider.ActorFactory.Release(actor);
             }
 
+            CatalogView.Dispose();
             eventBag.Dispose();
             uiAnimationList.OnClickEntity -= OnClickEntityFromAnimationList;
             uiSkinControl.OnSkinChanged -= OnSkinChanged;
@@ -220,19 +282,48 @@ namespace ActorWorkspace.InAppDebug
 
         // メニューバーとツールバーの中身を作る
         // ゲーム側のメニューを足したいときは、派生クラスで override する
+        // MEMO: 一覧表示の初期化で使うので、override でも base.OnSetupMenu を呼ぶこと
         protected virtual void OnSetupMenu(UIMenuBar menuBar, UIToolBar toolBar)
         {
-            menuBar.AddMenu("File").AddItem("Open...", OnOpenAsset);
-            menuBar.AddMenu("View").AddItem("Flip", OnFilpActor);
+            openMenuItem = menuBar.AddMenu("File").AddItem("Open...", OnOpenAsset);
+            flipMenuItem = menuBar.AddMenu("View").AddItem("Flip", OnFilpActor);
 
-            toolBar.AddButton("Open", OnOpenAsset);
-            toolBar.AddButton("Flip", OnFilpActor);
+            var modeMenu = menuBar.AddMenu("Mode");
+            singleViewMenuItem = modeMenu.AddItem("Single View", OnSingleView);
+            catalogViewMenuItem = modeMenu.AddItem("Catalog View", OnCatalogView);
+
+            singleViewToolButtons.Add(toolBar.AddButton("Open", OnOpenAsset));
+            singleViewToolButtons.Add(toolBar.AddButton("Flip", OnFilpActor));
+
+            for (int i = 0; i < ContextProvider.AssetRepositories.Count; ++i)
+            {
+                int category = i;
+                var button = toolBar.AddButton(ContextProvider.GetCategoryName(category), () => OnClickCategory(category));
+                categoryToolButtons.Add(button);
+                catalogToolButtons.Add(button);
+            }
+
+            previousPageToolButton = toolBar.AddButton("<", () => OnClickPage(-1));
+            // ページの表示。押せないボタンで出す
+            var pageToolButton = toolBar.AddButton(string.Empty, () => { });
+            pageToolButton.interactable = false;
+            pageLabel = pageToolButton.GetComponentInChildren<TMP_Text>(includeInactive: true);
+            nextPageToolButton = toolBar.AddButton(">", () => OnClickPage(+1));
+            catalogToolButtons.Add(previousPageToolButton);
+            catalogToolButtons.Add(pageToolButton);
+            catalogToolButtons.Add(nextPageToolButton);
         }
 
         // From UIFormViewBase
         // MEMO: 表示中のアクターは ActorManager に入らないので、モーションだけここで進める(移動などのビヘイビアーは動かさない)
         public override void DoUpdate(float deltaTime)
         {
+            if (CurrentViewMode == ViewMode.Catalog)
+            {
+                CatalogView.DoUpdate(deltaTime);
+                return;
+            }
+
             var actor = ContextProvider.CurrentWorkingActorContext.Actor;
             if (actor == null) return;
 
@@ -246,38 +337,174 @@ namespace ActorWorkspace.InAppDebug
 
             for (int categoty = 0; categoty < ContextProvider.AssetRepositories.Count; ++categoty)
             {
-                var assetRepository = ContextProvider.AssetRepositories.Get(categoty);
-                Debug.Assert(assetRepository != null);
-
-                IReadOnlyList<IModel> database = assetRepository.ToList();
-                for (int i = 0; i < database.Count; ++i)
-                {
-                    var model = database[i] as AssetModel;
-                    Debug.Assert(model != null);
-
-                    var info = new ActorAssetInfo();
-                    info.AssetModel = model as AssetModel;
-                    info.Category = categoty;
-
-                    info.Name = model.GetName();
-                    // Debug.Log($"AssetModel: {info.Name}");
-                    if (string.IsNullOrEmpty(info.Name))
-                    {
-                        // info.Name = System.IO.Path.GetDirectoryName(info.AssetModel.AssetLocator).Replace(assetRootDirectory, "");
-                        // info.Name = System.IO.Path.GetFileNameWithoutExtension(info.AssetModel.AssetLocator);
-                        info.Name = $"{model.Id:0000}: {info.AssetModel.AssetLocator}";
-                    }
-
-                    list.Add(info);
-                }
+                list.AddRange(ContextProvider.GetAssetList(categoty));
             }
 
             return list;
         }
 
+        // Single View にする。param を省略すると、最後に見ていたアクターを読み込む
+        public async UniTask<int> ShowSingleViewAsync(ActorCreateParam? param, CancellationToken cancellationToken)
+        {
+            if (IsBusy) return GeneralReturnCode.Failed;
+
+            CatalogView.Clear();
+            ActorCamera.transform.position = cameraHomePosition;
+            SetViewMode(ViewMode.Single);
+
+            var actorParam = param ?? lastActorParam;
+            if (actorParam == null) return GeneralReturnCode.Succeeded;
+            return await LoadActorAsync(actorParam.Value, cancellationToken);
+        }
+
+        // Catalog View にして、最後に見ていたページを読み込む
+        public async UniTask<int> ShowCatalogViewAsync(CancellationToken cancellationToken)
+        {
+            if (IsBusy) return GeneralReturnCode.Failed;
+            if (CurrentViewMode == ViewMode.Catalog) return GeneralReturnCode.Succeeded;
+
+            if (openAssetDialog.activeSelf) CloseOpenAssetDialog();
+
+            ReleaseWorkingActor();
+            ActorCamera.transform.position = cameraHomePosition;
+            SetViewMode(ViewMode.Catalog);
+
+            return await ShowCatalogPageAsync(CatalogView.Category, CatalogView.Page, cancellationToken);
+        }
+
+        public async UniTask<int> ShowCatalogPageAsync(int category, int page, CancellationToken cancellationToken)
+        {
+            if (IsBusy || CurrentViewMode != ViewMode.Catalog) return GeneralReturnCode.Failed;
+
+            var task = CatalogView.LoadPageAsync(category, page, cancellationToken);
+            UpdateViewModeUI();
+
+            try
+            {
+                return await task;
+            }
+            finally
+            {
+                // MEMO: キャンセルのときは、フォームが破棄されていてボタンがもう無いことがある
+                if (cancellationToken.IsCancellationRequested == false) UpdateViewModeUI();
+            }
+        }
+
+        void SetViewMode(ViewMode viewMode)
+        {
+            CurrentViewMode = viewMode;
+
+            bool isSingleView = viewMode == ViewMode.Single;
+            foreach (var panel in singleViewPanels)
+            {
+                panel.SetActive(isSingleView);
+            }
+
+            UpdateViewModeUI();
+        }
+
+        // メニューとツールバーを今の状態に合わせる
+        void UpdateViewModeUI()
+        {
+            bool isSingleView = CurrentViewMode == ViewMode.Single;
+
+            openMenuItem.Interactable = isSingleView;
+            flipMenuItem.Interactable = isSingleView;
+            singleViewMenuItem.Interactable = isSingleView == false;
+            catalogViewMenuItem.Interactable = isSingleView;
+
+            foreach (var button in singleViewToolButtons)
+            {
+                button.gameObject.SetActive(isSingleView);
+            }
+            foreach (var button in catalogToolButtons)
+            {
+                button.gameObject.SetActive(isSingleView == false);
+            }
+
+            bool isLoading = CatalogView.IsLoading;
+            for (int i = 0; i < categoryToolButtons.Count; ++i)
+            {
+                categoryToolButtons[i].interactable = isLoading == false && i != CatalogView.Category;
+            }
+            previousPageToolButton.interactable = isLoading == false && CatalogView.Page > 0;
+            nextPageToolButton.interactable = isLoading == false && CatalogView.Page < CatalogView.PageCount - 1;
+            pageLabel.text = $"{CatalogView.Page + 1} / {CatalogView.PageCount}";
+        }
+
+        // カメラの映像を RawImage に出しているときはその範囲、それ以外は画面全体を返す
+        RectTransform FindActorViewRect()
+        {
+            var targetTexture = ActorCamera.targetTexture;
+            if (targetTexture != null)
+            {
+                foreach (var rawImage in Form.Root.GetComponentsInChildren<RawImage>(includeInactive: true))
+                {
+                    if (rawImage.texture == targetTexture) return rawImage.rectTransform;
+                }
+            }
+            return (RectTransform)Form.Root.transform;
+        }
+
+        void ReleaseWorkingActor()
+        {
+            var actor = ContextProvider.CurrentWorkingActorContext.Actor;
+            if (actor == null) return;
+
+            ContextProvider.CurrentWorkingActorContext.Reset();
+            ReleaseActor(actor);
+        }
+
+        void ReleaseActor(IAWActor actor)
+        {
+            actor.ElementActive = false;
+            actor.GameObject.SetActive(false);
+            OnRemoveActor?.Invoke(actor);
+            ContextProvider.ActorFactory.Release(actor);
+        }
+
+        void OnSingleView()
+        {
+            ShowSingleViewAsync(null, ((UIForm)Form).destroyCancellationToken).Forget();
+        }
+
+        void OnCatalogView()
+        {
+            ShowCatalogViewAsync(((UIForm)Form).destroyCancellationToken).Forget();
+        }
+
+        void OnClickCategory(int category)
+        {
+            ShowCatalogPageAsync(category, 0, ((UIForm)Form).destroyCancellationToken).Forget();
+        }
+
+        void OnClickPage(int offset)
+        {
+            ShowCatalogPageAsync(CatalogView.Category, CatalogView.Page + offset, ((UIForm)Form).destroyCancellationToken).Forget();
+        }
+
+        // 一覧のアクターをクリックしたら、そのアクターの Single View にする
+        void OnClickActorView(BaseEventData baseEventData)
+        {
+            if (CurrentViewMode != ViewMode.Catalog) return;
+
+            var eventData = (PointerEventData)baseEventData;
+            if (eventData.button != PointerEventData.InputButton.Left || eventData.dragging) return;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                actorViewRect, eventData.position, eventData.pressEventCamera, out var localPoint) == false) return;
+            if (actorViewRect.rect.Contains(localPoint) == false) return;
+
+            var entry = CatalogView.FindEntry(Rect.PointToNormalized(actorViewRect.rect, localPoint));
+            if (entry == null) return;
+
+            var param = new ActorCreateParam(entry.AssetInfo.AssetModel.Id, entry.AssetInfo.Category);
+            ShowSingleViewAsync(param, ((UIForm)Form).destroyCancellationToken).Forget();
+        }
+
         void OnOpenAsset()
         {
-            if (openAssetDialog.activeSelf) return;
+            if (CurrentViewMode != ViewMode.Single || openAssetDialog.activeSelf) return;
 
             // 一覧を再生成せず、選択状態とスクロール位置を保持する。
             if (assetListCreated == false)
@@ -342,6 +569,11 @@ namespace ActorWorkspace.InAppDebug
             int ret = await LoadActorAsync(param, cancellationToken);
             if (ret < 0 || cancellationToken.IsCancellationRequested || openAssetDialog.activeSelf == false) return;
 
+            CloseOpenAssetDialog();
+        }
+
+        void CloseOpenAssetDialog()
+        {
             assetListScrollRect.StopMovement();
             var group = openAssetDialog.GetComponent<UIEntityRootGroup>();
             // MEMO: 開くアニメーションの途中はずれた位置なので保存しない
@@ -350,9 +582,24 @@ namespace ActorWorkspace.InAppDebug
             group.SendEntityEvent(UIEntityEvent.Type.Close);
         }
 
+        // ビューワーで動かすアクターの準備
+        internal static void SetupActor(IAWActor actor)
+        {
+            actor.GameObject.SetActive(true);
+            var monoBehaviour = actor.ActorDisplay.GetComponentsInChildren<MonoBehaviour>();
+            foreach (var mb in monoBehaviour)
+            {
+                if (mb.GetType().FullName == "BehaviorDesigner.Runtime.BehaviorTree")
+                {
+                    mb.enabled = false;
+                }
+            }
+        }
+
         public async UniTask<int> LoadActorAsync(ActorCreateParam param, CancellationToken cancellationToken)
         {
-            if (loadActorRequesting) return GeneralReturnCode.Failed;
+            // MEMO: Catalog View にした直後は、ダイアログが閉じ終わるまで Load ボタンを押せる
+            if (loadActorRequesting || CurrentViewMode != ViewMode.Single) return GeneralReturnCode.Failed;
             if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
 
             loadActorRequesting = true;
@@ -368,28 +615,15 @@ namespace ActorWorkspace.InAppDebug
                 if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Canceled;
                 if (actor == null) return GeneralReturnCode.Failed;
 
-                actor.GameObject.SetActive(true);
-                var monoBehaviour = actor.ActorDisplay.GetComponentsInChildren<MonoBehaviour>();
-                foreach (var mb in monoBehaviour)
-                {
-                    if (mb.GetType().FullName == "BehaviorDesigner.Runtime.BehaviorTree")
-                    {
-                        mb.enabled = false;
-                    }
-                }
+                SetupActor(actor);
                 ContextProvider.CurrentWorkingActorContext.Set(actor);
                 currentTrackIndex = 0;
                 ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.ResetUI, actor);
                 OnCreatedActor?.Invoke(actor);
                 committed = true;
+                lastActorParam = param;
 
-                if (previousActor != null)
-                {
-                    previousActor.ElementActive = false;
-                    previousActor.GameObject.SetActive(false);
-                    OnRemoveActor?.Invoke(previousActor);
-                    ContextProvider.ActorFactory.Release(previousActor);
-                }
+                if (previousActor != null) ReleaseActor(previousActor);
 
                 return GeneralReturnCode.Succeeded;
             }
