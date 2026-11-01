@@ -39,7 +39,7 @@ namespace ActorWorkspace.InAppDebug
         Button flipButton;
         Button loadAssetButton;
         GameObject openAssetDialog;
-        Vector2 assetListScrollPosition = new Vector2(0.0f, 1.0f);
+        Vector2 assetListScrollPosition = Vector2.zero;
         bool assetListCreated;
         float playbackSpeed = 1.0f;
 
@@ -93,16 +93,23 @@ namespace ActorWorkspace.InAppDebug
                 openAssetDialog.SetActive(false);
                 assetListView = openAssetDialog.GetComponent<UIListView>("UIListView");
                 assetListScrollRect = assetListView.GetComponentInChildren<ScrollRect>(includeInactive: true);
+                eventBag.In(openAssetDialog.GetComponent<UIEntityRootGroup>(),
+                    (entity) => entity.OnStay += OnOpenAssetDialogStay,
+                    (entity) => entity.OnStay -= OnOpenAssetDialogStay);
 
                 openButton = Form.VariableTable.Get("OpenButton").GetComponent<Button>();
                 eventBag.In(openButton,
                     (entity) => entity.onClick.AddListener(OnOpenAsset),
                     (entity) => entity.onClick.RemoveListener(OnOpenAsset));
 
-                flipButton = Form.VariableTable.Get("FlipButton").GetComponent<Button>();
-                eventBag.In(flipButton,
-                    (entity) => entity.onClick.AddListener(OnFilpActor),
-                    (entity) => entity.onClick.RemoveListener(OnFilpActor));
+                // MEMO: 標準の ActorWorkspaceForm.prefab には無いボタンなので、フォーム側で用意したときだけ使う
+                if (Form.VariableTable.TryGet("FlipButton", out var flipButtonVariable))
+                {
+                    flipButton = flipButtonVariable.GetComponent<Button>();
+                    eventBag.In(flipButton,
+                        (entity) => entity.onClick.AddListener(OnFilpActor),
+                        (entity) => entity.onClick.RemoveListener(OnFilpActor));
+                }
 
                 loadAssetButton = Form.VariableTable.Get("LoadAssetButton").GetComponent<Button>();
                 eventBag.In(loadAssetButton,
@@ -205,6 +212,13 @@ namespace ActorWorkspace.InAppDebug
         // From UIFormLogic
         protected override void InnerTerminate()
         {
+            var actor = ContextProvider.CurrentWorkingActorContext.Actor;
+            if (actor != null)
+            {
+                ContextProvider.CurrentWorkingActorContext.Reset();
+                ContextProvider.ActorFactory.Release(actor);
+            }
+
             eventBag.Dispose();
             uiAnimationList.OnClickEntity -= OnClickEntityFromAnimationList;
             uiSkinControl.OnSkinChanged -= OnSkinChanged;
@@ -213,6 +227,16 @@ namespace ActorWorkspace.InAppDebug
             uiAnimationControl.OnLoopValueChanged -= OnLoopValueChanged;
             uiAnimationControl.OnActiveTrackChanged -= OnActiveTrackChanged;
             uiAnimationControl.OnRootMotionValueChanged -= OnRootMotionValueChanged;
+        }
+
+        // From UIFormViewBase
+        // MEMO: 表示中のアクターは ActorManager に入らないので、モーションだけここで進める(移動などのビヘイビアーは動かさない)
+        public override void DoUpdate(float deltaTime)
+        {
+            var actor = ContextProvider.CurrentWorkingActorContext.Actor;
+            if (actor == null) return;
+
+            actor.AnimationController.DoUpdate(deltaTime * playbackSpeed);
         }
 
         // 全てのアセットのリストを生成して返します
@@ -271,9 +295,13 @@ namespace ActorWorkspace.InAppDebug
             }
 
             openAssetDialog.GetComponent<UIEntityRootGroup>().SendEntityEvent(UIEntityEvent.Type.Open);
-            Canvas.ForceUpdateCanvases();
+        }
+
+        // MEMO: 開くアニメーションの途中は ScrollRect が位置を正しく計算できずにずれるので、開き終わってから戻す
+        void OnOpenAssetDialogStay()
+        {
             assetListScrollRect.StopMovement();
-            assetListScrollRect.normalizedPosition = assetListScrollPosition;
+            assetListScrollRect.content.anchoredPosition = assetListScrollPosition;
         }
 
         void OnFilpActor()
@@ -315,8 +343,9 @@ namespace ActorWorkspace.InAppDebug
             if (ret < 0 || cancellationToken.IsCancellationRequested || openAssetDialog.activeSelf == false) return;
 
             assetListScrollRect.StopMovement();
-            assetListScrollPosition = assetListScrollRect.normalizedPosition;
             var group = openAssetDialog.GetComponent<UIEntityRootGroup>();
+            // MEMO: 開くアニメーションの途中はずれた位置なので保存しない
+            if (group.CurrentState == UIEntityState.Stay) assetListScrollPosition = assetListScrollRect.content.anchoredPosition;
             group.SetCloseComplateAtInactive(true);
             group.SendEntityEvent(UIEntityEvent.Type.Close);
         }
@@ -462,6 +491,9 @@ namespace ActorWorkspace.InAppDebug
                 opt.Flags = (uint)AWAnimationOptionFlag.Loop | (uint)AWAnimationOptionFlag.Immediate;
 
                 animationController.UseRootMotion = false;
+
+                // MEMO: 読み込みの後に残ったトリガーがあると、切り替えた直後に Animator がそのステートへ戻ってしまう
+                animationController.AnimationParameter.AllResetTrigger();
 
                 var track = animationController.SetAnimation(Utility.StringToHashId(animation.Name), opt);
                 // MixDurationを0にしないとDefaultMixが適応されない?
