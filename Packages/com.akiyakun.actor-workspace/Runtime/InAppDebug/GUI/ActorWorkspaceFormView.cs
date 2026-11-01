@@ -35,8 +35,6 @@ namespace ActorWorkspace.InAppDebug
         UIPlayListControl uiPlayListControl;
         UIListView assetListView;
         ScrollRect assetListScrollRect;
-        Button openButton;
-        Button flipButton;
         Button loadAssetButton;
         GameObject openAssetDialog;
         Vector2 assetListScrollPosition = Vector2.zero;
@@ -97,19 +95,10 @@ namespace ActorWorkspace.InAppDebug
                     (entity) => entity.OnStay += OnOpenAssetDialogStay,
                     (entity) => entity.OnStay -= OnOpenAssetDialogStay);
 
-                openButton = Form.VariableTable.Get("OpenButton").GetComponent<Button>();
-                eventBag.In(openButton,
-                    (entity) => entity.onClick.AddListener(OnOpenAsset),
-                    (entity) => entity.onClick.RemoveListener(OnOpenAsset));
-
-                // MEMO: 標準の ActorWorkspaceForm.prefab には無いボタンなので、フォーム側で用意したときだけ使う
-                if (Form.VariableTable.TryGet("FlipButton", out var flipButtonVariable))
-                {
-                    flipButton = flipButtonVariable.GetComponent<Button>();
-                    eventBag.In(flipButton,
-                        (entity) => entity.onClick.AddListener(OnFilpActor),
-                        (entity) => entity.onClick.RemoveListener(OnFilpActor));
-                }
+                OnSetupMenu(
+                    Form.Root.transform.Find("UIMenuBar").GetComponent<UIMenuBar>(),
+                    Form.Root.transform.Find("UIToolBar").GetComponent<UIToolBar>()
+                );
 
                 loadAssetButton = Form.VariableTable.Get("LoadAssetButton").GetComponent<Button>();
                 eventBag.In(loadAssetButton,
@@ -227,6 +216,17 @@ namespace ActorWorkspace.InAppDebug
             uiAnimationControl.OnLoopValueChanged -= OnLoopValueChanged;
             uiAnimationControl.OnActiveTrackChanged -= OnActiveTrackChanged;
             uiAnimationControl.OnRootMotionValueChanged -= OnRootMotionValueChanged;
+        }
+
+        // メニューバーとツールバーの中身を作る
+        // ゲーム側のメニューを足したいときは、派生クラスで override する
+        protected virtual void OnSetupMenu(UIMenuBar menuBar, UIToolBar toolBar)
+        {
+            menuBar.AddMenu("File").AddItem("Open...", OnOpenAsset);
+            menuBar.AddMenu("View").AddItem("Flip", OnFilpActor);
+
+            toolBar.AddButton("Open", OnOpenAsset);
+            toolBar.AddButton("Flip", OnFilpActor);
         }
 
         // From UIFormViewBase
