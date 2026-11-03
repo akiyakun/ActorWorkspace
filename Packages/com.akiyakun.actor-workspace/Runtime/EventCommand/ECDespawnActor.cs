@@ -45,8 +45,9 @@ namespace ActorWorkspace.EventCommand
             // 動作モードを取得
             int mode = param.Param2.Int;
 
+            // MEMO: クラスターのアクターが 0 体のときは何もしない(倒された・数の上限で出なかったなど、ふつうのプレイでも起きる)
+            Debug.Assert(cluster != 0, $"ECDespawnActor: クラスター値が 0 です。\n直前のコマンドをWaitしているかなど確認してください。");
             var list = actorManager.GetActorListAtCluster(cluster);
-            Debug.Assert((cluster != 0) && (list.Count > 0), $"ECSetEnemyAI: 対象のクラスタを取得できませんでした。\n直前のコマンドをWaitしているかなど確認してください。");
 
             switch (mode)
             {
