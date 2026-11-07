@@ -9,6 +9,7 @@
 *.yaml text=auto eol=lf
 *.py text=auto eol=lf
 *.sh text=auto eol=lf
+*.command text=auto eol=lf
 *.plist text=auto eol=lf
 *.groovy text=auto eol=lf
 *.md text=auto eol=lf
