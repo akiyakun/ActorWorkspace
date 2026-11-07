@@ -37,16 +37,17 @@ namespace ActorWorkspace.EventCommand
             if (param.UserData is ECSpawnActor.SpawnOption option)
             {
                 Response = option.Cluster;
-                EvaluateAsync(actorManager, param.Param1.Int, param.Param2.Int,
-                    option.Parent, option.Position, option.Cluster, GetCancellationToken()).Forget();
+                StartAsync(EvaluateAsync(actorManager, param.Param1.Int, param.Param2.Int,
+                    option.Parent, option.Position, option.Cluster, GetCancellationToken()));
             }
             else
             {
-                EvaluateAsync(actorManager, param.Param1.Int, param.Param2.Int,
-                    null, Vector3.zero, param.Param3.Int, GetCancellationToken()).Forget();
+                StartAsync(EvaluateAsync(actorManager, param.Param1.Int, param.Param2.Int,
+                    null, Vector3.zero, param.Param3.Int, GetCancellationToken()));
             }
         }
 
+        // MEMO: 例外が起きたら StartAsync() が Error にする(実行リストから外れ、タイムラインの @Wait は先に進む)
         protected async UniTask EvaluateAsync(IAWActorManager actorManager, int id, int category,
             GameObject? parent, Vector3 position, int cluster,
             CancellationToken cancellationToken)
@@ -62,7 +63,6 @@ namespace ActorWorkspace.EventCommand
             var actor = actorManager.Spawn(id: id, category: category, parent: parent);
             if (actor == null)
             {
-                SetState(EventCommandState.Error);
                 throw new System.Exception($"Failed to spawn actor after adding to pool. {id}:{Name}, category={category}");
             }
 

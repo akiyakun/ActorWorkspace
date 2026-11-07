@@ -29,13 +29,15 @@ namespace ActorWorkspace.EventCommand
         {
             // if (string.IsNullOrEmpty(param.String)) throw new System.ArgumentException();
             SetState(EventCommandState.Running);
-            EvaluateAsync(param.Param1.Int, param.Param2.Int, param.Param3.Int, GetCancellationToken()).Forget();
+            StartAsync(EvaluateAsync(param.Param1.Int, param.Param2.Int, param.Param3.Int, GetCancellationToken()));
         }
 
         async UniTask EvaluateAsync(int id, int category, int count, CancellationToken cancellationToken)
         {
             Debug.Log($"[ECAddToActorPool] actorId={id}, category={category}, count={count}");
             await actorManager.AddToPoolAsync(id, category, count, cancellationToken: cancellationToken);
+            // 生成中に止められた
+            if (cancellationToken.IsCancellationRequested) return;
             SetState(EventCommandState.Completed);
         }
     }

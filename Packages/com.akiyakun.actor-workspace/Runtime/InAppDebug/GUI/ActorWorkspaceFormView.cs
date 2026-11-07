@@ -266,6 +266,7 @@ namespace ActorWorkspace.InAppDebug
             if (actor != null)
             {
                 ContextProvider.CurrentWorkingActorContext.Reset();
+                ApplyPlaybackSpeed(actor, 1.0f);
                 ContextProvider.ActorFactory.Release(actor);
             }
 
@@ -327,7 +328,19 @@ namespace ActorWorkspace.InAppDebug
             var actor = ContextProvider.CurrentWorkingActorContext.Actor;
             if (actor == null) return;
 
-            actor.AnimationController.DoUpdate(deltaTime * playbackSpeed);
+            // MEMO: 自分で進むコントローラー(Spine など)は TimeScale で速さを変えている(ApplyPlaybackSpeed())ので、時間はそのまま渡す
+            float speed = actor.AnimationController is IAWTimeScalable ? 1.0f : playbackSpeed;
+            actor.AnimationController.DoUpdate(deltaTime * speed);
+        }
+
+        // 再生速度。自分で進むコントローラー(Spine など)は TimeScale を変える
+        public float PlaybackSpeed => playbackSpeed;
+
+        void ApplyPlaybackSpeed(IAWActor actor, float speed)
+        {
+            // MEMO: シーンを閉じるときは、終了処理(InnerTerminate)より先にアクターが破棄されていることがある
+            if (actor is Object unityObject && unityObject == null) return;
+            if (actor.AnimationController is IAWTimeScalable timeScalable) timeScalable.TimeScale = speed;
         }
 
         // 全てのアセットのリストを生成して返します
@@ -457,6 +470,8 @@ namespace ActorWorkspace.InAppDebug
 
         void ReleaseActor(IAWActor actor)
         {
+            // 速さを元に戻してから返す
+            ApplyPlaybackSpeed(actor, 1.0f);
             actor.ElementActive = false;
             actor.GameObject.SetActive(false);
             OnRemoveActor?.Invoke(actor);
@@ -616,6 +631,7 @@ namespace ActorWorkspace.InAppDebug
                 if (actor == null) return GeneralReturnCode.Failed;
 
                 SetupActor(actor);
+                ApplyPlaybackSpeed(actor, playbackSpeed);
                 ContextProvider.CurrentWorkingActorContext.Set(actor);
                 currentTrackIndex = 0;
                 ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.ResetUI, actor);
@@ -645,6 +661,7 @@ namespace ActorWorkspace.InAppDebug
                         ContextProvider.CurrentWorkingActorContext.Actor = previousActor;
                         if (actor != null)
                         {
+                            ApplyPlaybackSpeed(actor, 1.0f);
                             actor.ElementActive = false;
                             actor.GameObject.SetActive(false);
                             ContextProvider.ActorFactory.Release(actor);
@@ -763,6 +780,8 @@ namespace ActorWorkspace.InAppDebug
         public void OnSpeedValueChanged(float value)
         {
             playbackSpeed = Mathf.Clamp(value, 0.1f, 2.0f);
+            var actor = ContextProvider.CurrentWorkingActorContext.Actor;
+            if (actor != null) ApplyPlaybackSpeed(actor, playbackSpeed);
             OnSpeedChanged?.Invoke(playbackSpeed);
         }
 
@@ -795,11 +814,13 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-        // index: UIの0-4のボタンのインデックス
+        // index: UIの0-4のボタンのインデックス(IAWTrack.MaxTrack 以上のボタンは押せない)
         public void OnActiveTrackChanged(int index)
         {
             // Debug.Log($"OnActiveTrackChanged: index={index}");
             if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
+            // アニメーションコントローラーのトラックは IAWTrack.MaxTrack 個まで
+            if (index < 0 || IAWTrack.MaxTrack <= index) return;
 
             currentTrackIndex = index;
 

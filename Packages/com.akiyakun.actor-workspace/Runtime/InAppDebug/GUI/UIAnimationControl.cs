@@ -19,6 +19,9 @@ namespace ActorWorkspace.InAppDebug
         Toggle loopToggle;
 
         [SerializeField] GameObject trackControl;
+        // Track のボタンの数(Track0〜Track4)
+        // MEMO: アニメーションコントローラーのトラックは IAWTrack.MaxTrack 個なので、それより後ろのボタンは押せなくする
+        const int TrackCount = 5;
 
         [SerializeField] GameObject otherControl;
         Toggle rootMotionToggle;
@@ -49,6 +52,14 @@ namespace ActorWorkspace.InAppDebug
 
             rootMotionToggle = otherControl.GetComponent<Toggle>("RootMotion");
 
+            // MEMO: Track のボタンは同じプレハブ(Track.prefab)で文字が全部同じなので、番号はここで入れる
+            for (int i = 0; i < TrackCount; i++)
+            {
+                GetTrackText(i, "DefaultText").text = i.ToString();
+                GetTrackText(i, "PlayingText").text = i.ToString();
+                GetTrackToggle(i).interactable = i < IAWTrack.MaxTrack;
+            }
+
             // イベント登録
             {
                 speedSlider.onValueChanged.AddListener(OnSpeedSliderValueChanged);
@@ -62,7 +73,7 @@ namespace ActorWorkspace.InAppDebug
                 trackControl.GetComponent<Toggle>("Track1").onValueChanged.AddListener(OnTrack1ToggleChanged);
                 trackControl.GetComponent<Toggle>("Track2").onValueChanged.AddListener(OnTrack2ToggleChanged);
                 trackControl.GetComponent<Toggle>("Track3").onValueChanged.AddListener(OnTrack3ToggleChanged);
-                // trackControl.GetComponent<Toggle>("Track4").onValueChanged.AddListener(OnTrack4ToggleChanged);
+                trackControl.GetComponent<Toggle>("Track4").onValueChanged.AddListener(OnTrack4ToggleChanged);
 
                 otherControl.GetComponent<Toggle>("RootMotion").onValueChanged.AddListener(OnRootMotionToggleChanged);
 
@@ -85,6 +96,7 @@ namespace ActorWorkspace.InAppDebug
                 speedInputField.onEndEdit.RemoveListener(OnSpeedInputEndEdit);
                 speedControl.GetComponent<Button>("Reset").onClick.RemoveListener(OnSpeedReset);
 
+                mixControl.GetComponent<Slider>("Slider").onValueChanged.RemoveListener(OnMixSliderValueChanged);
                 mixControl.GetComponent<Toggle>("Loop").onValueChanged.RemoveListener(OnLoopToggleChanged);
 
                 trackControl.GetComponent<Toggle>("Track0").onValueChanged.RemoveListener(OnTrack0ToggleChanged);
@@ -92,6 +104,8 @@ namespace ActorWorkspace.InAppDebug
                 trackControl.GetComponent<Toggle>("Track2").onValueChanged.RemoveListener(OnTrack2ToggleChanged);
                 trackControl.GetComponent<Toggle>("Track3").onValueChanged.RemoveListener(OnTrack3ToggleChanged);
                 trackControl.GetComponent<Toggle>("Track4").onValueChanged.RemoveListener(OnTrack4ToggleChanged);
+
+                otherControl.GetComponent<Toggle>("RootMotion").onValueChanged.RemoveListener(OnRootMotionToggleChanged);
 
                 // OnAnimationChanged -= InnerOnAnimationChanged;
             }
@@ -108,12 +122,26 @@ namespace ActorWorkspace.InAppDebug
 
         // public void Refresh(bool loop)
 
+        // Track のボタン(テストで使う)
+        public Toggle GetTrackToggle(int trackIndex) => trackControl.GetComponent<Toggle>($"Track{trackIndex}");
+
+        TMP_Text GetTrackText(int trackIndex, string name)
+        {
+            return trackControl.GetComponent<TMP_Text>($"Track{trackIndex}/Background/Checkmark/{name}");
+        }
+
+        // Track のボタンに出している番号(テストで使う)
+        public string GetTrackLabel(int trackIndex) => GetTrackText(trackIndex, "DefaultText").text;
+
+        // Speed のスライダーを動かしたときと同じように、速さを変える(テストで使う)
+        public void SetSpeed(float value) => OnSpeedSliderValueChanged(value);
+
         public void ResetTrackControl()
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < TrackCount; i++)
             {
-                var defaultText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/DefaultText");
-                var playingText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/PlayingText");
+                var defaultText = GetTrackText(i, "DefaultText");
+                var playingText = GetTrackText(i, "PlayingText");
 
                 defaultText.gameObject.SetActive(true);
                 playingText.gameObject.SetActive(false);
@@ -128,8 +156,8 @@ namespace ActorWorkspace.InAppDebug
             // for (int i = 0; i < 5; i++)
             {
                 int i = trackIndex;
-                var defaultText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/DefaultText");
-                var playingText = trackControl.GetComponent<TMP_Text>($"Track{i}/Background/Checkmark/PlayingText");
+                var defaultText = GetTrackText(i, "DefaultText");
+                var playingText = GetTrackText(i, "PlayingText");
 
                 defaultText.gameObject.SetActive(!isPlaying);
                 playingText.text = defaultText.text;
@@ -195,29 +223,30 @@ namespace ActorWorkspace.InAppDebug
             OnLoopValueChanged?.Invoke(value);
         }
 
+        // MEMO: 別の Track を選ぶと、外れた Track の通知(value = false)も来るので、選ばれたときだけ伝える
         void OnTrack0ToggleChanged(bool value)
         {
-            OnActiveTrackChanged?.Invoke(0);
+            if (value) OnActiveTrackChanged?.Invoke(0);
         }
 
         void OnTrack1ToggleChanged(bool value)
         {
-            OnActiveTrackChanged?.Invoke(1);
+            if (value) OnActiveTrackChanged?.Invoke(1);
         }
 
         void OnTrack2ToggleChanged(bool value)
         {
-            OnActiveTrackChanged?.Invoke(2);
+            if (value) OnActiveTrackChanged?.Invoke(2);
         }
 
         void OnTrack3ToggleChanged(bool value)
         {
-            OnActiveTrackChanged?.Invoke(3);
+            if (value) OnActiveTrackChanged?.Invoke(3);
         }
 
         void OnTrack4ToggleChanged(bool value)
         {
-            OnActiveTrackChanged?.Invoke(4);
+            if (value) OnActiveTrackChanged?.Invoke(4);
         }
 
 

@@ -10,7 +10,7 @@ using afl;
 namespace ActorWorkspace.UnitySpine
 {
     // SkeletonAnimation と対になるコントローラークラス
-    public class SpineSkeletonAnimationController : SpineAnimationControllerBase<SpineSkeletonAnimation, SpineSkeletonTrack>
+    public class SpineSkeletonAnimationController : SpineAnimationControllerBase<SpineSkeletonAnimation, SpineSkeletonTrack>, IAWTimeScalable
     {
         public override IAWAnimationParameter AnimationParameter { get; protected set; }
 
@@ -22,6 +22,14 @@ namespace ActorWorkspace.UnitySpine
         }
 
         public override bool IsPlaying => true;
+
+        // From IAWTimeScalable
+        // MEMO: SkeletonAnimation は自分の Update で進むので、その時間の倍率を変える
+        public float TimeScale
+        {
+            get => skeletonAnimation.timeScale;
+            set => skeletonAnimation.timeScale = value;
+        }
 
         SkeletonAnimation skeletonAnimation;
         IAWAnimationEventDecoder<Spine.Event> animationEventDecoder;
