@@ -22,6 +22,7 @@ namespace ActorWorkspace.Tests
         public AWActorDisplay ActorDisplay => actorDisplay;
         public IAWAnimationController AnimationController { get; set; } = null!;
         public IReadOnlyList<IAWSkin> SkinList { get; set; } = null!;
+        public IReadOnlyList<int> SkinIndices { get; set; } = System.Array.Empty<int>();
         public AWActorBehaviourController ActorBehaviourController { get; set; } = null!;
         public EventBus<string> EventBus { get; set; } = new();
         public VariableTable Variables { get; set; } = new();
@@ -75,6 +76,10 @@ namespace ActorWorkspace.Tests
         }
 
         public void SetSkin(int skinIndex)
+        {
+        }
+
+        public void SetSkins(IReadOnlyList<int> skinIndices)
         {
         }
     }

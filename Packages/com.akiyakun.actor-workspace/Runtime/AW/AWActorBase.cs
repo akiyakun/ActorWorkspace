@@ -47,6 +47,7 @@ namespace ActorWorkspace
         public TAnimationController AnimationController { get; protected set; }
         IReadOnlyList<IAWSkin> IAWActor.SkinList => SkinList as IReadOnlyList<IAWSkin>;
         public abstract IReadOnlyList<TSkin> SkinList { get; }
+        public virtual IReadOnlyList<int> SkinIndices => System.Array.Empty<int>();
         public virtual AWActorBehaviourController ActorBehaviourController { get; private set; }
         public EventBus<string> EventBus { get; protected set; } = new();
         public VariableTable Variables { get; protected set; } = null!;
@@ -220,6 +221,17 @@ namespace ActorWorkspace
 
         public virtual void SetSkin(int skinIndex)
         {
+        }
+
+        // スキンの合成に対応しないアクターは、1 つだけのときに SetSkin を呼ぶ
+        public virtual void SetSkins(IReadOnlyList<int> skinIndices)
+        {
+            if (skinIndices.Count == 1)
+            {
+                SetSkin(skinIndices[0]);
+                return;
+            }
+            Debug.Assert(false, $"{GetType().Name} はスキンの合成に対応していません");
         }
 
 #if UNITY_EDITOR

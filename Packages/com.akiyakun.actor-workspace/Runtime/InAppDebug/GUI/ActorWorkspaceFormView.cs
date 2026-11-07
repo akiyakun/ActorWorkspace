@@ -198,7 +198,7 @@ namespace ActorWorkspace.InAppDebug
                 // await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
                 // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
 
-                uiSkinControl.OnSkinChanged += OnSkinChanged;
+                uiSkinControl.OnSkinsChanged += OnSkinsChanged;
             }
 
             {
@@ -273,7 +273,7 @@ namespace ActorWorkspace.InAppDebug
             CatalogView.Dispose();
             eventBag.Dispose();
             uiAnimationList.OnClickEntity -= OnClickEntityFromAnimationList;
-            uiSkinControl.OnSkinChanged -= OnSkinChanged;
+            uiSkinControl.OnSkinsChanged -= OnSkinsChanged;
             uiAnimationControl.OnSpeedValueChanged -= OnSpeedValueChanged;
             uiAnimationControl.OnMixValueChanged -= OnMixValueChanged;
             uiAnimationControl.OnLoopValueChanged -= OnLoopValueChanged;
@@ -761,20 +761,16 @@ namespace ActorWorkspace.InAppDebug
 
         public void OnSkinChanged(int index)
         {
-            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            // var skeleton = skeletonAnimation.Skeleton;
-            // var skinList = ContextProvider.CurrentWorkingActorContext.Actor.SkinList;
+            OnSkinsChanged(new[] { index });
+        }
 
-            // if (index < 0 || skinList.Count <= index)
-            // {
-            //     Debug.Assert(false);
-            //     return;
-            // }
-
-            // var skin = skeleton.Data.Skins.Items[index];
-            // skeleton.SetSkin(skin);
-            // skeleton.SetSlotsToSetupPose();
-            ContextProvider.CurrentWorkingActorContext.Actor.SetSkin(index);
+        // 複数のスキンを合成して付ける(後ろのスキンが優先)
+        public void OnSkinsChanged(IReadOnlyList<int> skinIndices)
+        {
+            var actor = ContextProvider.CurrentWorkingActorContext.Actor;
+            if (actor == null) return;
+            actor.SetSkins(skinIndices);
+            uiSkinControl.ShowSelectedSkins(actor.SkinIndices);
         }
 
         public void OnSpeedValueChanged(float value)
