@@ -63,7 +63,8 @@ namespace ActorWorkspace.ArcaneLedger
             {
                 uint lsb = BitUtility.FirstSetBit(factor);
                 if (lsb == 0) break;
-                generalParam[BitUtility.LsbToIndex(lsb)].Factor = 0;
+                // 係数の初期値は 1(ALGeneralParam.Data.Restore)。0 に戻すと計算結果がずっと 0 になる
+                generalParam[BitUtility.LsbToIndex(lsb)].Factor = 1.0f;
                 factor &= ~lsb;
             } while (factor != 0);
 
