@@ -30,7 +30,11 @@ namespace ActorWorkspace
 
 
         #region AnimationEvent
+        // モーションのAudioイベント(値:SEマスタのId)。AWAudioEventBehaviour が鳴らす
         public static readonly (string, int) Audio = ("Audio", default);
+        // 「モーション中断で止める」SEを止める(AWAudioEventBehaviour)
+        // MEMO: アクターのマネージャーの Despawn() は Behaviour に知らせないので、直接 Despawn するときは先にこれを発行する
+        public static readonly string StopMotionSE = "StopMotionSE";
 
         public struct EffectInfo
         {

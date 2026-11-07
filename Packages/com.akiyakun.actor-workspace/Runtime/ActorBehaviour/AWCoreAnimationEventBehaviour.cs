@@ -55,6 +55,12 @@ namespace ActorWorkspace.ActorBehaviour
             {
                 action?.Invoke(eventData);
             }
+            // Audio events
+            // ゲームが AddEventAction で登録していなければ、AWCoreActorEvents.Audio に流す(SEを鳴らすのは AWAudioEventBehaviour)
+            else if (eventData.Name == AWCoreAnimationEvents.Audio)
+            {
+                EventBus.Publish(AWCoreActorEvents.Audio, eventData.Int);
+            }
             else
             {
                 Debug.Assert(false, $"Unknown animation event: {eventData.Name}");
