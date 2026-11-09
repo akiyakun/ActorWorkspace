@@ -30,7 +30,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     {
         public abstract IALProcessor Processor { get; }
 
-        public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update;
+        public override UpdateFlags UpdateFlags { get; protected set; } = UpdateFlags.Update | UpdateFlags.FixedUpdate;
 
         public ALGeneralParam GeneralParam { get; } = new ALGeneralParam();
 
@@ -72,6 +72,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
             statusEffectController.Update(deltaTime);
             Processor.Update(deltaTime);
+        }
+
+        public override void OnFixedUpdate(float deltaTime)
+        {
+            statusEffectController.FixedUpdate(deltaTime);
+            Processor.FixedUpdate(deltaTime);
         }
 
         // public override void OnLateUpdate(float deltaTime)
