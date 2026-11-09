@@ -197,6 +197,30 @@ namespace ActorWorkspace.ArcaneLedger.Tests
         }
 
         [Test]
+        public void PerActivationで間隔があれば_出ている間に入り直しても間隔の間は当たらない()
+        {
+            var resolver = new ALHitResolver();
+            var attacker = new FakeExtraData() { HitHistoryMode = ALHitHistoryMode.PerActivation, SerialNumber = 10, RepeatHitInterval = 1.0f };
+
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DEnter, null!, null!), attacker, null);
+            Assert.AreEqual(1, resolver.Resolve(0.0f, ALFaction.All).Count);
+
+            // 通り抜けて(Exit は当たりにしない)また入った
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DExit, null!, null!), attacker, null);
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DEnter, null!, null!), attacker, null);
+            Assert.AreEqual(0, resolver.Resolve(0.5f, ALFaction.All).Count);
+
+            // 出直した(番号が変わった)ら、間隔の間でも当たる
+            attacker.SerialNumber = 11;
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DEnter, null!, null!), attacker, null);
+            Assert.AreEqual(1, resolver.Resolve(0.6f, ALFaction.All).Count);
+
+            // 出たまま(いつも出ている体当たりなど)でも、間隔がたてばまた当たる
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DEnter, null!, null!), attacker, null);
+            Assert.AreEqual(1, resolver.Resolve(1.6f, ALFaction.All).Count);
+        }
+
+        [Test]
         public void PerActivationは同じ番号では一度だけ_番号が変わるとまた当たる()
         {
             var resolver = new ALHitResolver();
