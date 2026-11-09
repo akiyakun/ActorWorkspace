@@ -5,6 +5,7 @@ using afl;
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     // 当たりの候補を溜めて、まとめて確定する(ALHurtBoxBehaviour が使う)
+    // 0. IgnoreEvents の種類の通知(既定は「離れた」(Exit))は候補にしない
     // 1. 陣営: 攻撃した側の陣営が HostileMask に入っていなければ当たらない
     // 2. HitHistoryMode が None の攻撃は、候補ごとにそのまま当たる(今までと同じ)
     // 3. それ以外は、同じ攻撃(HitKey)の候補を 1 つにまとめる。HurtBox の Priority がいちばん大きいもの(同じなら先に来たもの)を使う
@@ -24,9 +25,19 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public ALHitHistory History { get; } = new();
         public int PendingCount => candidates.Count;
 
-        public void Add(in CollisionContactInfo raw, IALCollisionExtraData attacker, IALCollisionExtraData? hurtBox)
+        // 当たりにしない通知の種類(既定は「離れた」(Exit)。入ったとき・重なっている間・パーティクルの当たりは当たりにする)
+        // MEMO: Exit も当たりにすると、1 回の攻撃が入ったときと離れたときの 2 回当たる
+        public CollisionEventType IgnoreEvents { get; set; } = DefaultIgnoreEvents;
+        public const CollisionEventType DefaultIgnoreEvents =
+            CollisionEventType.Collision3DExit | CollisionEventType.Trigger3DExit |
+            CollisionEventType.Collision2DExit | CollisionEventType.Trigger2DExit;
+
+        // 戻り値: 候補にしたか(IgnoreEvents の種類なら false)
+        public bool Add(in CollisionContactInfo raw, IALCollisionExtraData attacker, IALCollisionExtraData? hurtBox)
         {
+            if ((raw.EventType & IgnoreEvents) != 0) return false;
             candidates.Add(new Candidate() { Raw = raw, Attacker = attacker, HurtBox = hurtBox });
+            return true;
         }
 
         // 溜めた候補を確定する。戻り値の一覧は次の Resolve() まで使える

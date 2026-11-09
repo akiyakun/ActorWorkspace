@@ -27,6 +27,9 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // 当たる相手のレイヤー(物理で調べる前の大まかな絞り込み。陣営は ArcaneLedgerBehaviour.HostileMask で決める)
         public int LayerMask { get; set; }
 
+        // 当たりにしない通知の種類(ALHitResolver.IgnoreEvents。既定は「離れた」(Exit))
+        public CollisionEventType IgnoreEvents { get => resolver.IgnoreEvents; set => resolver.IgnoreEvents = value; }
+
         // 当たりをどこで受け取るか(変えると購読し直す)
         ALHurtBoxDetectMode detectMode = ALHurtBoxDetectMode.Main;
         public ALHurtBoxDetectMode DetectMode

@@ -47,6 +47,43 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             Assert.AreEqual(1, resolver.Resolve(0.1f, ALFaction.All).Count);
         }
 
+        [TestCase(CollisionEventType.Trigger2DExit)]
+        [TestCase(CollisionEventType.Collision2DExit)]
+        [TestCase(CollisionEventType.Trigger3DExit)]
+        [TestCase(CollisionEventType.Collision3DExit)]
+        public void 離れた通知は当たりにしない(CollisionEventType eventType)
+        {
+            var resolver = new ALHitResolver();
+            var attacker = new FakeExtraData() { HitHistoryMode = ALHitHistoryMode.None };
+
+            Assert.IsFalse(resolver.Add(new CollisionContactInfo(eventType, null!, null!), attacker, null));
+            Assert.AreEqual(0, resolver.PendingCount);
+            Assert.AreEqual(0, resolver.Resolve(0.0f, ALFaction.All).Count);
+        }
+
+        [Test]
+        public void 入って離れた攻撃は1回だけ当たる()
+        {
+            var resolver = new ALHitResolver();
+            // MEMO: None は候補ごとに当たるので、Exit も当たりにすると 2 回当たる
+            var attacker = new FakeExtraData() { HitHistoryMode = ALHitHistoryMode.None };
+
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DEnter, null!, null!), attacker, null);
+            Assert.AreEqual(1, resolver.Resolve(0.0f, ALFaction.All).Count);
+            resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DExit, null!, null!), attacker, null);
+            Assert.AreEqual(0, resolver.Resolve(0.1f, ALFaction.All).Count);
+        }
+
+        [Test]
+        public void IgnoreEventsを変えると離れた通知も当たりにできる()
+        {
+            var resolver = new ALHitResolver() { IgnoreEvents = 0 };
+            var attacker = new FakeExtraData() { HitHistoryMode = ALHitHistoryMode.None };
+
+            Assert.IsTrue(resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DExit, null!, null!), attacker, null));
+            Assert.AreEqual(1, resolver.Resolve(0.0f, ALFaction.All).Count);
+        }
+
         [Test]
         public void 陣営がHostileMaskに入っていなければ当たらない()
         {
