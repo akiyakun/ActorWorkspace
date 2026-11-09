@@ -11,6 +11,12 @@ namespace ActorWorkspace.ArcaneLedger
     {
         // public IAWActor Actor { get; }
 
+        // ステータスの表(ALStatTable)の大きさ。0 ならステータスを持たない
+        // MEMO: Setup() より前に読む(ArcaneLedgerBehaviour が表を作るときに使う)
+        public int StatCapacity { get; }
+        // 最大 HP のステータスの ID。-1 なら HP を持たない
+        public int MaxLifeStatId { get; }
+
         public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController);
         public void Restore();
 
@@ -23,6 +29,11 @@ namespace ActorWorkspace.ArcaneLedger
         public void OnStatusEffectChanged(uint enableFlags);
 
         public HitResult Hit(CollisionContactInfo contactInfo);
+
+        // ダメージを受ける(ALActorEvents.RequestDamage からも呼ばれる)
+        public ALDamageResult ApplyDamage(ALDamageInfo info);
+        // HP を回復する(ALActorEvents.RequestHeal からも呼ばれる)
+        public ALHealResult ApplyHeal(float amount);
 
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Calc(int paramId);

@@ -34,6 +34,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public ALGeneralParam GeneralParam { get; } = new ALGeneralParam();
 
+        // ステータス(大きさは Processor.StatCapacity)・HP(最大 HP は Processor.MaxLifeStatId のステータス)
+        // MEMO: OnAwake() で作る
+        public ALStatTable Stats { get; private set; } = null!;
+        public ALHealth Health { get; private set; } = null!;
+
         MotionValueController motionValueController = null!;
         StatusEffectController statusEffectController = null!;
 
@@ -42,12 +47,18 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         {
             motionValueController.Restore();
             statusEffectController.Restore();
+            // MEMO: 補正を外してから HP を最大にする(最大 HP の補正が残らないように)
+            Stats.Restore();
+            Health.Reset();
             Processor.Restore();
             GeneralParam.Restore();
         }
 
         public override void OnAwake()
         {
+            Stats = new ALStatTable(Processor.StatCapacity);
+            Health = new ALHealth(Stats, Processor.MaxLifeStatId);
+
             motionValueController = new MotionValueController(this);
             statusEffectController = new StatusEffectController(this);
 
@@ -72,6 +83,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
             statusEffectController.Update(deltaTime);
             Processor.Update(deltaTime);
+
+            Health.Update(deltaTime);
         }
 
         public override void OnFixedUpdate(float deltaTime)
