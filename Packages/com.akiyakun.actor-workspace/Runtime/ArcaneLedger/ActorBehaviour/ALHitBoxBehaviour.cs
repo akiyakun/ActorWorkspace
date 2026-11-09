@@ -8,13 +8,6 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
     public class ALHitBoxBehaviour : AWActorBehaviour<IAWActor>
     {
-        // FIXME: ここじゃない
-        static uint currentSerialNumber = 0;
-        public static uint GetNextSerialNumber()
-        {
-            return unchecked(++currentSerialNumber);
-        }
-
         public override void OnRestore()
         {
 
@@ -45,7 +38,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 {
                     var follower = followers[i];
 
-                    var extraInfo = follower.GameObject.AddComponent<ALCollisionExtraData>();
+                    var extraInfo = follower.GameObject.GetComponent<ALCollisionExtraData>() ?? follower.GameObject.AddComponent<ALCollisionExtraData>();
                     extraInfo.Actor = Actor;
                     if (Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>() is ArcaneLedgerBehaviour behaviour)
                     {
@@ -72,7 +65,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             }
 
             // シリアル番号を振る
-            extraInfo.SerialNumber = GetNextSerialNumber();
+            extraInfo.SerialNumber = ColliderSerialNumberGenerator.GetNext();
             // Debug.Log($"{currentSerialNumber}");
 
         }

@@ -9,7 +9,7 @@ namespace ActorWorkspace.UnitySpine
 {
     // SkeletonDataAssetの追加情報
     // [CreateAssetMenu(fileName = "SkeletonDataMapping", menuName = "Spine/Skeleton Data Mapping")]
-    public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData
+    public class SpineExtraDataScriptableObject : ScriptableObjectCustom, IAWExtraData, IAWHitAreaInfoProvider
     {
         public bool DefaultApplyRootMotionPositionX = true;
         public bool DefaultApplyRootMotionPositionY;
@@ -63,6 +63,12 @@ namespace ActorWorkspace.UnitySpine
         [SerializeField, Disable]
         public bool IsImportError = true;
 
+        // 当たり判定の追加情報(IAWHitAreaInfoProvider)。Spine フォルダの extra_data.json の hurtBoxes・attackBindings から取り込む
+        [SerializeField] List<AWHurtBoxInfo> hurtBoxes = new();
+        [SerializeField] List<AWAttackBinding> attackBindings = new();
+        public IReadOnlyList<AWHurtBoxInfo> HurtBoxes => hurtBoxes;
+        public IReadOnlyList<AWAttackBinding> AttackBindings => attackBindings;
+
         public void Clear()
         {
             DefaultApplyRootMotionPositionX = true;
@@ -70,6 +76,60 @@ namespace ActorWorkspace.UnitySpine
 
             folders?.Clear();
             folders = new();
+
+            hurtBoxes = new();
+            attackBindings = new();
+        }
+
+        // 同じ名前・同じ番号があればエラーを出して足さない
+        public void AddHurtBoxInfo(AWHurtBoxInfo info)
+        {
+            if (TryGetHurtBoxInfo(info.Name, out _))
+            {
+                Debug.LogError($"SpineExtraData: HurtBox の名前が重なっています。name={info.Name}");
+                return;
+            }
+            hurtBoxes.Add(info);
+        }
+
+        public void AddAttackBinding(AWAttackBinding binding)
+        {
+            if (TryGetAttackBinding(binding.LocalId, out _))
+            {
+                Debug.LogError($"SpineExtraData: 攻撃の番号が重なっています。localId={binding.LocalId}");
+                return;
+            }
+            attackBindings.Add(binding);
+        }
+
+        // From IAWHitAreaInfoProvider
+        public bool TryGetHurtBoxInfo(string hurtBoxName, out AWHurtBoxInfo info)
+        {
+            foreach (var item in hurtBoxes)
+            {
+                if (item.Name == hurtBoxName)
+                {
+                    info = item;
+                    return true;
+                }
+            }
+            info = default;
+            return false;
+        }
+
+        // From IAWHitAreaInfoProvider
+        public bool TryGetAttackBinding(int localId, out AWAttackBinding binding)
+        {
+            foreach (var item in attackBindings)
+            {
+                if (item.LocalId == localId)
+                {
+                    binding = item;
+                    return true;
+                }
+            }
+            binding = default;
+            return false;
         }
 
         public FolderInfo? GetFolderInfo(string key, bool createIfNotExist = false)

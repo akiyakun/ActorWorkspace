@@ -30,7 +30,8 @@ namespace ActorWorkspace.ArcaneLedger
 
         public void OnStatusEffectChanged(uint enableFlags);
 
-        public HitResult Hit(CollisionContactInfo contactInfo);
+        // 当たり判定の当たり(ALHurtBoxBehaviour が陣営・ヒット履歴・部位を確かめたあと)
+        public HitResult Hit(in ALHitContact contact);
 
         // ダメージを受ける(ALActorEvents.RequestDamage からも呼ばれる)
         public ALDamageResult ApplyDamage(ALDamageInfo info);

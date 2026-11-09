@@ -29,6 +29,10 @@ namespace ActorWorkspace.ArcaneLedger
         public int DamageReaction;
         // 当たった位置
         public Vector3 Position;
+        // 当たった部位(0 はなし)と部位のダメージ倍率(ALHitContact から。当たり判定によらないダメージは 1)
+        // MEMO: 倍率は CalcDamage() で使うかをゲームが決める(既定の CalcDamage は使わない)
+        public int Region;
+        public float RegionMultiplier;
         // ゲームが決めるフラグ(属性など)
         public uint Flags;
         public object? UserData;
@@ -36,13 +40,29 @@ namespace ActorWorkspace.ArcaneLedger
         // 攻撃のダメージ
         public static ALDamageInfo Hit(float value, IAWActor? attacker = null)
         {
-            return new ALDamageInfo() { Kind = ALDamageKind.Hit, Value = value, Attacker = attacker };
+            return new ALDamageInfo() { Kind = ALDamageKind.Hit, Value = value, Attacker = attacker, RegionMultiplier = 1.0f };
         }
 
         // 続くダメージ(毒・地形など)
         public static ALDamageInfo Continuous(float value, IAWActor? attacker = null)
         {
-            return new ALDamageInfo() { Kind = ALDamageKind.Continuous, Value = value, Attacker = attacker };
+            return new ALDamageInfo() { Kind = ALDamageKind.Continuous, Value = value, Attacker = attacker, RegionMultiplier = 1.0f };
+        }
+
+        // 当たり判定の当たりからの攻撃のダメージ(攻撃したアクター・当たり判定・攻撃の ID・部位・位置を入れる)
+        public static ALDamageInfo FromHit(in ActorBehaviour.ALHitContact contact, float value)
+        {
+            return new ALDamageInfo()
+            {
+                Kind = ALDamageKind.Hit,
+                Value = value,
+                Attacker = contact.Attacker.Actor,
+                Source = contact.Attacker,
+                AttackId = contact.Attacker.AttackId,
+                Region = contact.Region,
+                RegionMultiplier = contact.RegionMultiplier,
+                Position = contact.Raw.Position,
+            };
         }
     }
 }

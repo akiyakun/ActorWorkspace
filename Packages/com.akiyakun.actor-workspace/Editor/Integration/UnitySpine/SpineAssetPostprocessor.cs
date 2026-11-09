@@ -388,6 +388,9 @@ namespace ActorWorkspace.Editor.UnitySpine
 
             ProcessFolders(skeletonDataAsset, spineExtraData);
 
+            // extra_data.json の当たり判定の追加情報(HurtBox の部位・攻撃の対応表)
+            SpineHitAreaImporter.Import(assetInfo.Path, spineExtraData);
+
             // SpineイベントのInt/Float/Stringすべてをインポート
             ImportAllSpineEventParameters(skeletonDataAsset, spineExtraData);
 

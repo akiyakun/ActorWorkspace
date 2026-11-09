@@ -44,6 +44,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // MEMO: 移動の処理は ArcaneLedgerBehaviour より後で更新して、これを読む
         public Vector3 OverrideMoveDirection { get; set; }
 
+        // 陣営(ALFaction。0〜31)と、当たる相手の陣営のビット(既定はすべての陣営に当たる)
+        // MEMO: 攻撃の当たり判定(HitBox・弾)の Faction がこのアクターの HostileMask に入っていれば、このアクターに当たる
+        public int Faction { get; set; }
+        public uint HostileMask { get; set; } = ALFaction.All;
+
         MotionValueController motionValueController = null!;
         StatusEffectController statusEffectController = null!;
 
@@ -105,15 +110,15 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // {
         // }
 
-        // Call from ALHurtBoxBehaviour
-        public void ContactWithHurtBox(CollisionContactInfo contactInfo)
+        // Call from ALHurtBoxBehaviour(陣営・ヒット履歴・部位を確かめたあと)
+        public void ContactWithHurtBox(in ALHitContact contact)
         {
             // me: ステータスの取得
             // me: モーション値の取得
             // other: ステータスの取得
             // other: ヒットボックスの情報から攻撃の強さや属性を取得
 
-            var hitResult = Processor.Hit(contactInfo);
+            var hitResult = Processor.Hit(contact);
             if (hitResult.IsHit == false) return;
 
             EventBus.Publish(AWCoreActorEvents.DamageReaction, Mathf.RoundToInt(hitResult.Value));

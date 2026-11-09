@@ -79,7 +79,7 @@ namespace ActorWorkspace.ArcaneLedger
         }
 
 
-        public virtual HitResult Hit(CollisionContactInfo contactInfo)
+        public virtual HitResult Hit(in ALHitContact contact)
         {
             return HitResult.NotHit;
         }
