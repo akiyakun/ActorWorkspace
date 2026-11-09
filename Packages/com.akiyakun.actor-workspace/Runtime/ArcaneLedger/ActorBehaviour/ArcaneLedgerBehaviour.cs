@@ -39,6 +39,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public ALStatTable Stats { get; private set; } = null!;
         public ALHealth Health { get; private set; } = null!;
 
+        // ステータス効果が決める、本来の移動の向きの代わりに使う向き(Vector3.zero なら変えない)
+        // 毎フレームの Update の始めに Vector3.zero に戻り、ステータス効果の更新で設定し直す(Id が小さい効果ほど優先)
+        // MEMO: 移動の処理は ArcaneLedgerBehaviour より後で更新して、これを読む
+        public Vector3 OverrideMoveDirection { get; set; }
+
         MotionValueController motionValueController = null!;
         StatusEffectController statusEffectController = null!;
 
@@ -50,6 +55,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             // MEMO: 補正を外してから HP を最大にする(最大 HP の補正が残らないように)
             Stats.Restore();
             Health.Reset();
+            OverrideMoveDirection = Vector3.zero;
             Processor.Restore();
             GeneralParam.Restore();
         }
@@ -78,6 +84,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void OnUpdate(float deltaTime)
         {
+            OverrideMoveDirection = Vector3.zero;
+
             statusEffectController.Prepare();
             Processor.Prepare();
 

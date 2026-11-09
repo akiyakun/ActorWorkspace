@@ -21,6 +21,7 @@ namespace ActorWorkspace.ArcaneLedger
         // ステータスの表の大きさ・最大 HP のステータスの ID(ゲーム側が override する)
         public virtual int StatCapacity => 0;
         public virtual int MaxLifeStatId => -1;
+        public virtual int MoveSpeedStatId => -1;
 
         public virtual void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController)
         {

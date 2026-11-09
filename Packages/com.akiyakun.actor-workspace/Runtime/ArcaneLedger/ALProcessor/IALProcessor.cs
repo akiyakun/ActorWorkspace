@@ -16,6 +16,8 @@ namespace ActorWorkspace.ArcaneLedger
         public int StatCapacity { get; }
         // 最大 HP のステータスの ID。-1 なら HP を持たない
         public int MaxLifeStatId { get; }
+        // 移動速度のステータスの ID(減速・ノックバックの効果が補正を付ける)。-1 なら付けない
+        public int MoveSpeedStatId { get; }
 
         public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController);
         public void Restore();

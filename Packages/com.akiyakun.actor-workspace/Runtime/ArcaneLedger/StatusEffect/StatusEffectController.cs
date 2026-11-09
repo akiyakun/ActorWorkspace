@@ -20,7 +20,11 @@ namespace ActorWorkspace.ArcaneLedger
         ArcaneLedgerBehaviour owner;
         // IAWActor actor;
         public IAWActor Actor { get; private set; } = null!;
+        public ArcaneLedgerBehaviour Owner => owner;
         public ALGeneralParam GeneralParam { get; } = null!;
+        public ALStatTable Stats { get; } = null!;
+        // 移動速度のステータスの ID(IALProcessor.MoveSpeedStatId)。-1 なら移動速度を変える効果は何もしない
+        public int MoveSpeedStatId => owner.Processor.MoveSpeedStatId;
 
         // IALProcessor processor;
         StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
@@ -46,6 +50,7 @@ namespace ActorWorkspace.ArcaneLedger
             // this.processor = processor;
             Actor = owner.Actor;
             GeneralParam = owner.GeneralParam;
+            Stats = owner.Stats;
 
             // for (int id = 0; id < MaxStatusEffectCount; id++)
             // {

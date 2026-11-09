@@ -19,6 +19,11 @@ namespace ActorWorkspace.ArcaneLedger
         protected StatusEffectController controller = null!;
         protected IAWActor Actor = null!;
 
+        // アクターのステータス(補正は AddModifierWhileEnabled() で付ける)
+        protected ALStatTable Stats => controller.Stats;
+        // アクターの台帳(移動の向きの上書き OverrideMoveDirection など)
+        protected ActorBehaviour.ArcaneLedgerBehaviour Ledger => controller.Owner;
+
         // Tick間隔時間(ダメージ発生間隔)
         float tickIntervalTime;
         float tickCountdown;
@@ -77,8 +82,28 @@ namespace ActorWorkspace.ArcaneLedger
             {
                 _enable = false;
                 OnDisable();
+                // かかっている間だけ付けたステータスの補正を外す
+                RemoveModifiersWhileEnabled();
                 OnEnableChanged?.Invoke(Id, _enable);
             }
+        }
+
+        // かかっている間だけステータスに補正を付ける(効果が終わると外れる)。statId が負なら何もしない
+        protected void AddModifierWhileEnabled(int statId, ALModifierOp op, float value)
+        {
+            if (statId < 0) return;
+            if (Enable == false)
+            {
+                UnityEngine.Debug.Assert(false, $"StatusEffect: AddModifierWhileEnabled() is called while disabled. id={Id}");
+                return;
+            }
+            Stats.AddModifier(statId, op, value, this);
+        }
+
+        // AddModifierWhileEnabled() で付けた補正をすべて外す(かけ直して値を変えるときなど)
+        protected void RemoveModifiersWhileEnabled()
+        {
+            Stats.RemoveModifiers(this);
         }
 
         public virtual bool Apply(ApplyStatusEffectParams applyParam)
