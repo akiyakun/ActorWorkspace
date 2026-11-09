@@ -49,8 +49,8 @@ namespace ActorWorkspace.ArcaneLedger
             // Events
             // {
             //     eventBag.In(Actor.EventBus,
-            //         (entity) => entity.Subscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffectChanged),
-            //         (entity) => entity.Unsubscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffectChanged));
+            //         (entity) => entity.Subscribe(ALActorEvents.RequestStatusEffect, RequestStatusEffectChanged),
+            //         (entity) => entity.Unsubscribe(ALActorEvents.RequestStatusEffect, RequestStatusEffectChanged));
             // }
         }
 
@@ -166,7 +166,7 @@ namespace ActorWorkspace.ArcaneLedger
 
             // 通知
             owner.Processor.OnStatusEffectChanged(EnableFlags);
-            owner.Actor.EventBus.Publish(AWCoreActorEvents.OnStatusEffectChanged, EnableFlags);
+            owner.Actor.EventBus.Publish(ALActorEvents.OnStatusEffectChanged, EnableFlags);
         }
 
     }

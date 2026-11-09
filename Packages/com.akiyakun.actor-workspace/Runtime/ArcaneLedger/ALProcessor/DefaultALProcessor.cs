@@ -34,11 +34,11 @@ namespace ActorWorkspace.ArcaneLedger
             // Events
             {
                 eventBag.In(actor.EventBus,
-                    (entity) => entity.Subscribe(AWCoreActorEvents.RevokeStatusEffect, RevokeStatusEffect),
-                    (entity) => entity.Unsubscribe(AWCoreActorEvents.RevokeStatusEffect, RevokeStatusEffect));
+                    (entity) => entity.Subscribe(ALActorEvents.RevokeStatusEffect, RevokeStatusEffect),
+                    (entity) => entity.Unsubscribe(ALActorEvents.RevokeStatusEffect, RevokeStatusEffect));
                 eventBag.In(actor.EventBus,
-                    (entity) => entity.Subscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffect),
-                    (entity) => entity.Unsubscribe(AWCoreActorEvents.RequestStatusEffect, RequestStatusEffect));
+                    (entity) => entity.Subscribe(ALActorEvents.RequestStatusEffect, RequestStatusEffect),
+                    (entity) => entity.Unsubscribe(ALActorEvents.RequestStatusEffect, RequestStatusEffect));
             }
         }
 

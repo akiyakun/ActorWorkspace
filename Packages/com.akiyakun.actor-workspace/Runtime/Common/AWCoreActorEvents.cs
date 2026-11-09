@@ -1,7 +1,6 @@
 #nullable enable
 using UnityEngine;
 using afl;
-using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace
 {
@@ -45,13 +44,12 @@ namespace ActorWorkspace
         #endregion// AnimationEvent
 
 
-        #region ArcaneLedger
+        #region DamageReaction
+        // 被弾のリアクションの段階(AWDefaultActorMotionStateBehaviour がモーションのパラメータに入れる)
+        // MEMO: ArcaneLedger(ArcaneLedgerBehaviour)が発行するが、受けるのが中核の Behaviour なのでここに置いている
+        // ArcaneLedger のほかのイベントは ArcaneLedger/ALActorEvents.cs
         public static readonly (string, int) DamageReaction = ("DamageReaction", 0);
-
-        public static readonly (string, int id) RevokeStatusEffect = ("RevokeStatusEffect", 0);
-        public static readonly (string, ApplyStatusEffectParams) RequestStatusEffect = ("RequestStatusEffect", default);
-        public static readonly (string, uint enableFlags) OnStatusEffectChanged = ("OnStatusEffectChanged", 0);
-        #endregion// ArcaneLedger
+        #endregion// DamageReaction
 
 
         public static readonly (string, CollisionContactInfo) OnInteractHurtbox1 = ("OnInteractHurtbox1", default);

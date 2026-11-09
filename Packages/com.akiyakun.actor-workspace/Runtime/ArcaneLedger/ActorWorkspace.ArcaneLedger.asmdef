@@ -1,0 +1,18 @@
+{
+    "name": "ActorWorkspace.ArcaneLedger",
+    "rootNamespace": "ActorWorkspace.ArcaneLedger",
+    "references": [
+        "GUID:878380d8c26584ae3ab741d0e3a254b5",
+        "GUID:98557ddb935f44ae59f5af2cce2426f6",
+        "GUID:b2ca878e799214d499178a4b3b3fe965"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
