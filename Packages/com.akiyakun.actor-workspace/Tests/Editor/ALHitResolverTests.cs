@@ -31,6 +31,25 @@ namespace ActorWorkspace.ArcaneLedger.Tests
 #endif
         }
 
+        // テスト用の ALProcessor(汎用パラメータだけを持つ)
+        class FakeProcessor : IALProcessor
+        {
+            public ALGeneralParam GeneralParam { get; } = new();
+            public int StatCapacity => 0;
+            public int MaxLifeStatId => -1;
+            public int MoveSpeedStatId => -1;
+            public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController) { }
+            public void Restore() { }
+            public void Prepare() { }
+            public void Update(float deltaTime) { }
+            public void FixedUpdate(float deltaTime) { }
+            public void OnStatusEffectChanged(uint enableFlags) { }
+            public HitResult Hit(in ALHitContact contact) => HitResult.NotHit;
+            public ALDamageResult ApplyDamage(ALDamageInfo info) => default;
+            public ALHealResult ApplyHeal(float amount) => default;
+            public float Calc(int paramId) => 0.0f;
+        }
+
         static CollisionContactInfo Raw() => default;
 
         [Test]
@@ -82,6 +101,70 @@ namespace ActorWorkspace.ArcaneLedger.Tests
 
             Assert.IsTrue(resolver.Add(new CollisionContactInfo(CollisionEventType.Trigger2DExit, null!, null!), attacker, null));
             Assert.AreEqual(1, resolver.Resolve(0.0f, ALFaction.All).Count);
+        }
+
+        [Test]
+        public void 当たった瞬間の汎用パラメータを写す()
+        {
+            var attackerProcessor = new FakeProcessor();
+            var receiverParams = new ALGeneralParam();
+            var resolver = new ALHitResolver() { ReceiverParams = receiverParams };
+            var attacker = new FakeExtraData() { ALProcessor = attackerProcessor };
+
+            attackerProcessor.GeneralParam[0].Factor = 1.5f;
+            attackerProcessor.GeneralParam[3].Value = 2.0f;
+            attackerProcessor.GeneralParam[3].Delta = 1.0f;
+            receiverParams[1].Factor = 0.5f;
+            resolver.Add(Raw(), attacker, null);
+
+            // 確定する前にモーションが変わって値が戻った
+            attackerProcessor.GeneralParam.Restore();
+            receiverParams.Restore();
+
+            var contacts = resolver.Resolve(0.0f, ALFaction.All);
+            Assert.AreEqual(1, contacts.Count);
+            Assert.IsTrue(contacts[0].AttackerParams.IsValid);
+            Assert.AreEqual(1.5f, contacts[0].AttackerParams.Factor(0));
+            Assert.AreEqual(3.0f, contacts[0].AttackerParams.Calc(3));
+            Assert.AreEqual(0.5f, contacts[0].ReceiverParams.Factor(1));
+
+            // ダメージの情報にも入る
+            var info = ALDamageInfo.FromHit(contacts[0], 1.0f);
+            Assert.AreEqual(1.5f, info.AttackerParams.Factor(0));
+            Assert.AreEqual(0.5f, info.ReceiverParams.Factor(1));
+        }
+
+        [Test]
+        public void 写しは次のResolveまで書き換わらない()
+        {
+            var attackerProcessor = new FakeProcessor();
+            var resolver = new ALHitResolver();
+            var attacker = new FakeExtraData() { ALProcessor = attackerProcessor };
+
+            attackerProcessor.GeneralParam[0].Factor = 1.2f;
+            resolver.Add(Raw(), attacker, null);
+            var first = resolver.Resolve(0.0f, ALFaction.All)[0];
+
+            // 次の候補を写しても、前の当たりの写しはそのまま(配列が足りなくなって作り直すほど溜める)
+            attackerProcessor.GeneralParam[0].Factor = 2.0f;
+            for (int i = 0; i < 10; i++) resolver.Add(Raw(), attacker, null);
+            Assert.AreEqual(1.2f, first.AttackerParams.Factor(0));
+
+            var second = resolver.Resolve(1.0f, ALFaction.All);
+            Assert.AreEqual(10, second.Count);
+            Assert.AreEqual(2.0f, second[9].AttackerParams.Factor(0));
+        }
+
+        [Test]
+        public void 写す元が無ければ写しは無い()
+        {
+            var resolver = new ALHitResolver();
+            resolver.Add(Raw(), new FakeExtraData(), null);
+
+            var contact = resolver.Resolve(0.0f, ALFaction.All)[0];
+            Assert.IsFalse(contact.AttackerParams.IsValid);
+            Assert.IsFalse(contact.ReceiverParams.IsValid);
+            Assert.Throws<System.InvalidOperationException>(() => contact.AttackerParams.Factor(0));
         }
 
         [Test]

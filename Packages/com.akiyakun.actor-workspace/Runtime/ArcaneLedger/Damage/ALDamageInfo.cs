@@ -33,6 +33,10 @@ namespace ActorWorkspace.ArcaneLedger
         // MEMO: 倍率は CalcDamage() で使うかをゲームが決める(既定の CalcDamage は使わない)
         public int Region;
         public float RegionMultiplier;
+        // 当たった瞬間の、攻撃した側・受けた側の汎用パラメータの写し(FromHit() のとき。当たり判定によらないダメージは IsValid が false)
+        // MEMO: 使えるのは、当たりを確定した ALHurtBoxBehaviour の Update の中だけ(ALGeneralParamSnapshot)
+        public ALGeneralParamSnapshot AttackerParams;
+        public ALGeneralParamSnapshot ReceiverParams;
         // ゲームが決めるフラグ(属性など)
         public uint Flags;
         public object? UserData;
@@ -62,6 +66,8 @@ namespace ActorWorkspace.ArcaneLedger
                 Region = contact.Region,
                 RegionMultiplier = contact.RegionMultiplier,
                 Position = contact.Raw.Position,
+                AttackerParams = contact.AttackerParams,
+                ReceiverParams = contact.ReceiverParams,
             };
         }
     }

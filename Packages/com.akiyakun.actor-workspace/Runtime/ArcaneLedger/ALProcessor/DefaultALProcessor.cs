@@ -13,6 +13,7 @@ namespace ActorWorkspace.ArcaneLedger
         protected StatusEffectController statusEffectController = null!;
 
         protected ALGeneralParam generalParam = null!;
+        public ALGeneralParam GeneralParam => generalParam;
         protected ALStatTable stats = null!;
         protected ALHealth health = null!;
 

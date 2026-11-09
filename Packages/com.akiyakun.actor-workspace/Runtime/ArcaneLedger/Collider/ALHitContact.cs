@@ -26,6 +26,9 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public IALCollisionExtraData? HurtBox;
         // 当たった攻撃の記録のキー(ALHitHistory.GetHitKey。None なら 0)
         public ulong HitKey;
+        // 当たった瞬間の、攻撃した側・受けた側の汎用パラメータの写し(ALHitResolver.Add() のとき。無ければ IsValid が false)
+        public ALGeneralParamSnapshot AttackerParams;
+        public ALGeneralParamSnapshot ReceiverParams;
 
         // 部位(0 はなし)と部位のダメージ倍率(0 以下は 1 とみなす)
         public int Region => HurtBox?.Region ?? 0;

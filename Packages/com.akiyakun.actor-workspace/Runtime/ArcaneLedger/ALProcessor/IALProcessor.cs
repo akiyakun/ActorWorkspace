@@ -26,7 +26,8 @@ namespace ActorWorkspace.ArcaneLedger
         public void Update(float deltaTime);
         public void FixedUpdate(float deltaTime);
 
-        // public ALGeneralParam GetGeneralParam(int paramId);
+        // 汎用パラメータ(アニメーションのイベント SetGenValue[X] などで変わる。ALHitResolver が当たった瞬間の値を写す)
+        public ALGeneralParam GeneralParam { get; }
 
         public void OnStatusEffectChanged(uint enableFlags);
 

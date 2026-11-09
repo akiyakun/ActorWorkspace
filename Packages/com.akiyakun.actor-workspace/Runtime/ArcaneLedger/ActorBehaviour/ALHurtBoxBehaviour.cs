@@ -72,6 +72,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         {
             ledger = Actor.GetLedger()!;
             if (ledger == null) throw new System.Exception("ALHurtBoxBehaviour DoAwake: ArcaneLedgerBehaviour not found in ActorBehaviourController");
+            // 当たった瞬間の、受けた側の汎用パラメータを写す
+            resolver.ReceiverParams = ledger.GeneralParam;
 
             // FolderObject
             var folderObject = Variables.Get(AWCoreVariableKeys.HurtBoxFolder).GetGameObject();
