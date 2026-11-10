@@ -94,11 +94,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         }
 
         // Call from ALHurtBoxBehaviour(陣営・ヒット履歴・部位を確かめたあと)
-        // 当たったら、リアクションの段階を AWCoreActorEvents.DamageReaction で知らせる(0 もそのまま知らせる)
+        // リアクションがあれば(段階が 0 より大きければ)AWCoreActorEvents.DamageReaction で知らせる
+        // MEMO: 0 は知らせない(同じフレームの先の当たりで出したリアクションを 0 で消さないため)
         public void ContactWithHurtBox(in ALHitContact contact)
         {
             var hitResult = Processor.Hit(contact);
-            if (hitResult.IsHit == false) return;
+            if (hitResult.IsHit == false || hitResult.DamageReaction <= 0) return;
 
             EventBus.Publish(AWCoreActorEvents.DamageReaction, hitResult.DamageReaction);
         }

@@ -134,7 +134,7 @@ namespace ActorWorkspace.ArcaneLedger.Tests
         }
 
         [Test]
-        public void 当たったらリアクションの段階をDamageReactionで知らせる()
+        public void リアクションがあるときだけDamageReactionを知らせる()
         {
             int count = 0;
             int last = -1;
@@ -148,12 +148,12 @@ namespace ActorWorkspace.ArcaneLedger.Tests
 
             processor.HitReaction = 0;
             behaviour.ContactWithHurtBox(Contact());
-            Assert.AreEqual(2, count);
-            Assert.AreEqual(0, last);
+            Assert.AreEqual(1, count);
 
             // 当たらなければ知らせない
+            processor.HitReaction = 2;
             behaviour.ContactWithHurtBox(Contact(withProcessor: false));
-            Assert.AreEqual(2, count);
+            Assert.AreEqual(1, count);
         }
 
         // HP を持たない(MaxLifeStatId が -1)

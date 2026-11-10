@@ -8,7 +8,7 @@ namespace ActorWorkspace.ArcaneLedger
 
         // 当たりとして扱ったか(陣営・無敵などで弾いたときは false)
         public bool IsHit;
-        // リアクションの段階(0 はなし。ゲームが決める)。AWCoreActorEvents.DamageReaction で知らせる
+        // リアクションの段階(0 はなし。ゲームが決める)。0 より大きければ AWCoreActorEvents.DamageReaction で知らせる
         public int DamageReaction;
         // ダメージの結果(ダメージを与えなかったときは Applied が false・Reason が None)
         public ALDamageResult Damage;
