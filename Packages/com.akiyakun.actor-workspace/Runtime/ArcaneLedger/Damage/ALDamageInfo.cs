@@ -63,9 +63,9 @@ namespace ActorWorkspace.ArcaneLedger
             {
                 Kind = ALDamageKind.Hit,
                 Value = value,
-                Attacker = contact.AttackerActor,
+                Attacker = contact.Attacker,
                 AttackerProcessor = contact.AttackerProcessor,
-                Source = contact.Attacker,
+                Source = contact.Source,
                 AttackId = contact.AttackId,
                 Region = contact.Region,
                 RegionMultiplier = contact.RegionMultiplier,

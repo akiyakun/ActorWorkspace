@@ -19,7 +19,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         struct Candidate
         {
             public CollisionContactInfo Raw;
-            public IALCollisionExtraData Attacker;
+            public IALCollisionExtraData Source;
             public IALCollisionExtraData? HurtBox;
             // Add() のときの攻撃した側の値
             public int Faction;
@@ -27,7 +27,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             public float RepeatHitInterval;
             public ulong HitKey;
             public int AttackId;
-            public IAWActor? AttackerActor;
+            public IAWActor? Attacker;
             public IALProcessor? AttackerProcessor;
             // 汎用パラメータの写しの位置(無ければ -1)と、写したときの EventSetMask
             public int AttackerParamsOffset;
@@ -58,22 +58,23 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             CollisionEventType.Collision3DExit | CollisionEventType.Trigger3DExit |
             CollisionEventType.Collision2DExit | CollisionEventType.Trigger2DExit;
 
+        // source: 攻撃の当たり判定(HitBox・弾)、hurtBox: 受けた側の HurtBox(分からなければ null)
         // 戻り値: 候補にしたか(IgnoreEvents の種類なら false)
-        public bool Add(in CollisionContactInfo raw, IALCollisionExtraData attacker, IALCollisionExtraData? hurtBox)
+        public bool Add(in CollisionContactInfo raw, IALCollisionExtraData source, IALCollisionExtraData? hurtBox)
         {
             if ((raw.EventType & IgnoreEvents) != 0) return false;
-            var processor = attacker.ALProcessor;
+            var processor = source.ALProcessor;
             candidates.Add(new Candidate()
             {
                 Raw = raw,
-                Attacker = attacker,
+                Source = source,
                 HurtBox = hurtBox,
-                Faction = attacker.Faction,
-                HitHistoryMode = attacker.HitHistoryMode,
-                RepeatHitInterval = attacker.RepeatHitInterval,
-                HitKey = ALHitHistory.GetHitKey(attacker),
-                AttackId = attacker.AttackId,
-                AttackerActor = attacker.Actor,
+                Faction = source.Faction,
+                HitHistoryMode = source.HitHistoryMode,
+                RepeatHitInterval = source.RepeatHitInterval,
+                HitKey = ALHitHistory.GetHitKey(source),
+                AttackId = source.AttackId,
+                Attacker = source.Actor,
                 AttackerProcessor = processor,
                 AttackerParamsOffset = WriteSnapshot(processor?.GeneralParam),
                 ReceiverParamsOffset = WriteSnapshot(ReceiverParams),
@@ -171,11 +172,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             return new ALHitContact()
             {
                 Raw = candidate.Raw,
-                Attacker = candidate.Attacker,
+                Source = candidate.Source,
                 HurtBox = candidate.HurtBox,
                 HitKey = candidate.HitKey,
                 AttackId = candidate.AttackId,
-                AttackerActor = candidate.AttackerActor,
+                Attacker = candidate.Attacker,
                 AttackerProcessor = candidate.AttackerProcessor,
                 AttackerParams = ToSnapshot(candidate.AttackerParamsOffset, candidate.AttackerEventSetMask),
                 ReceiverParams = ToSnapshot(candidate.ReceiverParamsOffset, candidate.ReceiverEventSetMask),
