@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using afl;
-using afl.Service.Input;
 using ActorWorkspace;
 
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
@@ -41,15 +40,6 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void OnAwake()
         {
-            // CollisionDetector
-            // {
-            //     var collisionDetector = Variables.Get(AWCoreVariableKeys.MainCollisionDetector).GetComponent<CollisionDetector>();
-            //     if (collisionDetector == null) throw new System.Exception($"ALHitBoxBehaviour DoAwake: CollisionDetector not found in variable {AWCoreVariableKeys.MainCollisionDetector}");
-            //     EventBag.In(collisionDetector,
-            //         (entity) => entity.OnCollision += OnCollision,
-            //         (entity) => entity.OnCollision -= OnCollision);
-            // }
-
             // FolderObject
             var folderObject = Variables.Get(AWCoreVariableKeys.HitBoxFolder).GetGameObject();
             if (folderObject == null)
@@ -85,8 +75,6 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         void OnActivatingFromFollower(IAWFollower follower)
         {
-            // Debug.Log($"ALHitBoxBehaviour OnFollowerActiveChanged: {follower}");
-
             ALCollisionExtraData extraInfo = follower.GameObject.GetComponent<ALCollisionExtraData>();
             if (extraInfo == null)
             {
@@ -96,8 +84,6 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
             // シリアル番号を振る
             extraInfo.SerialNumber = ColliderSerialNumberGenerator.GetNext();
-            // Debug.Log($"{currentSerialNumber}");
-
         }
     }
 }

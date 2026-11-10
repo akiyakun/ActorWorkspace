@@ -6,16 +6,6 @@ using ActorWorkspace.ArcaneLedger;
 
 namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 {
-    public struct HitResult
-    {
-        public static readonly HitResult NotHit = new HitResult() { IsHit = false };
-
-        public bool IsHit;
-        public float Value;
-        // public Vector3 HitPoint;
-        // public Vector3 HitNormal;
-    }
-
     public class ArcaneLedgerBehaviour<TALProcessor> : ArcaneLedgerBehaviour
         where TALProcessor : class, IALProcessor, new()
     {
@@ -23,9 +13,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     }
 
     // アーケイン・レジャー
-    // FIXME: 後で整理整する。雑多に処理入れてる
-    // public class ArcaneLedgerBehaviour<TCalculator> : AWActorBehaviour<IAWActor>
-    // where TCalculator : IALCalculator
+    // アクターの汎用パラメータ・ステータス・HP・状態異常を持ち、計算・判定は Processor(IALProcessor)に任せる
+    // FIXME: 後で整理する。雑多に処理入れてる
     public abstract class ArcaneLedgerBehaviour : AWActorBehaviour<IAWActor>
     {
         public abstract IALProcessor Processor { get; }
@@ -34,7 +23,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public ALGeneralParam GeneralParam { get; } = new ALGeneralParam();
 
-        // ステータス(大きさは Processor.StatCapacity)・HP(最大 HP は Processor.MaxLifeStatId のステータス)
+        // ステータス(大きさは Processor.Config.StatCapacity)・HP(最大 HP は Processor.Config.MaxLifeStatId のステータス)
         // MEMO: OnAwake() で作る
         public ALStatTable Stats { get; private set; } = null!;
         public ALHealth Health { get; private set; } = null!;
@@ -68,24 +57,14 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void OnAwake()
         {
-            Stats = new ALStatTable(Processor.StatCapacity);
-            Health = new ALHealth(Stats, Processor.MaxLifeStatId);
+            var config = Processor.Config;
+            Stats = new ALStatTable(config.StatCapacity);
+            Health = new ALHealth(Stats, config.MaxLifeStatId);
 
             motionValueController = new MotionValueController(this);
             statusEffectController = new StatusEffectController(this);
 
             Processor.Setup(this, statusEffectController);
-
-            // イベント購読
-            // {
-            //     // AnimationController
-            //     EventBag.In(Actor.AnimationController,
-            //         (entity) => entity.OnAnimationEntered += OnAnimationEntered,
-            //         (entity) => entity.OnAnimationEntered -= OnAnimationEntered);
-            //     EventBag.In(Actor.AnimationController,
-            //         (entity) => entity.OnAnimationEvent += OnAnimationEvent,
-            //         (entity) => entity.OnAnimationEvent -= OnAnimationEvent);
-            // }
         }
 
         // 購読を外す(Processor の EventBag・MotionValueController)
@@ -114,23 +93,14 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             Processor.FixedUpdate(deltaTime);
         }
 
-        // public override void OnLateUpdate(float deltaTime)
-        // {
-        // }
-
         // Call from ALHurtBoxBehaviour(陣営・ヒット履歴・部位を確かめたあと)
+        // 当たったら、リアクションの段階を AWCoreActorEvents.DamageReaction で知らせる(0 もそのまま知らせる)
         public void ContactWithHurtBox(in ALHitContact contact)
         {
-            // me: ステータスの取得
-            // me: モーション値の取得
-            // other: ステータスの取得
-            // other: ヒットボックスの情報から攻撃の強さや属性を取得
-
             var hitResult = Processor.Hit(contact);
             if (hitResult.IsHit == false) return;
 
-            EventBus.Publish(AWCoreActorEvents.DamageReaction, Mathf.RoundToInt(hitResult.Value));
-
+            EventBus.Publish(AWCoreActorEvents.DamageReaction, hitResult.DamageReaction);
         }
     }
 }

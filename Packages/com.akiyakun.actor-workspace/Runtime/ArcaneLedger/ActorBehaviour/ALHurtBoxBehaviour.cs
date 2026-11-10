@@ -198,6 +198,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             }
 #endif
 
+            // MEMO: 陣営が当たらない候補は Add() で捨てる(汎用パラメータを写さない)
+            resolver.HostileMask = ledger.HostileMask;
             resolver.Add(info, attacker, hurtBox);
         }
     }

@@ -1,23 +1,16 @@
 #nullable enable
-using System.Runtime.CompilerServices;
 using ActorWorkspace.ArcaneLedger.ActorBehaviour;
-using afl;
 
 namespace ActorWorkspace.ArcaneLedger
 {
     // FIXME: 適当な名前
+    // ゲームごとの計算・判定(ArcaneLedgerBehaviour が持つ。既定の実装は DefaultALProcessor)
     // MEMO: 基本的にはActorイベントなどよりも先にProcessorのコールバックメソッドが呼ばれる設計
     public interface IALProcessor
     {
-        // public IAWActor Actor { get; }
-
-        // ステータスの表(ALStatTable)の大きさ。0 ならステータスを持たない
+        // 設定(ステータスの表の大きさ・最大 HP と移動速度のステータスの ID)
         // MEMO: Setup() より前に読む(ArcaneLedgerBehaviour が表を作るときに使う)
-        public int StatCapacity { get; }
-        // 最大 HP のステータスの ID。-1 なら HP を持たない
-        public int MaxLifeStatId { get; }
-        // 移動速度のステータスの ID(減速・ノックバックの効果が補正を付ける)。-1 なら付けない
-        public int MoveSpeedStatId { get; }
+        public ALProcessorConfig Config { get; }
 
         public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController);
         public void Restore();
@@ -26,7 +19,8 @@ namespace ActorWorkspace.ArcaneLedger
         public void Update(float deltaTime);
         public void FixedUpdate(float deltaTime);
 
-        // 汎用パラメータ(アニメーションのイベント SetGenValue[X] などで変わる。ALHitResolver が当たった瞬間の値を写す)
+        // 汎用パラメータ(台帳の ArcaneLedgerBehaviour.GeneralParam と同じもの。計算は ALGeneralParam.Calc())
+        // MEMO: 当たり判定(IALCollisionExtraData)から、攻撃した側の汎用パラメータを読むときの入口(ALHitResolver が当たった瞬間の値を写す)
         public ALGeneralParam GeneralParam { get; }
 
         public void OnStatusEffectChanged(uint enableFlags);
@@ -38,12 +32,6 @@ namespace ActorWorkspace.ArcaneLedger
         public ALDamageResult ApplyDamage(ALDamageInfo info);
         // HP を回復する(ALActorEvents.RequestHeal からも呼ばれる)
         public ALHealResult ApplyHeal(float amount);
-
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float Calc(int paramId);
-
-        // public void SetupStatusEffects(IStatusEffect[] statusEffects);
-
     }
 }
 #nullable restore

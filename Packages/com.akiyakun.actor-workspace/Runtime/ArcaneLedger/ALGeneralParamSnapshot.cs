@@ -29,8 +29,8 @@ namespace ActorWorkspace.ArcaneLedger
         public float Value(int id) => Get(id, 0);
         public float Factor(int id) => Get(id, 1);
         public float Delta(int id) => Get(id, 2);
-        // DefaultALProcessor.Calc() と同じ計算
-        public float Calc(int id) => (Value(id) + Delta(id)) * Factor(id);
+        // ALGeneralParam.Calc() と同じ計算
+        public float Calc(int id) => ALGeneralParam.Calc(Value(id), Factor(id), Delta(id));
 
         float Get(int id, int field)
         {

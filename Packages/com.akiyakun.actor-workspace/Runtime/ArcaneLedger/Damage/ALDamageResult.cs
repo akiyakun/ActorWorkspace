@@ -11,7 +11,7 @@ namespace ActorWorkspace.ArcaneLedger
         Invincible = 2,     // 無敵の間(攻撃のダメージだけ)
         Filtered = 3,       // ゲームが受けないと決めた(DefaultALProcessor.FilterDamage())
         Zero = 4,           // 計算したダメージが 0 以下(当たったことは OnDamaged で知らせる)
-        NoLife = 5,         // HP を持たない(IALProcessor.MaxLifeStatId が -1)
+        NoLife = 5,         // HP を持たない(IALProcessor.Config.MaxLifeStatId が -1)
     }
 
     // ダメージの結果

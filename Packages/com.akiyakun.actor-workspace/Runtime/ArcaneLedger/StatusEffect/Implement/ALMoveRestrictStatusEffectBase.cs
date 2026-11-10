@@ -7,7 +7,7 @@ namespace ActorWorkspace.ArcaneLedger
         移動を制限するステータス効果の基底(こおり・どんそく・まひ・こんらん・きょうふ など)
         Param1: 減速の割合(0.0:減速しない、0.5:半分の速さ、1.0:止まる)
 
-        かかっている間、移動速度のステータス(IALProcessor.MoveSpeedStatId)に MultiplyMin の補正を付ける
+        かかっている間、移動速度のステータス(IALProcessor.Config.MoveSpeedStatId)に MultiplyMin の補正を付ける
         (複数の効果がかかっているときは、いちばん遅くなるものを使う)
         MEMO: マスタで空欄(0)のときに止まらないように、倍率ではなく減速の割合を渡す
     */

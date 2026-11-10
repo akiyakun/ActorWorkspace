@@ -17,15 +17,13 @@ namespace ActorWorkspace.ArcaneLedger
         // Tick間隔時間(ダメージ発生間隔)
         public float TickIntervalTime;
 
-        // public float[] Params = new float[1];
         public UnionPrimitiveData Param1;
         public UnionPrimitiveData Param2;
         public UnionPrimitiveData Param3;
 
-        // public StatusEffectData()
-        // {
-        //     Params = new float[StatusEffectController.MaxStatusEffectParamCount];
-        // }
+        // かけたアクター(分からなければ null)。続くダメージ(ALDamageOverTimeStatusEffectBase)の ALDamageInfo.Attacker になる
+        // MEMO: 倒したときの ALActorEvents.OnKilled・OnDealtDamage が、かけたアクターに届く(撃破数・経験値を誰のものにするか)
+        public IAWActor? Applier;
     }
 }
 #nullable restore

@@ -44,6 +44,17 @@ namespace ActorWorkspace.ArcaneLedger
         // MEMO: MotionValueController が入れ、次のアニメーションに入ると 0 に戻す。値が既定のままか、イベントで 0 を入れたかを区別するのに使う
         public uint EventSetMask { get; set; }
         public bool IsSetByEvent(int id) => (EventSetMask & (1u << id)) != 0;
+
+        // 汎用パラメータの計算((Value + Delta) × Factor)。写し(ALGeneralParamSnapshot.Calc)も同じ式
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Calc(float value, float factor, float delta) => (value + delta) * factor;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float Calc(int id)
+        {
+            var data = this[id];
+            return ALGeneralParam.Calc(data.Value, data.Factor, data.Delta);
+        }
         // public Data[] GeneralParams => generalParams;
 
         public ALGeneralParam()

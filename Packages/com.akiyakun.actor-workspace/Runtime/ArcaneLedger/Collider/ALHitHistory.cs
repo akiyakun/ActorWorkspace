@@ -1,7 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // 同じ攻撃が同じ相手に何度も当たるのを防ぐ方法(IALCollisionExtraData.HitHistoryMode)
     // MEMO: ゲーム側で数値として保存することがあるので、末尾に追加すること

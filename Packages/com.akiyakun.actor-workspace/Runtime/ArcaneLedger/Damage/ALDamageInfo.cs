@@ -1,6 +1,5 @@
 #nullable enable
 using UnityEngine;
-using ActorWorkspace.ArcaneLedger.ActorBehaviour;
 
 namespace ActorWorkspace.ArcaneLedger
 {
@@ -57,7 +56,7 @@ namespace ActorWorkspace.ArcaneLedger
         }
 
         // 当たり判定の当たりからの攻撃のダメージ(攻撃したアクター・当たり判定・攻撃の ID・部位・位置を入れる)
-        public static ALDamageInfo FromHit(in ActorBehaviour.ALHitContact contact, float value)
+        public static ALDamageInfo FromHit(in ALHitContact contact, float value)
         {
             return new ALDamageInfo()
             {

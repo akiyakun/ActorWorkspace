@@ -1,7 +1,7 @@
 #nullable enable
 using afl;
 
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // 陣営(0〜31)。ゲーム側の enum を (int) にして使う
     // 攻撃した側の陣営(IALCollisionExtraData.Faction)のビットが、受ける側の HostileMask(ArcaneLedgerBehaviour)に立っていれば当たる

@@ -1,10 +1,10 @@
 #nullable enable
 using UnityEngine;
 using afl;
-using afl.Service.Input;
+using ActorWorkspace.ArcaneLedger.ActorBehaviour;
 using ActorWorkspace;
 
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // コライダーがアタッチされたオブジェクトから必要な情報を保持・取得するためのコンポーネント
     // ALHitBoxBehaviour・ALHurtBoxBehaviour が HitBox・HurtBox のアタッチメントに付ける
@@ -16,7 +16,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         [Header("通常コンポーネント版のIALCollisionExtraData実装")]
 
         #region IALCollisionExtraData
-        public IAWActor? Actor { get; set; }
+        public IAWActor? Actor { get => actor; set { actor = value; ledger = null; } }
+        IAWActor? actor;
         public IALProcessor? ALProcessor { get; set; }
 
         [SerializeField, Disable] uint serialNumber = 0;
@@ -37,7 +38,16 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public object? UserData { get; set; }
 
         // 陣営はアクターの ArcaneLedgerBehaviour から読む(アクターが無ければ 0)
-        public int Faction => Actor?.GetLedger()?.Faction ?? 0;
+        // MEMO: 当たりの候補を足すたびに読むので、見つけた台帳を覚えておく(Actor を変えたら探し直す。見つからなければ次も探す)
+        public int Faction
+        {
+            get
+            {
+                ledger ??= actor?.GetLedger();
+                return ledger?.Faction ?? 0;
+            }
+        }
+        ArcaneLedgerBehaviour? ledger;
 
         [SerializeField] int attackId;
         public int AttackId { get => attackId; set => attackId = value; }

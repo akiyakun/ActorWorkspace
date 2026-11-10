@@ -35,9 +35,7 @@ namespace ActorWorkspace.ArcaneLedger.Tests
         class FakeProcessor : IALProcessor
         {
             public ALGeneralParam GeneralParam { get; } = new();
-            public int StatCapacity => 0;
-            public int MaxLifeStatId => -1;
-            public int MoveSpeedStatId => -1;
+            public ALProcessorConfig Config => ALProcessorConfig.Default;
             public void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController) { }
             public void Restore() { }
             public void Prepare() { }
@@ -47,7 +45,6 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             public HitResult Hit(in ALHitContact contact) => HitResult.NotHit;
             public ALDamageResult ApplyDamage(ALDamageInfo info) => default;
             public ALHealResult ApplyHeal(float amount) => default;
-            public float Calc(int paramId) => 0.0f;
         }
 
         static CollisionContactInfo Raw() => default;
@@ -344,6 +341,29 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             // 当たりの記録も、当たったときの設定(PerActivation・番号 10)で付いている
             resolver.Add(Raw(), new FakeExtraData() { Faction = 1, HitHistoryMode = ALHitHistoryMode.PerActivation, SerialNumber = 10 }, null);
             Assert.AreEqual(0, resolver.Resolve(1.0f, ALFaction.ToBit(1)).Count);
+        }
+
+        [Test]
+        public void 当たらないと分かっている候補は足すときに捨てる()
+        {
+            var resolver = new ALHitResolver() { HostileMask = ALFaction.ToBit(0) };
+
+            // 陣営が当たらない
+            Assert.IsFalse(resolver.Add(Raw(), new FakeExtraData() { Faction = 1, ALProcessor = new FakeProcessor() }, null));
+            Assert.AreEqual(0, resolver.PendingCount);
+
+            // 当たり直さない攻撃(間隔 0)で、もう当たっている
+            var attacker = new FakeExtraData() { HitHistoryMode = ALHitHistoryMode.PerActivation, SerialNumber = 10 };
+            Assert.IsTrue(resolver.Add(Raw(), attacker, null));
+            Assert.AreEqual(1, resolver.Resolve(0.0f, ALFaction.All).Count);
+            Assert.IsFalse(resolver.Add(Raw(), attacker, null));
+            Assert.AreEqual(0, resolver.PendingCount);
+
+            // 間隔のある攻撃は、確定するときに決める(足すときは捨てない)
+            var repeat = new FakeExtraData() { HitHistoryMode = ALHitHistoryMode.PerSource, RepeatHitInterval = 1.0f };
+            Assert.IsTrue(resolver.Add(Raw(), repeat, null));
+            Assert.AreEqual(1, resolver.Resolve(0.0f, ALFaction.All).Count);
+            Assert.IsTrue(resolver.Add(Raw(), repeat, null));
         }
 
         [Test]

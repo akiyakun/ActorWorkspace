@@ -1,5 +1,5 @@
 #nullable enable
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // コライダーのシリアルナンバーを返すクラス
     public static class ColliderSerialNumberGenerator

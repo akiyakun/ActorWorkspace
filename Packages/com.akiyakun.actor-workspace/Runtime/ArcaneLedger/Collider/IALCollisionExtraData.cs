@@ -1,10 +1,9 @@
 #nullable enable
 using UnityEngine;
 using afl;
-using afl.Service.Input;
 using ActorWorkspace;
 
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // コライダーがアタッチされたオブジェクトから必要な情報を保持・取得するためのインターフェース
     // HitBox(攻撃する側)と HurtBox(受ける側)の両方に付く。項目によって、どちらで使うかが違う

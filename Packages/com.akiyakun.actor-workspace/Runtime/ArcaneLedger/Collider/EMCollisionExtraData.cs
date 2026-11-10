@@ -3,7 +3,7 @@ using UnityEngine;
 using afl;
 using afl.Service.Effects;
 
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // EffectModifier版のIALCollisionExtraData実装(パーティクルの弾など、エフェクトの当たり判定)
     // 撃ったアクターは EffectOption.UserData で渡す

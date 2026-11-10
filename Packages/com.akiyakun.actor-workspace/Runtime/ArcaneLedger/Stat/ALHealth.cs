@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ActorWorkspace.ArcaneLedger
 {
     // アクターの HP・生死・無敵時間
-    // 最大 HP は ALStatTable の最終値(IALProcessor.MaxLifeStatId)。-1 なら HP を持たない(Max は 0)
+    // 最大 HP は ALStatTable の最終値(IALProcessor.Config.MaxLifeStatId)。-1 なら HP を持たない(Max は 0)
     //
     // ダメージ・回復は DefaultALProcessor.ApplyDamage()・ApplyHeal() を通す(無敵・撃破の判定と通知をそこで行う)
     // MEMO: プロパティを直接書き換えると、判定も通知も通らない(テスト・演出・ダメージによらない退場などに使う)

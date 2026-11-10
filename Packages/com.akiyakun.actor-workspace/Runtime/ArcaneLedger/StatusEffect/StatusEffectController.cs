@@ -11,22 +11,19 @@ namespace ActorWorkspace.ArcaneLedger
     public class StatusEffectController
     {
         public const int MaxStatusEffectCount = 32;
-        // public const int MaxStatusEffectParamCount = 6;
         public const int MaxGeneralParamCount = 3;
 
         public uint EnableFlags { get; private set; }
 
 
         ArcaneLedgerBehaviour owner;
-        // IAWActor actor;
         public IAWActor Actor { get; private set; } = null!;
         public ArcaneLedgerBehaviour Owner => owner;
         public ALGeneralParam GeneralParam { get; } = null!;
         public ALStatTable Stats { get; } = null!;
-        // 移動速度のステータスの ID(IALProcessor.MoveSpeedStatId)。-1 なら移動速度を変える効果は何もしない
-        public int MoveSpeedStatId => owner.Processor.MoveSpeedStatId;
+        // 移動速度のステータスの ID(IALProcessor.Config.MoveSpeedStatId)。-1 なら移動速度を変える効果は何もしない
+        public int MoveSpeedStatId => owner.Processor.Config.MoveSpeedStatId;
 
-        // IALProcessor processor;
         StatusEffect[] statusEffects = new StatusEffect[MaxStatusEffectCount];
 
         // MEMO:ビットが1のとき無効になるマスク
@@ -42,27 +39,12 @@ namespace ActorWorkspace.ArcaneLedger
         // MEMO: 同じ種類をかけ直したときは、どのルールでも Apply() で値と効果時間が新しくなる
         public ALStatusEffectStackRule StackRule { get; set; } = ALStatusEffectStackRule.Stack;
 
-        // EventBag eventBag = new();
-
         public StatusEffectController(ArcaneLedgerBehaviour owner)
         {
             this.owner = owner;
-            // this.processor = processor;
             Actor = owner.Actor;
             GeneralParam = owner.GeneralParam;
             Stats = owner.Stats;
-
-            // for (int id = 0; id < MaxStatusEffectCount; id++)
-            // {
-            //     statusEffects[id].OnEnableChanged += OnEnableChanged;
-            // }
-
-            // Events
-            // {
-            //     eventBag.In(Actor.EventBus,
-            //         (entity) => entity.Subscribe(ALActorEvents.RequestStatusEffect, RequestStatusEffectChanged),
-            //         (entity) => entity.Unsubscribe(ALActorEvents.RequestStatusEffect, RequestStatusEffectChanged));
-            // }
         }
 
         public void Restore()
@@ -78,7 +60,6 @@ namespace ActorWorkspace.ArcaneLedger
 
         public void Prepare()
         {
-            // RequestMask = 0xffffffff;
             RequestMask = 0;
 
             for (int id = 0; id < MaxStatusEffectCount; id++)
@@ -89,8 +70,6 @@ namespace ActorWorkspace.ArcaneLedger
 
         public void Update(float deltaTime)
         {
-            // EnableFlags = 0;
-
             // マスクを考慮した有効なリクエストフラグ
             uint requestBit = ~(RequestMask & RequestUnmask) & RequestFlags;
             // ~(1110 & 0111 = 0110) -> 1001
@@ -110,7 +89,6 @@ namespace ActorWorkspace.ArcaneLedger
 
                 if (statusEffect.Enable == false) continue;
                 statusEffect.Update(deltaTime);
-                // if (statusEffect.Enable > 0) EnableFlags |= (1u << id);
             }
         }
 

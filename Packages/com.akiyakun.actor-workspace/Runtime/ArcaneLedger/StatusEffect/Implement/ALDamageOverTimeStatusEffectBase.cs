@@ -8,7 +8,7 @@ namespace ActorWorkspace.ArcaneLedger
         Param2: 1 回のダメージ
         TickIntervalTime: ダメージの間隔(秒)。0 ならダメージなし
 
-        Tick ごとに、自分に ALActorEvents.RequestDamage(ALDamageKind.Continuous)を発行する
+        Tick ごとに、自分に ALActorEvents.RequestDamage(ALDamageKind.Continuous)を発行する。攻撃したアクターは、かけたアクター(ApplyStatusEffectParams.Applier)
         かけ直したときは次のダメージまでの時間を引き継ぎ、最初のダメージまでの時間は GetFirstTickDelay() で変えられる(StatusEffect)
     */
     public abstract class ALDamageOverTimeStatusEffectBase : ALMoveRestrictStatusEffectBase
@@ -18,7 +18,7 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected override void OnTick()
         {
-            Actor.EventBus.Publish(ALActorEvents.RequestDamage, ALDamageInfo.Continuous(GetTickDamage()));
+            Actor.EventBus.Publish(ALActorEvents.RequestDamage, ALDamageInfo.Continuous(GetTickDamage(), AppliedParams.Applier));
         }
     }
 }

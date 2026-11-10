@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using afl;
 
-namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
+namespace ActorWorkspace.ArcaneLedger
 {
     // 当たりの候補を溜めて、まとめて確定する(ALHurtBoxBehaviour が使う)
     // 0. IgnoreEvents の種類の通知(既定は「離れた」(Exit))は候補にしない
@@ -45,6 +45,10 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // 受けた側の汎用パラメータ(写しを取る。null なら取らない)
         public ALGeneralParam? ReceiverParams { get; set; }
 
+        // 受けた側の、当たる相手の陣営のビット(ArcaneLedgerBehaviour.HostileMask)
+        // MEMO: Add() のときに、陣営が当たらない候補を捨てる(汎用パラメータを写さないため。Resolve() でも確かめる)
+        public uint HostileMask { get; set; } = ALFaction.All;
+
         // 汎用パラメータの写しを入れる配列。Add() は writeBuffer に写し、Resolve() で入れ替える
         // (Resolve() が返した当たりの写しは、次の Resolve() まで書き換えない)
         float[] writeBuffer = new float[ALGeneralParamSnapshot.Stride * 4];
@@ -59,20 +63,32 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             CollisionEventType.Collision2DExit | CollisionEventType.Trigger2DExit;
 
         // source: 攻撃の当たり判定(HitBox・弾)、hurtBox: 受けた側の HurtBox(分からなければ null)
-        // 戻り値: 候補にしたか(IgnoreEvents の種類なら false)
+        // 戻り値: 候補にしたか(IgnoreEvents の種類・当たらないと分かっているときは false)
         public bool Add(in CollisionContactInfo raw, IALCollisionExtraData source, IALCollisionExtraData? hurtBox)
         {
             if ((raw.EventType & IgnoreEvents) != 0) return false;
+
+            // 当たらないと分かっている候補は、汎用パラメータを写す前に捨てる
+            // - 陣営が当たらない
+            // - 当たり直さない攻撃(RepeatHitInterval が 0 以下)で、もう当たっている
+            // MEMO: 間隔のある攻撃は、確定する時刻で決まるので Resolve() で確かめる
+            int faction = source.Faction;
+            if (ALFaction.CanHit(faction, HostileMask) == false) return false;
+            var hitHistoryMode = source.HitHistoryMode;
+            float repeatHitInterval = source.RepeatHitInterval;
+            ulong hitKey = ALHitHistory.GetHitKey(source);
+            if (hitHistoryMode != ALHitHistoryMode.None && repeatHitInterval <= 0.0f && History.CanHit(hitKey, repeatHitInterval, 0.0f) == false) return false;
+
             var processor = source.ALProcessor;
             candidates.Add(new Candidate()
             {
                 Raw = raw,
                 Source = source,
                 HurtBox = hurtBox,
-                Faction = source.Faction,
-                HitHistoryMode = source.HitHistoryMode,
-                RepeatHitInterval = source.RepeatHitInterval,
-                HitKey = ALHitHistory.GetHitKey(source),
+                Faction = faction,
+                HitHistoryMode = hitHistoryMode,
+                RepeatHitInterval = repeatHitInterval,
+                HitKey = hitKey,
                 AttackId = source.AttackId,
                 Attacker = source.Actor,
                 AttackerProcessor = processor,

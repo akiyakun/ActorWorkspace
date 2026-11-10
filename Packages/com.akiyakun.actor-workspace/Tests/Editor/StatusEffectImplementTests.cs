@@ -21,9 +21,7 @@ namespace ActorWorkspace.ArcaneLedger.Tests
 
         class TestProcessor : DefaultALProcessor
         {
-            public override int StatCapacity => 2;
-            public override int MaxLifeStatId => MaxLife;
-            public override int MoveSpeedStatId => MoveSpeed;
+            public override ALProcessorConfig Config => new() { StatCapacity = 2, MaxLifeStatId = MaxLife, MoveSpeedStatId = MoveSpeed };
             public StatusEffectController Controller => statusEffectController;
         }
 
@@ -171,6 +169,29 @@ namespace ActorWorkspace.ArcaneLedger.Tests
 
             // 続くダメージなので無敵にならない
             Assert.AreEqual(0.0f, behaviour.Health.InvincibleTime);
+        }
+
+        [Test]
+        public void 続くダメージはかけたアクターが攻撃したことになる()
+        {
+            var applier = new StubAWActor(9, 0);
+            try
+            {
+                IAWActor? damagedBy = null;
+                behaviour.Actor.EventBus.Subscribe(ALActorEvents.OnDamaged, (ALDamagedArgs args) => damagedBy = args.Info.Attacker);
+
+                controller.SetStatusEffect(new TestPoison());
+                var p = Params(PoisonId, tickInterval: 1.0f, param2: 1.0f);
+                p.Applier = applier;
+                controller.Request(p);
+                behaviour.DoUpdate(1.1f);
+
+                Assert.AreSame(applier, damagedBy);
+            }
+            finally
+            {
+                applier.Dispose();
+            }
         }
 
         [Test]

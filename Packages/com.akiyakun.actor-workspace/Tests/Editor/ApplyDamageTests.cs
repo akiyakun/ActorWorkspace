@@ -12,8 +12,7 @@ namespace ActorWorkspace.ArcaneLedger.Tests
 
         class TestProcessor : DefaultALProcessor
         {
-            public override int StatCapacity => 1;
-            public override int MaxLifeStatId => MaxLife;
+            public override ALProcessorConfig Config => new() { StatCapacity = 1, MaxLifeStatId = MaxLife, MoveSpeedStatId = -1 };
 
             public float InvincibleTimeOnHit;
             public bool Filter = true;
@@ -30,6 +29,16 @@ namespace ActorWorkspace.ArcaneLedger.Tests
                 LastDamagedReason = args.Result.Reason;
             }
             protected override void OnDefeated(in ALDamagedArgs args) => DefeatedCount++;
+
+            // 当たり(Hit)の差し込み口
+            public float HitValue;
+            public int HitReaction;
+            protected override bool TryCreateHitDamage(in ALHitContact contact, out ALDamageInfo info)
+            {
+                info = ALDamageInfo.FromHit(contact, HitValue);
+                return true;
+            }
+            protected override int DecideReactionBeforeDamage(in ALHitContact contact, in ALDamageInfo info) => HitReaction;
         }
 
         StubAWActor actor = null!;
@@ -71,10 +80,86 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             attacker.Dispose();
         }
 
+        ALHitContact Contact(bool withProcessor = true)
+        {
+            return new ALHitContact() { Source = null!, Attacker = attacker, AttackerProcessor = withProcessor ? processor : null };
+        }
+
+        [Test]
+        public void 当たりはダメージを与えてリアクションの段階を返す()
+        {
+            processor.HitValue = 1.0f;
+            processor.HitReaction = 2;
+
+            var result = processor.Hit(Contact());
+
+            Assert.IsTrue(result.IsHit);
+            Assert.AreEqual(2, result.DamageReaction);
+            Assert.IsTrue(result.Damage.Applied);
+            Assert.AreEqual(8.0f, health.Current);
+            Assert.AreEqual(1, dealtEventCount);
+        }
+
+        [Test]
+        public void 攻撃した側のProcessorが分からない当たりは当たらない()
+        {
+            processor.HitValue = 1.0f;
+            Assert.IsFalse(processor.Hit(Contact(withProcessor: false)).IsHit);
+            Assert.AreEqual(10.0f, health.Current);
+        }
+
+        [Test]
+        public void 倒れた当たりと受けなかった当たりはリアクションしない()
+        {
+            processor.HitReaction = 2;
+            processor.InvincibleTimeOnHit = 1.0f;
+
+            // 0 ダメージ(受けない)
+            processor.HitValue = 0.0f;
+            var zero = processor.Hit(Contact());
+            Assert.IsTrue(zero.IsHit);
+            Assert.AreEqual(0, zero.DamageReaction);
+            Assert.AreEqual(ALDamageRejectReason.Zero, zero.Damage.Reason);
+
+            // 無敵
+            processor.HitValue = 1.0f;
+            Assert.AreEqual(0, processor.Hit(Contact()).DamageReaction);
+
+            // 倒れた
+            health.InvincibleTime = 0.0f;
+            processor.HitValue = 100.0f;
+            var killed = processor.Hit(Contact());
+            Assert.IsTrue(killed.Damage.Killed);
+            Assert.AreEqual(0, killed.DamageReaction);
+        }
+
+        [Test]
+        public void 当たったらリアクションの段階をDamageReactionで知らせる()
+        {
+            int count = 0;
+            int last = -1;
+            actor.EventBus.Subscribe(AWCoreActorEvents.DamageReaction, (int value) => { count++; last = value; });
+
+            processor.HitValue = 1.0f;
+            processor.HitReaction = 2;
+            behaviour.ContactWithHurtBox(Contact());
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(2, last);
+
+            processor.HitReaction = 0;
+            behaviour.ContactWithHurtBox(Contact());
+            Assert.AreEqual(2, count);
+            Assert.AreEqual(0, last);
+
+            // 当たらなければ知らせない
+            behaviour.ContactWithHurtBox(Contact(withProcessor: false));
+            Assert.AreEqual(2, count);
+        }
+
         // HP を持たない(MaxLifeStatId が -1)
         class NoLifeProcessor : DefaultALProcessor
         {
-            public override int StatCapacity => 1;
+            public override ALProcessorConfig Config => new() { StatCapacity = 1, MaxLifeStatId = -1, MoveSpeedStatId = -1 };
             public int DefeatedCount;
             protected override void OnDefeated(in ALDamagedArgs args) => DefeatedCount++;
         }

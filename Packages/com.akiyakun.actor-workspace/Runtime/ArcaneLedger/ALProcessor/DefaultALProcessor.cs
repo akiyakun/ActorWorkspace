@@ -1,5 +1,4 @@
 #nullable enable
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using afl;
 using ActorWorkspace.ArcaneLedger.ActorBehaviour;
@@ -20,10 +19,8 @@ namespace ActorWorkspace.ArcaneLedger
 
         protected EventBag eventBag = new();
 
-        // ステータスの表の大きさ・最大 HP のステータスの ID(ゲーム側が override する)
-        public virtual int StatCapacity => 0;
-        public virtual int MaxLifeStatId => -1;
-        public virtual int MoveSpeedStatId => -1;
+        // 設定(ステータスの表の大きさ・最大 HP と移動速度のステータスの ID。ゲーム側が override する)
+        public virtual ALProcessorConfig Config => ALProcessorConfig.Default;
 
         public virtual void Setup(ArcaneLedgerBehaviour owner, StatusEffectController statusEffectController)
         {
@@ -86,38 +83,43 @@ namespace ActorWorkspace.ArcaneLedger
         }
 
 
+        #region Hit
+        // 当たり判定の当たり。順番:
+        // 1. FilterHit() が false なら当たらない(NotHit)
+        // 2. TryCreateHitDamage() でダメージの情報を作る。false ならダメージを与えずに当たりにする(リアクションもなし)
+        // 3. DecideReactionBeforeDamage() でリアクションを先に決めて info.DamageReaction に入れる(GetInvincibleTimeOnHit() などで使える)
+        // 4. ApplyDamage()
+        // 5. ApplyHitReaction() でリアクションを決めて、かける(戻り値の段階は AWCoreActorEvents.DamageReaction で知らせる)
         public virtual HitResult Hit(in ALHitContact contact)
         {
-            return HitResult.NotHit;
+            if (FilterHit(in contact) == false) return HitResult.NotHit;
+            if (TryCreateHitDamage(in contact, out var info) == false) return new HitResult() { IsHit = true };
+
+            info.DamageReaction = DecideReactionBeforeDamage(in contact, in info);
+            var result = ApplyDamage(info);
+            int reaction = ApplyHitReaction(in contact, in info, in result);
+            return new HitResult() { IsHit = true, DamageReaction = reaction, Damage = result };
         }
 
-
-        // デフォルトの汎用パラメータ計算
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float Calc(int paramId)
+        // ゲーム側が override するところ
+        // 当たりにするか(false なら NotHit。陣営・レイヤーは ALHurtBoxBehaviour が先に確かめている)
+        // MEMO: 既定は、攻撃した側の ALProcessor が分かる当たりだけ
+        protected virtual bool FilterHit(in ALHitContact contact) => contact.AttackerProcessor != null;
+        // 当たりのダメージの情報(既定は ALDamageInfo.FromHit で値 0。計算は CalcDamage())。false ならダメージを与えない
+        protected virtual bool TryCreateHitDamage(in ALHitContact contact, out ALDamageInfo info)
         {
-            var param = generalParam[paramId];
-            return (param.Value + param.Delta) * param.Factor;
+            info = ALDamageInfo.FromHit(contact, 0.0f);
+            return true;
         }
-
-        // protected virtual float CalcDamageReaction()
-        // {
-        //     var param = GetGeneralParam(GeneralParamType.DamageReaction);
-        //     return param.Value + param.Modifier;
-        // }
-
-        // protected virtual float CalcDamageReactionResist()
-        // {
-        //     var param = GetGeneralParam(GeneralParamType.DamageReactionResist);
-        //     return param.Value + param.Modifier;
-        // }
-
-        // public void SetupStatusEffects(StatusEffect[] statusEffects)
-        // {
-        //     if (statusEffects == null) throw new System.ArgumentNullException(nameof(statusEffects));
-
-        //     //  statusEffects[(int)StatusEffectId.Freeze] = new StatusEffectFreeze();
-        // }
+        // ダメージより先に決めるリアクションの段階(既定は 0)
+        protected virtual int DecideReactionBeforeDamage(in ALHitContact contact, in ALDamageInfo info) => 0;
+        // リアクションを決めて、かける。戻り値はリアクションの段階(0 はなし)
+        // MEMO: 既定は、ダメージを受けて倒れなかったときだけ info.DamageReaction
+        protected virtual int ApplyHitReaction(in ALHitContact contact, in ALDamageInfo info, in ALDamageResult result)
+        {
+            return result.Applied && result.Killed == false ? info.DamageReaction : 0;
+        }
+        #endregion
 
         protected virtual void RevokeStatusEffect(int id)
         {

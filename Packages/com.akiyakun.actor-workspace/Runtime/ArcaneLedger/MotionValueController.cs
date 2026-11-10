@@ -82,23 +82,6 @@ namespace ActorWorkspace.ArcaneLedger
                 generalParam[BitUtility.LsbToIndex(lsb)].Delta = 0;
                 delta &= ~lsb;
             } while (delta != 0);
-
-            // for (int index = 0; index < ALGeneralParam.MaxParamCount; index++)
-            // {
-            //     uint mask = 1u << index;
-            //     if ((value & mask) != 0)
-            //     {
-            //         generalParam[index].Value = 0;
-            //     }
-            //     if ((factor & mask) != 0)
-            //     {
-            //         generalParam[index].Factor = 0;
-            //     }
-            //     if ((delta & mask) != 0)
-            //     {
-            //         generalParam[index].Delta = 0;
-            //     }
-            // }
         }
 
         void OnAnimationEntered(IAWAnimation animation)
@@ -114,16 +97,6 @@ namespace ActorWorkspace.ArcaneLedger
                 ProcessSetGenEvent(animation, ref eventData);
                 return;
             }
-
-            // switch (eventData.Name)
-            // {
-            //     case AWCoreAnimationEvents.MotionConfig:
-            //         // EventBus.Publish(ActorEvents.MotionConfig, eventData.Int);
-            //         break;
-            //     default:
-            //         Debug.Assert(false, $"Unknown animation event: {eventData.Name}");
-            //         break;
-            // }
         }
 
         void ProcessSetGenEvent(IAWAnimation animation, ref AWAnimationEventData eventData)
