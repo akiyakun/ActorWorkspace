@@ -42,7 +42,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         [SerializeField] int attackId;
         public int AttackId { get => attackId; set => attackId = value; }
 
-        // MEMO: 既定は None(当たるたびに処理する。今までの動き)。攻撃の対応表(ALAttackBindingBehaviour)でかけた攻撃は PerActivation になる
+        // MEMO: 既定は None(当たるたびに処理する。今までの動き)。ALHitBoxBehaviour.SetDefaultHitHistory で変えられる
         [SerializeField] ALHitHistoryMode hitHistoryMode = ALHitHistoryMode.None;
         public ALHitHistoryMode HitHistoryMode { get => hitHistoryMode; set => hitHistoryMode = value; }
 

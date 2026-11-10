@@ -23,7 +23,7 @@ namespace ActorWorkspace
         public const string DisableRootMotionRotationEnd = "DisableRootMotionRotationEnd";
 
         // HitBox に攻撃を持たせる(int: 攻撃の番号。AWAttackBinding.LocalId)。次のアニメーションに入ると外れる
-        // MEMO: ArcaneLedger の ALAttackBindingBehaviour が受ける
+        // MEMO: ArcaneLedger の ALAttackBindingBehaviour が受ける(今はコメントアウトしているので、受けるものが無い)
         public const string SetAttack = "SetAttack";
 
 

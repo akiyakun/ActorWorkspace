@@ -10,7 +10,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     {
         // アクターの MainCollisionDetector(Variable)で受け取る。どの HurtBox に当たったかは分からない(部位は 0)
         Main,
-        // HurtBoxFolder の下の HurtBox ごとの ICollisionDetector で受け取る(部位・倍率・優先度が使える)
+        // HurtBoxFolder の下の HurtBox ごとの ICollisionDetector で受け取る(どの HurtBox に当たったかが分かる)
+        // MEMO: 部位・倍率・優先度をアニメーションの追加情報から入れるのは、今はコメントアウトしている(下の OnAwake)
         // MEMO: HurtBox のアタッチメントに CollisionDetector を付けておくこと(ゲーム側)
         PerHurtBox,
     }
@@ -18,7 +19,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     // やられ判定(HurtBox)
     // 当たり判定の通知を候補として溜め、OnUpdate でまとめて確定してから ArcaneLedgerBehaviour.ContactWithHurtBox() を呼ぶ
     // (陣営・ヒット履歴・同じフレームに複数の部位に当たったときの部位の選び方は ALHitResolver)
-    // HurtBox のアタッチメントには ALCollisionExtraData を付け、部位・倍率・優先度をアニメーションの追加情報(IAWHitAreaInfoProvider)から入れる
+    // HurtBox のアタッチメントには ALCollisionExtraData を付ける(部位・倍率・優先度はその ALCollisionExtraData の値。今はアニメーションの追加情報からは入れない)
     //
     // HurtBoxはHitBoxとのみ接触する想定
     // IALCollisionExtraData が取得できる前提
@@ -80,7 +81,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             var folderObject = Variables.Get(AWCoreVariableKeys.HurtBoxFolder).GetGameObject();
             if (folderObject != null)
             {
-                var hitAreaInfo = Actor.AnimationController?.ExtraData as IAWHitAreaInfoProvider;
+                // FIXME: 部位・倍率・優先度をアニメーションの追加情報から入れるのは、使っていないのでコメントアウトした。AttackData の形が決まったら戻す
+                // var hitAreaInfo = Actor.AnimationController?.ExtraData as IAWHitAreaInfoProvider;
 
                 // GetComponentsInChildren()は自身も含む
                 var followers = folderObject.GetComponentsInChildren<IAWFollower>(includeInactive: true);
@@ -94,12 +96,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                     extraInfo.ALProcessor = ledger.Processor;
 
                     // 部位・倍率・優先度
-                    if (hitAreaInfo != null && hitAreaInfo.TryGetHurtBoxInfo(follower.GameObject.name, out var info))
-                    {
-                        extraInfo.Region = info.Region;
-                        extraInfo.DamageMultiplier = info.DamageMultiplier > 0.0f ? info.DamageMultiplier : 1.0f;
-                        extraInfo.Priority = info.Priority;
-                    }
+                    // if (hitAreaInfo != null && hitAreaInfo.TryGetHurtBoxInfo(follower.GameObject.name, out var info))
+                    // {
+                    //     extraInfo.Region = info.Region;
+                    //     extraInfo.DamageMultiplier = info.DamageMultiplier > 0.0f ? info.DamageMultiplier : 1.0f;
+                    //     extraInfo.Priority = info.Priority;
+                    // }
                     hurtBoxes.Add(extraInfo);
                 }
             }

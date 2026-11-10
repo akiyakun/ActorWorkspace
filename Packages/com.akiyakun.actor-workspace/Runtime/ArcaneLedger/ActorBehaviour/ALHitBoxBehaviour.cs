@@ -18,7 +18,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // HitBox の当たりの記録の区切り方と、同じ相手に当たり直すまでの秒数(ALCollisionExtraData の既定。最初は None・0)
         // 例: PerActivation・0 なら、HitBox が出ている間は同じ相手に 1 回だけ当たり、出直したらまた当たる
         // MEMO: Awake のあと(ActorBehaviourController.Add のあと)に呼んでよい。今ある HitBox にも入れる
-        // MEMO: ALAttackBindingBehaviour は Awake のときの値を「元の値」として覚えるので、それより先に呼ぶ
+        // MEMO: ALAttackBindingBehaviour(今はコメントアウトしている)は Awake のときの値を「元の値」として覚えるので、それより先に呼ぶ
         public void SetDefaultHitHistory(ALHitHistoryMode mode, float repeatHitInterval)
         {
             defaultHitHistoryMode = mode;
