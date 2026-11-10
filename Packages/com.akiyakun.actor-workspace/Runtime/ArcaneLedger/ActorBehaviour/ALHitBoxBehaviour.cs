@@ -32,9 +32,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             hitBox.RepeatHitInterval = defaultRepeatHitInterval;
         }
 
+        // アクターを使い回すとき、HitBox に新しい番号を振る(前に出ていたときの当たりの記録を引き継がない)
+        // MEMO: 出たり消えたりしない HitBox(いつも出ている体当たりなど)は OnActivating が来ないので、ここと Awake で振る
         public override void OnRestore()
         {
-
+            foreach (var hitBox in hitBoxes) hitBox.SerialNumber = ColliderSerialNumberGenerator.GetNext();
         }
 
         public override void OnAwake()
@@ -68,6 +70,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                     {
                         extraInfo.ALProcessor = behaviour.Processor;
                     }
+                    // 番号 0 のままだと、ほかのアクターの HitBox と当たりの記録のキー(PerActivation)が同じになる
+                    extraInfo.SerialNumber = ColliderSerialNumberGenerator.GetNext();
                     hitBoxes.Add(extraInfo);
                     if (defaultHitHistoryMode != ALHitHistoryMode.None) ApplyDefaultHitHistory(extraInfo);
 

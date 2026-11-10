@@ -12,6 +12,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
     // 4. ヒット履歴(ALHitHistory)で、当たり直してよいかを確かめてから当たる
     // Add() のときに、攻撃した側と受けた側(ReceiverParams)の汎用パラメータを写しておく(ALHitContact.AttackerParams・ReceiverParams)
     // MEMO: 確定するのは Update なので、それまでにモーションが変わってモーション値などが戻っても、当たった瞬間の値で計算できる
+    // MEMO: 攻撃した側の陣営・ヒット履歴の設定・攻撃の ID・アクター・ALProcessor も Add() のときに写す
+    //       (確定までに、攻撃が次のアニメーションで元に戻ったり、弾がプールに戻って中身が消えたり、アクターが消えたりするため)
     public sealed class ALHitResolver
     {
         struct Candidate
@@ -19,6 +21,14 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             public CollisionContactInfo Raw;
             public IALCollisionExtraData Attacker;
             public IALCollisionExtraData? HurtBox;
+            // Add() のときの攻撃した側の値
+            public int Faction;
+            public ALHitHistoryMode HitHistoryMode;
+            public float RepeatHitInterval;
+            public ulong HitKey;
+            public int AttackId;
+            public IAWActor? AttackerActor;
+            public IALProcessor? AttackerProcessor;
             // 汎用パラメータの写しの位置(無ければ -1)
             public int AttackerParamsOffset;
             public int ReceiverParamsOffset;
@@ -50,12 +60,20 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         public bool Add(in CollisionContactInfo raw, IALCollisionExtraData attacker, IALCollisionExtraData? hurtBox)
         {
             if ((raw.EventType & IgnoreEvents) != 0) return false;
+            var processor = attacker.ALProcessor;
             candidates.Add(new Candidate()
             {
                 Raw = raw,
                 Attacker = attacker,
                 HurtBox = hurtBox,
-                AttackerParamsOffset = WriteSnapshot(attacker.ALProcessor?.GeneralParam),
+                Faction = attacker.Faction,
+                HitHistoryMode = attacker.HitHistoryMode,
+                RepeatHitInterval = attacker.RepeatHitInterval,
+                HitKey = ALHitHistory.GetHitKey(attacker),
+                AttackId = attacker.AttackId,
+                AttackerActor = attacker.Actor,
+                AttackerProcessor = processor,
+                AttackerParamsOffset = WriteSnapshot(processor?.GeneralParam),
                 ReceiverParamsOffset = WriteSnapshot(ReceiverParams),
             });
             return true;
@@ -80,40 +98,46 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         {
             resolved.Clear();
 
-            for (int i = 0; i < candidates.Count; i++)
+            try
             {
-                var candidate = candidates[i];
-                if (ALFaction.CanHit(candidate.Attacker.Faction, hostileMask) == false) continue;
-
-                ulong key = ALHitHistory.GetHitKey(candidate.Attacker);
-                if (candidate.Attacker.HitHistoryMode == ALHitHistoryMode.None)
+                for (int i = 0; i < candidates.Count; i++)
                 {
-                    resolved.Add(ToContact(candidate, key));
-                    continue;
+                    var candidate = candidates[i];
+                    if (ALFaction.CanHit(candidate.Faction, hostileMask) == false) continue;
+
+                    ulong key = candidate.HitKey;
+                    if (candidate.HitHistoryMode == ALHitHistoryMode.None)
+                    {
+                        resolved.Add(ToContact(candidate));
+                        continue;
+                    }
+
+                    // 同じ攻撃で、先に出た候補があればそちらでまとめたので飛ばす
+                    if (IsAlreadyGrouped(i, key)) continue;
+
+                    // 同じ攻撃の候補の中で、優先度がいちばん大きい HurtBox を使う
+                    var best = candidate;
+                    for (int j = i + 1; j < candidates.Count; j++)
+                    {
+                        var other = candidates[j];
+                        if (other.HitHistoryMode == ALHitHistoryMode.None) continue;
+                        if (other.HitKey != key) continue;
+                        if (GetPriority(other) > GetPriority(best)) best = other;
+                    }
+
+                    if (History.CanHit(key, best.RepeatHitInterval, now) == false) continue;
+                    History.Mark(key, now);
+                    resolved.Add(ToContact(best));
                 }
-
-                // 同じ攻撃で、先に出た候補があればそちらでまとめたので飛ばす
-                if (IsAlreadyGrouped(i, key)) continue;
-
-                // 同じ攻撃の候補の中で、優先度がいちばん大きい HurtBox を使う
-                var best = candidate;
-                for (int j = i + 1; j < candidates.Count; j++)
-                {
-                    var other = candidates[j];
-                    if (other.Attacker.HitHistoryMode == ALHitHistoryMode.None) continue;
-                    if (ALHitHistory.GetHitKey(other.Attacker) != key) continue;
-                    if (GetPriority(other) > GetPriority(best)) best = other;
-                }
-
-                if (History.CanHit(key, best.Attacker.RepeatHitInterval, now) == false) continue;
-                History.Mark(key, now);
-                resolved.Add(ToContact(best, key));
             }
-
-            candidates.Clear();
-            // 返した当たりの写しは readBuffer に残し、次の Add() からは別の配列に写す
-            (writeBuffer, readBuffer) = (readBuffer, writeBuffer);
-            writeCount = 0;
+            finally
+            {
+                // 途中で例外が出ても、溜めた候補は捨てる(次のフレームに持ち越さない)
+                candidates.Clear();
+                // 返した当たりの写しは readBuffer に残し、次の Add() からは別の配列に写す
+                (writeBuffer, readBuffer) = (readBuffer, writeBuffer);
+                writeCount = 0;
+            }
             return resolved;
         }
 
@@ -130,22 +154,25 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             for (int j = 0; j < index; j++)
             {
                 var prev = candidates[j];
-                if (prev.Attacker.HitHistoryMode == ALHitHistoryMode.None) continue;
-                if (ALHitHistory.GetHitKey(prev.Attacker) == key) return true;
+                if (prev.HitHistoryMode == ALHitHistoryMode.None) continue;
+                if (prev.HitKey == key) return true;
             }
             return false;
         }
 
         static int GetPriority(in Candidate candidate) => candidate.HurtBox?.Priority ?? 0;
 
-        ALHitContact ToContact(in Candidate candidate, ulong key)
+        ALHitContact ToContact(in Candidate candidate)
         {
             return new ALHitContact()
             {
                 Raw = candidate.Raw,
                 Attacker = candidate.Attacker,
                 HurtBox = candidate.HurtBox,
-                HitKey = key,
+                HitKey = candidate.HitKey,
+                AttackId = candidate.AttackId,
+                AttackerActor = candidate.AttackerActor,
+                AttackerProcessor = candidate.AttackerProcessor,
                 AttackerParams = ToSnapshot(candidate.AttackerParamsOffset),
                 ReceiverParams = ToSnapshot(candidate.ReceiverParamsOffset),
             };

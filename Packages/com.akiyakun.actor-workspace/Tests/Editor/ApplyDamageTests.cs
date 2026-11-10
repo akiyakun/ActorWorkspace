@@ -71,6 +71,38 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             attacker.Dispose();
         }
 
+        // HP を持たない(MaxLifeStatId が -1)
+        class NoLifeProcessor : DefaultALProcessor
+        {
+            public override int StatCapacity => 1;
+            public int DefeatedCount;
+            protected override void OnDefeated(in ALDamagedArgs args) => DefeatedCount++;
+        }
+
+        [Test]
+        public void HPを持たなければダメージを受けない()
+        {
+            var noLifeActor = new StubAWActor(3, 0);
+            try
+            {
+                var noLife = noLifeActor.ActorBehaviourController.Add<ArcaneLedgerBehaviour<NoLifeProcessor>>()!;
+                noLife.Restore();
+                var noLifeProcessor = (NoLifeProcessor)noLife.Processor;
+
+                var result = noLifeProcessor.ApplyDamage(ALDamageInfo.Hit(5.0f, attacker));
+
+                Assert.IsFalse(result.Applied);
+                Assert.AreEqual(ALDamageRejectReason.NoLife, result.Reason);
+                Assert.IsFalse(result.Killed);
+                Assert.IsTrue(noLife.Health.IsAlive);
+                Assert.AreEqual(0, noLifeProcessor.DefeatedCount);
+            }
+            finally
+            {
+                noLifeActor.Dispose();
+            }
+        }
+
         [Test]
         public void Restoreで最大HPになる()
         {

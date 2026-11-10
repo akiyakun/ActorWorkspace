@@ -6,7 +6,8 @@ using ActorWorkspace.ArcaneLedger.ActorBehaviour;
 
 namespace ActorWorkspace.ArcaneLedger
 {
-    public class DefaultALProcessor : IALProcessor
+    // MEMO: Dispose() で購読(eventBag)を外す(ArcaneLedgerBehaviour.OnDestroy から呼ぶ)
+    public class DefaultALProcessor : IALProcessor, System.IDisposable
     {
         protected ArcaneLedgerBehaviour owner = null!;
         protected IAWActor actor = null!;
@@ -60,6 +61,11 @@ namespace ActorWorkspace.ArcaneLedger
 
         public virtual void Restore()
         {
+        }
+
+        public virtual void Dispose()
+        {
+            eventBag.Dispose();
         }
 
         public virtual void Prepare()
@@ -129,6 +135,7 @@ namespace ActorWorkspace.ArcaneLedger
         void OnRequestHeal(float amount) => ApplyHeal(amount);
 
         // ダメージを受ける。順番:
+        // 0. HP を持たなければ受けない(NoLife)
         // 1. 倒れていたら受けない(NotAlive)
         // 2. 攻撃(Hit)は、無敵の間は受けない(Invincible)
         // 3. FilterDamage() が false なら受けない(Filtered)
@@ -140,6 +147,7 @@ namespace ActorWorkspace.ArcaneLedger
         public virtual ALDamageResult ApplyDamage(ALDamageInfo info)
         {
             float life = health.Current;
+            if (health.HasLife == false) return ALDamageResult.Rejected(ALDamageRejectReason.NoLife, life);
             if (health.IsAlive == false) return ALDamageResult.Rejected(ALDamageRejectReason.NotAlive, life);
             if (info.Kind == ALDamageKind.Hit && health.IsInvincible) return ALDamageResult.Rejected(ALDamageRejectReason.Invincible, life);
             if (FilterDamage(ref info) == false) return ALDamageResult.Rejected(ALDamageRejectReason.Filtered, life);

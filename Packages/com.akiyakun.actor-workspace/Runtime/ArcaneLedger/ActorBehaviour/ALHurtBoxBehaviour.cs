@@ -76,13 +76,9 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             resolver.ReceiverParams = ledger.GeneralParam;
 
             // FolderObject
+            // MEMO: HurtBoxFolder が無くても、Main(MainCollisionDetector で受け取る)なら当たる(今までどおり)。PerHurtBox は受け取る先が無い
             var folderObject = Variables.Get(AWCoreVariableKeys.HurtBoxFolder).GetGameObject();
-            if (folderObject == null)
-            {
-                ElementActive = false;
-                return;
-            }
-
+            if (folderObject != null)
             {
                 var hitAreaInfo = Actor.AnimationController?.ExtraData as IAWHitAreaInfoProvider;
 
@@ -114,6 +110,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
         public override void OnDestroy()
         {
+            // MEMO: 消したあとに DetectMode を変えても、購読し直さない
+            isAwaked = false;
             Unsubscribe();
         }
 

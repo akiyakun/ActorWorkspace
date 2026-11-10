@@ -32,6 +32,12 @@ namespace ActorWorkspace.ArcaneLedger
             }
         }
 
+        // 購読を外す(ArcaneLedgerBehaviour.OnDestroy から呼ぶ)
+        public void Dispose()
+        {
+            eventBag.Dispose();
+        }
+
         public void Restore()
         {
             ResetMotionValues();

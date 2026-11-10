@@ -87,6 +87,13 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             // }
         }
 
+        // 購読を外す(Processor の EventBag・MotionValueController)
+        public override void OnDestroy()
+        {
+            motionValueController?.Dispose();
+            (Processor as System.IDisposable)?.Dispose();
+        }
+
         public override void OnUpdate(float deltaTime)
         {
             OverrideMoveDirection = Vector3.zero;

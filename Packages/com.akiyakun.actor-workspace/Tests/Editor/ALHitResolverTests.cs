@@ -294,8 +294,11 @@ namespace ActorWorkspace.ArcaneLedger.Tests
         [Test]
         public void 当たりのダメージ情報に攻撃と部位が入る()
         {
-            var attacker = new FakeExtraData() { AttackId = 2001 };
-            var contact = new ALHitContact() { Attacker = attacker, HurtBox = new FakeExtraData() { Region = 2, DamageMultiplier = 1.5f } };
+            var processor = new FakeProcessor();
+            var attacker = new FakeExtraData() { AttackId = 2001, ALProcessor = processor };
+            var resolver = new ALHitResolver();
+            resolver.Add(Raw(), attacker, new FakeExtraData() { Region = 2, DamageMultiplier = 1.5f });
+            var contact = resolver.Resolve(0.0f, ALFaction.All)[0];
 
             var info = ALDamageInfo.FromHit(contact, 3.0f);
 
@@ -303,8 +306,47 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             Assert.AreEqual(3.0f, info.Value);
             Assert.AreEqual(2001, info.AttackId);
             Assert.AreSame(attacker, info.Source);
+            Assert.AreSame(processor, info.AttackerProcessor);
             Assert.AreEqual(2, info.Region);
             Assert.AreEqual(1.5f, info.RegionMultiplier);
+        }
+
+        [Test]
+        public void 攻撃した側の値は当たったときのものを使う()
+        {
+            var processor = new FakeProcessor();
+            var attacker = new FakeExtraData()
+            {
+                Faction = 1, AttackId = 2001, ALProcessor = processor,
+                HitHistoryMode = ALHitHistoryMode.PerActivation, SerialNumber = 10,
+            };
+            var resolver = new ALHitResolver();
+            resolver.Add(Raw(), attacker, null);
+
+            // 確定する前に、攻撃が元に戻った・弾がプールに戻って中身が消えた
+            attacker.Faction = 0;
+            attacker.AttackId = 0;
+            attacker.ALProcessor = null;
+            attacker.HitHistoryMode = ALHitHistoryMode.None;
+            attacker.SerialNumber = 0;
+
+            var contacts = resolver.Resolve(0.0f, ALFaction.ToBit(1));
+            Assert.AreEqual(1, contacts.Count);
+            Assert.AreEqual(2001, contacts[0].AttackId);
+            Assert.AreSame(processor, contacts[0].AttackerProcessor);
+
+            // 当たりの記録も、当たったときの設定(PerActivation・番号 10)で付いている
+            resolver.Add(Raw(), new FakeExtraData() { Faction = 1, HitHistoryMode = ALHitHistoryMode.PerActivation, SerialNumber = 10 }, null);
+            Assert.AreEqual(0, resolver.Resolve(1.0f, ALFaction.ToBit(1)).Count);
+        }
+
+        [Test]
+        public void 確定したあとは候補が残らない()
+        {
+            var resolver = new ALHitResolver();
+            resolver.Add(Raw(), new FakeExtraData(), null);
+            resolver.Resolve(0.0f, ALFaction.All);
+            Assert.AreEqual(0, resolver.PendingCount);
         }
     }
 }

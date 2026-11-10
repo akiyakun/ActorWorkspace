@@ -172,6 +172,17 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             // 続くダメージなので無敵にならない
             Assert.AreEqual(0.0f, behaviour.Health.InvincibleTime);
         }
+
+        [Test]
+        public void 間隔より長いフレームでも続くダメージの回数は減らない()
+        {
+            controller.SetStatusEffect(new TestPoison());
+            controller.Request(Params(PoisonId, tickInterval: 0.1f, param2: 0.1f));
+
+            // 1 フレーム 0.155 秒(間隔 0.1 秒より長い)を 10 回 = 1.55 秒 → 15 回
+            for (int i = 0; i < 10; i++) behaviour.DoUpdate(0.155f);
+            Assert.AreEqual(10.0f - 1.5f, behaviour.Health.Current, 1e-4f);
+        }
         #endregion
 
         #region ノックバック

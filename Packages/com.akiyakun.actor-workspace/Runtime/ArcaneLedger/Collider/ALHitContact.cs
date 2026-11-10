@@ -21,7 +21,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
         // 当たり判定の通知そのもの(Me は受けた側、Other は攻撃の当たり判定)
         public CollisionContactInfo Raw;
         // 攻撃の当たり判定の情報(HitBox・弾)
+        // MEMO: 確定したときの中身は、当たったときと違うことがある(攻撃が元に戻った・弾がプールに戻った)。当たったときの値は下の AttackId などを使う
         public IALCollisionExtraData Attacker;
+        // 当たったとき(ALHitResolver.Add())の、攻撃の ID・攻撃したアクター・その ALProcessor
+        public int AttackId;
+        public IAWActor? AttackerActor;
+        public IALProcessor? AttackerProcessor;
         // 受けた側の HurtBox の情報(どの HurtBox か分からないとき(ALHurtBoxDetectMode.Main)は null)
         public IALCollisionExtraData? HurtBox;
         // 当たった攻撃の記録のキー(ALHitHistory.GetHitKey。None なら 0)

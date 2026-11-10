@@ -115,7 +115,8 @@ namespace ActorWorkspace.ArcaneLedger
             ElapsedTime = 0.0f;
             RemainingTime = applyParam.DurationTime;
             tickIntervalTime = applyParam.TickIntervalTime;
-            if (wasEnabled == false || KeepTickOnReapply == false)
+            // MEMO: 前の間隔が 0(Tick しない)だったときは、次の Tick までの時間が残っていないので、最初から数える
+            if (wasEnabled == false || KeepTickOnReapply == false || tickCountdown <= 0.0f)
             {
                 tickCountdown = GetFirstTickDelay(applyParam);
             }
@@ -146,13 +147,14 @@ namespace ActorWorkspace.ArcaneLedger
             ElapsedTime += deltaTime;
 
             // Tick間隔時間が有効なとき
+            // MEMO: 間隔を超えた分の時間は次の Tick に持ち越す(捨てると、フレームレートが低いほど Tick が減る)。1 フレームに何回でも Tick する
             if (tickIntervalTime > 0.0f)
             {
                 tickCountdown -= deltaTime;
-                if (tickCountdown <= 0.0f)
+                while (tickCountdown <= 0.0f && Enable && tickIntervalTime > 0.0f)
                 {
                     OnTick();
-                    tickCountdown = tickIntervalTime;
+                    tickCountdown += tickIntervalTime;
                 }
             }
 

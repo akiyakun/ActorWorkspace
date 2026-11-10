@@ -19,7 +19,10 @@ namespace ActorWorkspace.ArcaneLedger
         public ALDamageKind Kind;
         // 攻撃したアクター(分からなければ null)
         public IAWActor? Attacker;
+        // 攻撃したアクターの ALProcessor(当たったときの値。分からなければ null)
+        public IALProcessor? AttackerProcessor;
         // 当たった HitBox・弾の情報(当たり判定によらないダメージは null)
+        // MEMO: 確定したときの中身は、当たったときと違うことがある。攻撃したアクター・ALProcessor・攻撃の ID は上の値を使う
         public IALCollisionExtraData? Source;
         // ゲームが決める攻撃の ID(マスタの Id・スキルの Id など。0 はなし)
         public int AttackId;
@@ -60,9 +63,10 @@ namespace ActorWorkspace.ArcaneLedger
             {
                 Kind = ALDamageKind.Hit,
                 Value = value,
-                Attacker = contact.Attacker.Actor,
+                Attacker = contact.AttackerActor,
+                AttackerProcessor = contact.AttackerProcessor,
                 Source = contact.Attacker,
-                AttackId = contact.Attacker.AttackId,
+                AttackId = contact.AttackId,
                 Region = contact.Region,
                 RegionMultiplier = contact.RegionMultiplier,
                 Position = contact.Raw.Position,

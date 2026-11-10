@@ -114,8 +114,15 @@ namespace ActorWorkspace.ArcaneLedger
             int removed = 0;
             for (int id = 0; id < Capacity; id++)
             {
+                // MEMO: RemoveAll にラムダを渡すと、呼ぶたびにデリゲートを作る(状態異常をかけるたびに呼ばれる)ので、後ろから消す
                 var list = modifiers[id];
-                int count = list.RemoveAll(m => ReferenceEquals(m.Source, source));
+                int count = 0;
+                for (int i = list.Count - 1; i >= 0; i--)
+                {
+                    if (ReferenceEquals(list[i].Source, source) == false) continue;
+                    list.RemoveAt(i);
+                    count++;
+                }
                 if (count == 0) continue;
                 removed += count;
                 MarkDirty(id);
