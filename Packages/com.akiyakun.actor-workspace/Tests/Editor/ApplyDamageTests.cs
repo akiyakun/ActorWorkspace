@@ -233,6 +233,15 @@ namespace ActorWorkspace.ArcaneLedger.Tests
         }
 
         [Test]
+        public void 最大HPのときは回復しない()
+        {
+            var heal = processor.ApplyHeal(5.0f);
+            Assert.IsFalse(heal.Applied);
+            Assert.AreEqual(0.0f, heal.Amount);
+            Assert.AreEqual(0, healedEventCount);
+        }
+
+        [Test]
         public void RequestHealのイベントでも回復する()
         {
             processor.ApplyDamage(ALDamageInfo.Hit(2.0f));

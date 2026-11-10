@@ -171,6 +171,8 @@ namespace ActorWorkspace.ArcaneLedger
         {
             int id = applyParam.Id;
             Debug.Assert(id >= 0 && id < MaxStatusEffectCount, "Invalid status effect ID");
+            // 登録していない効果はかけない(待たせると、Update が飛ばすのでビットが残り続け、重ね掛けのルールでほかの効果がかからなくなる)
+            if (statusEffects[id] == null) return false;
             uint bit = 1u << id;
 
             // 成功判定。1 以上は必ず成功にする

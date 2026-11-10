@@ -58,6 +58,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             motionValueController.Restore();
             statusEffectController.Restore();
             // MEMO: 補正を外してから HP を最大にする(最大 HP の補正が残らないように)
+            // MEMO: Processor.Restore() で最大 HP の補正を付け直すとき(ソウルスキルなど)は、HP はその前の最大 HP のままなので、Processor 側で Health.Reset() し直す
             Stats.Restore();
             Health.Reset();
             OverrideMoveDirection = Vector3.zero;

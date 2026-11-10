@@ -201,11 +201,13 @@ namespace ActorWorkspace.ArcaneLedger
         // HP を回復する(最大 HP まで)。倒れていたら回復しない
         public virtual ALHealResult ApplyHeal(float amount)
         {
-            if (health.IsAlive == false || (amount > 0.0f) == false) return new ALHealResult() { LifeAfter = health.Current };
+            if (health.HasLife == false || health.IsAlive == false || (amount > 0.0f) == false) return new ALHealResult() { LifeAfter = health.Current };
             if (FilterHeal(ref amount) == false) return new ALHealResult() { LifeAfter = health.Current };
 
             float before = health.Current;
             health.Current = Mathf.Min(health.Max, before + amount);
+            // MEMO: 最大 HP のときは増えないので、回復しなかったことにする(OnHealed も出さない)
+            if ((health.Current > before) == false) return new ALHealResult() { LifeAfter = health.Current };
             var result = new ALHealResult() { Applied = true, Amount = health.Current - before, LifeAfter = health.Current };
 
             OnHealed(in result);

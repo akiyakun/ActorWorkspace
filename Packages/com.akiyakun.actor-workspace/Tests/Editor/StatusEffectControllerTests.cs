@@ -90,6 +90,14 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             Assert.IsFalse(controller.Request(Params(1, chance: 0.0f)));
             Assert.IsFalse(effect.Enable);
         }
+
+        [Test]
+        public void 登録していない効果はかからず_待たせもしない()
+        {
+            Assert.IsFalse(controller.Request(Params(5)));
+            Assert.IsFalse(IsEnabled(5));
+            Assert.IsFalse(IsRequested(5));
+        }
         #endregion
 
         #region パラメータ
