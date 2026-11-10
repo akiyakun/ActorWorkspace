@@ -115,6 +115,8 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             attackerProcessor.GeneralParam[3].Value = 2.0f;
             attackerProcessor.GeneralParam[3].Delta = 1.0f;
             receiverParams[1].Factor = 0.5f;
+            // D(3) はアニメーションのイベントで入れた
+            attackerProcessor.GeneralParam.EventSetMask = 1u << 3;
             resolver.Add(Raw(), attacker, null);
 
             // 確定する前にモーションが変わって値が戻った
@@ -127,6 +129,10 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             Assert.AreEqual(1.5f, contacts[0].AttackerParams.Factor(0));
             Assert.AreEqual(3.0f, contacts[0].AttackerParams.Calc(3));
             Assert.AreEqual(0.5f, contacts[0].ReceiverParams.Factor(1));
+            // イベントで入れたかも、当たった瞬間のもの
+            Assert.IsTrue(contacts[0].AttackerParams.IsSetByEvent(3));
+            Assert.IsFalse(contacts[0].AttackerParams.IsSetByEvent(0));
+            Assert.IsFalse(contacts[0].ReceiverParams.IsSetByEvent(3));
 
             // ダメージの情報にも入る
             var info = ALDamageInfo.FromHit(contacts[0], 1.0f);

@@ -56,6 +56,7 @@ namespace ActorWorkspace.ArcaneLedger
             valueDirtyFlag = 0;
             factorDirtyFlag = 0;
             deltaDirtyFlag = 0;
+            generalParam.EventSetMask = 0;
 
             do
             {
@@ -135,6 +136,7 @@ namespace ActorWorkspace.ArcaneLedger
                 generalParam[index].Value = eventData.Float;
                 D.Log(CoreLogMask.Events, $"SetGenValue: {(char)('A' + index)}, value={eventData.Float}");
                 valueDirtyFlag |= (uint)(1u << index);
+                generalParam.EventSetMask |= 1u << index;
             }
             // SetGenFactor[X] イベント
             else if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenFactorPrefix, System.StringComparison.Ordinal))
@@ -144,6 +146,7 @@ namespace ActorWorkspace.ArcaneLedger
                 generalParam[index].Factor = eventData.Float;
                 D.Log(CoreLogMask.Events, $"SetGenFactor: {(char)('A' + index)}, factor={eventData.Float}");
                 factorDirtyFlag |= (uint)(1u << index);
+                generalParam.EventSetMask |= 1u << index;
             }
             // SetGenDelta[X] イベント
             else if (eventData.Name.StartsWith(AWCoreAnimationEvents.SetGenDeltaPrefix, System.StringComparison.Ordinal))
@@ -153,6 +156,7 @@ namespace ActorWorkspace.ArcaneLedger
                 generalParam[index].Delta = eventData.Float;
                 D.Log(CoreLogMask.Events, $"SetGenDelta: {(char)('A' + index)}, delta={eventData.Float}");
                 deltaDirtyFlag |= (uint)(1u << index);
+                generalParam.EventSetMask |= 1u << index;
             }
             else
             {

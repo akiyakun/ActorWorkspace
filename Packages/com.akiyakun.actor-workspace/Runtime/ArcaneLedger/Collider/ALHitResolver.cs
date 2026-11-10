@@ -29,9 +29,11 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
             public int AttackId;
             public IAWActor? AttackerActor;
             public IALProcessor? AttackerProcessor;
-            // 汎用パラメータの写しの位置(無ければ -1)
+            // 汎用パラメータの写しの位置(無ければ -1)と、写したときの EventSetMask
             public int AttackerParamsOffset;
             public int ReceiverParamsOffset;
+            public uint AttackerEventSetMask;
+            public uint ReceiverEventSetMask;
         }
 
         readonly List<Candidate> candidates = new();
@@ -75,6 +77,8 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 AttackerProcessor = processor,
                 AttackerParamsOffset = WriteSnapshot(processor?.GeneralParam),
                 ReceiverParamsOffset = WriteSnapshot(ReceiverParams),
+                AttackerEventSetMask = processor?.GeneralParam?.EventSetMask ?? 0,
+                ReceiverEventSetMask = ReceiverParams?.EventSetMask ?? 0,
             });
             return true;
         }
@@ -173,12 +177,12 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                 AttackId = candidate.AttackId,
                 AttackerActor = candidate.AttackerActor,
                 AttackerProcessor = candidate.AttackerProcessor,
-                AttackerParams = ToSnapshot(candidate.AttackerParamsOffset),
-                ReceiverParams = ToSnapshot(candidate.ReceiverParamsOffset),
+                AttackerParams = ToSnapshot(candidate.AttackerParamsOffset, candidate.AttackerEventSetMask),
+                ReceiverParams = ToSnapshot(candidate.ReceiverParamsOffset, candidate.ReceiverEventSetMask),
             };
         }
 
-        ALGeneralParamSnapshot ToSnapshot(int offset) => offset >= 0 ? new ALGeneralParamSnapshot(writeBuffer, offset) : default;
+        ALGeneralParamSnapshot ToSnapshot(int offset, uint eventSetMask) => offset >= 0 ? new ALGeneralParamSnapshot(writeBuffer, offset, eventSetMask) : default;
     }
 }
 #nullable restore

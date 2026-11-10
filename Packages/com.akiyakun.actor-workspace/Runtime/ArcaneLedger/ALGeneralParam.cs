@@ -39,6 +39,11 @@ namespace ActorWorkspace.ArcaneLedger
         }
 
         Data[] dataArray = new Data[MaxParamCount];
+
+        // 今のアニメーションで、イベント(SetGenValue[X]・SetGenFactor[X]・SetGenDelta[X])が入れた汎用パラメータのビット(1 << id)
+        // MEMO: MotionValueController が入れ、次のアニメーションに入ると 0 に戻す。値が既定のままか、イベントで 0 を入れたかを区別するのに使う
+        public uint EventSetMask { get; set; }
+        public bool IsSetByEvent(int id) => (EventSetMask & (1u << id)) != 0;
         // public Data[] GeneralParams => generalParams;
 
         public ALGeneralParam()
@@ -55,6 +60,7 @@ namespace ActorWorkspace.ArcaneLedger
             {
                 dataArray[i].Restore();
             }
+            EventSetMask = 0;
         }
 
         public Data this[int i]

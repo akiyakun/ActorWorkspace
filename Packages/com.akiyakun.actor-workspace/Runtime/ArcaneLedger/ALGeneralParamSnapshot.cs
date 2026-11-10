@@ -12,10 +12,15 @@ namespace ActorWorkspace.ArcaneLedger
         readonly float[]? buffer;
         readonly int offset;
 
-        public ALGeneralParamSnapshot(float[] buffer, int offset)
+        // 写したときの ALGeneralParam.EventSetMask(今のアニメーションで、イベントが入れた汎用パラメータのビット)
+        public uint EventSetMask { get; }
+        public bool IsSetByEvent(int id) => (EventSetMask & (1u << id)) != 0;
+
+        public ALGeneralParamSnapshot(float[] buffer, int offset, uint eventSetMask = 0)
         {
             this.buffer = buffer;
             this.offset = offset;
+            EventSetMask = eventSetMask;
         }
 
         // 写しがあるか(ALProcessor を持たない当たり判定などは無い)

@@ -27,12 +27,15 @@ namespace ActorWorkspace.ArcaneLedger.Tests
             param[3].Value = 5.0f;
             param[3].Factor = 0.5f;
             param[3].Delta = 2.0f;
+            param.EventSetMask = 1u << 3;
+            Assert.IsTrue(param.IsSetByEvent(3));
 
             param.Restore();
 
             Assert.AreEqual(0.0f, param[3].Value);
             Assert.AreEqual(1.0f, param[3].Factor);
             Assert.AreEqual(0.0f, param[3].Delta);
+            Assert.IsFalse(param.IsSetByEvent(3));
         }
     }
 }
