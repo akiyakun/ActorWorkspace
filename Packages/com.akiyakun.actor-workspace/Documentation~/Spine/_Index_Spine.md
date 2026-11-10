@@ -17,6 +17,27 @@ UnitySpineSettings (ScriptableObject) を作成します。
 
 
 
+## Spine のデータの原本と書き出しツール
+
+Spine のデータの原本は、`.spine` か、Spine から書き出した JSON(Nonessential data あり)のどちらかにします(プロジェクトごとに決める)。JSON にすると、AI エージェントが中身を読んだり直したりでき、差分も読めます。JSON を原本にするときは、`.spine` は原本から作り直せる作業用のファイルとして扱います。
+
+* 原本のファイル名はスケルトンの名前にします(JSON を `.spine` に取り込むと、ファイル名がスケルトンの名前になる)
+* JSON にして失われるのは、作業するときだけの情報(最後に書き出した先などの設定、書き出さない設定にしたもの)です。ボーンの色・アイコン、メッシュの辺は残ります(Spine 4.2 で確認)
+
+`json_to_spine`・`spine_to_json` は JSON を原本にするプロジェクト用です。ツールは `External~/tools/`(プロジェクトの `tools/` にコピーして使う)にあります。Python 3 と Spine が要ります。`bin/` の `.bat` にフォルダをドラッグ&ドロップするか、`tools/` で `python spine/<スクリプト>.py --inputs <フォルダ>` を実行します。
+
+| ツール | 内容 |
+| --- | --- |
+| `json_to_spine` | 原本の JSON から、同じフォルダに作業用の `.spine` を作る。もう `.spine` があるときは作らない |
+| `spine_to_json` | `.spine` から原本の JSON を作る。そのフォルダの原本と名前が違う `.spine`、画像・音のフォルダが絶対パスの `.spine` ではエラー。スケルトンの名前が `skeleton` のままなら警告。hash 以外が同じなら原本を書き換えない |
+| `spine_actor_export_to_unity` | Unity 用のデータを書き出す。フォルダに原本の JSON があれば、一時的な `.spine` に取り込んでから書き出す(JSON から直接アトラスを作ると、連番の画像が見つからないため)。無ければ、前の版と同じく `.spine` から書き出す。`.spine` を直接渡したときは、その `.spine` から書き出す(原本の JSON もあれば警告)。書き出しの設定は `bin/spine_export_setting.json` があればそれ、無ければ `spine/default_spine_export_setting.json` |
+
+* JSON を原本にするプロジェクトでは、`.spine` を `.gitignore` で無視してください。作業用の `.spine` と、`spine_actor_export_to_unity` が原本と同じフォルダに作る一時的な `_export_temp.spine`(書き出しが途中で止まると残る)をコミットしないためです
+* `spine_actor_export_to_unity` は、フォルダに `.spine` と JSON の両方があると JSON を原本として使い、そのことを表示します。`.spine` を原本にするプロジェクトでは、原本のフォルダに書き出した JSON を置かないでください
+* `override_export_setting.json`・`extra_data.json` は、前の版と同じく下のフォルダにあっても使います(フォルダの直下を優先)
+* 共通の処理は `spine/spine_common.py` にあります
+* `bin/` の `.exe`・`.app` は、`.spine` を入力にしていた前の版をビルドしたものです(作り直していない)
+
 ## インポート
 
 AWの SpineAssetPostprocessor によってSpineファイルのインポート後のポストプロセスが行われます。

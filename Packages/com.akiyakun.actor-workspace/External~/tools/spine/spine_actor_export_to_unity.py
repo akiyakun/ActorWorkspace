@@ -1,29 +1,38 @@
-from lib.core import *
-from lib import afl
-import sys
-import os
-import os.path
+"""Spine のデータから、Unity 用のデータ(JSON・アトラス)を書き出す。
+
+原本は、書き出した JSON でも .spine でもよい(プロジェクトによって違う)。
+原本の JSON は、一時的な .spine に取り込んでから書き出す
+(MEMO: JSON から直接アトラスを作ると、連番(シーケンス)の画像が見つからない)。
+
+入力のフォルダ(例: spine/Player/Player_0001@bundle/)
+  <スケルトンの名前>.json か .spine  原本(両方あるときは JSON。.spine は作業用のファイルとみなす)
+  images/                         画像
+  override_export_setting.json    (任意)書き出しの設定のうち、このフォルダだけ変えるもの
+  extra_data.json                 (任意)書き出し先にコピーする。externalSpineFilePath でほかの場所の原本を使える
+出力: <export_dir>/<カテゴリ(入力の親フォルダの名前)>/<入力のフォルダの名前>/
+
+使い方(tools フォルダで):
+  python spine/spine_actor_export_to_unity.py --inputs <フォルダ・.spine・原本の JSON> ...
+"""
+
+from __future__ import annotations
+
 import argparse
 import shutil
-import filecmp
-import json
+import sys
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path
 from types import SimpleNamespace
 
-import subprocess
-import time
-from datetime import datetime, timezone
-import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
-from send2trash import send2trash
+from spine_common import (EXTRA_DATA_FILENAME, NOT_ORIGINAL_JSON_FILENAMES, OVERRIDE_EXPORT_SETTING_FILENAME,
+                          TEMP_SPINE_FILENAME, TOOLS_DIR, SpineToolError, find_original_json, find_original_jsons,
+                          find_spine_command, import_json_to_spine, read_json, run_spine, setup_console, write_json)
 
-
-msgbox_title = "spine_actor_export_to_unity"
-export_dir = "../Assets/AssetBundleData/Actor/"
-spine_export_settings_file = "./spine/default_spine_export_setting.json"
-temp_export_settings_file = "./spine/_temp_export_setting.json"
-override_export_setting_filename = "override_export_setting.json"
-extra_data_filename = "extra_data.json"
+DEFAULT_EXPORT_DIR = TOOLS_DIR.parent / "Assets" / "AssetBundleData" / "Actor"
+# 書き出しの設定。プロジェクト用の設定(bin/spine_export_setting.json)があればそれを使う
+PROJECT_EXPORT_SETTING = TOOLS_DIR / "bin" / "spine_export_setting.json"
+DEFAULT_EXPORT_SETTING = TOOLS_DIR / "spine" / "default_spine_export_setting.json"
 
 
 # by AI
@@ -36,288 +45,180 @@ def deep_merge(a: dict, b: dict) -> dict:
     return a
 
 
-# by AI
-def merge_json_files(path_a: str, path_b: str, output_path: str = None):
-    with open(path_a, "r", encoding="utf-8") as fa:
-        data_a = json.load(fa)
-    with open(path_b, "r", encoding="utf-8") as fb:
-        data_b = json.load(fb)
-
-    merged = deep_merge(data_a, data_b)  # BでAを上書き
-
-    # 保存先が未指定ならAと同じ場所に上書き保存
-    save_path = output_path or path_a
-    with open(save_path, "w", encoding="utf-8") as fo:
-        json.dump(merged, fo, ensure_ascii=False, indent=2)
-    print(f"Saved: {save_path}")
-
-
-# by AI
-def add_timestamp_to_exported_json(output_path: str, spine_path: str):
-  timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-  spine_filename = os.path.splitext(os.path.basename(spine_path))[0]
-  json_path = os.path.join(output_path, f"{spine_filename}.json")
-
-  if not os.path.isfile(json_path):
-    print(f"Timestamp target not found: {json_path}")
-    return
-
-  try:
-    with open(json_path, "r", encoding="utf-8") as f:
-      original = f.read()
-
+def add_timestamp_to_exported_json(json_path: Path) -> None:
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    original = json_path.read_text(encoding="utf-8")
     newline = "\r\n" if "\r\n" in original else "\n"
     lines = original.splitlines()
-
-    if len(lines) == 0:
-      print(f"Skip (empty file): {json_path}")
-      return
-
-    if lines[0].strip() != "{":
-      raise ValueError(f"Unexpected json header: {json_path}")
-
-    # indent = "  "
-    indent = ""
-    lines.insert(1, f'{indent}"exportTimestamp": "{timestamp}",')
-
+    if len(lines) == 0 or lines[0].strip() != "{":
+        raise SpineToolError(f"書き出した JSON の先頭が {{ ではありません: {json_path}")
+    lines.insert(1, f'"exportTimestamp": "{timestamp}",')
     new_text = newline.join(lines)
-    if original.endswith("\n") or original.endswith("\r\n"):
-      new_text += newline
-
-    with open(json_path, "w", encoding="utf-8", newline="") as f:
-      f.write(new_text)
-
+    if original.endswith("\n"):
+        new_text += newline
+    json_path.write_text(new_text, encoding="utf-8", newline="")
     print(f"Timestamp added: {json_path}")
-  except Exception as e:
-    print(f"Timestamp add failed: {json_path} ({e})")
-    raise e
 
 
-# e.g. spine_dir_path
-# /Spine/Player/Player_0001@bundle/
-# /Spine/Player/Player_0001@bundle/Player.spine
-# /Spine/Player/Player_0001@bundle/extra_data.json
-def create_fileinfo(spine_dir_path: str):
-  spine_path = None
-  category_dir_name = None
-  override_export_setting_file_path = None
-  extra_data_file_path = None
+def find_spine_files(folder: Path) -> list[Path]:
+    # MEMO: 前の版と同じく、下のフォルダの .spine も探す。書き出しの一時的な .spine は数えない
+    return sorted(p for p in folder.rglob("*.spine") if p.name != TEMP_SPINE_FILENAME)
 
-  # カテゴリ名取得
-  # e.g. "Player"
-  category_dir_name = os.path.basename(os.path.dirname(spine_dir_path))
 
-  # フォルダ内のファイルを捜査
-  for root, dirs, files in os.walk(spine_dir_path):
-    for file in files:
-      # print(f"Checking file: {file}")
-      if file.endswith(".spine"):
-        # .spineファイルが存在
-        spine_path = os.path.join(root, file)
-      elif file == override_export_setting_filename:
-        # オーバーライド設定ファイルが存在
-        override_export_setting_file_path = os.path.join(root, override_export_setting_filename)
-      elif file == extra_data_filename:
-        # エクストラデータファイルが存在
-        extra_data_file_path = os.path.join(root, extra_data_filename)
+def find_setting_file(folder: Path, filename: str) -> Path | None:
+    # MEMO: 前の版と同じく、下のフォルダにあるものも使う(フォルダの直下を優先する)
+    if (folder / filename).is_file():
+        return folder / filename
+    found = sorted(folder.rglob(filename))
+    if len(found) > 1:
+        raise SpineToolError(f"{filename} が 1 つではありません: {folder}（{[p.relative_to(folder).as_posix() for p in found]}）")
+    return found[0] if found else None
 
-  # .spineファイルが無く、エクストラデータファイルのみ存在する場合
-  if spine_path is None:
-    if extra_data_file_path is not None:
-      # エクストラデータファイルを読み込み、externalSpineFilePathを取得して.spineファイルのパスを決定
-      with open(extra_data_file_path, "r", encoding="utf-8") as f:
-        extra_data = json.load(f)
-        if "externalSpineFilePath" in extra_data:
-          external_spine_path = extra_data["externalSpineFilePath"]
-          if not external_spine_path:
-            print_exception(f"externalSpineFilePath フィールドが空です: {spine_dir_path}")
-          spine_path = os.path.normpath(os.path.join(spine_dir_path, external_spine_path))
+
+def find_source(input_path: Path, folder: Path) -> Path:
+    """書き出す元を決める。
+
+    1. 渡された .spine・原本の JSON
+    2. フォルダの原本の JSON(JSON を原本にしているプロジェクト)
+    3. フォルダの .spine(.spine を原本にしているプロジェクト)
+    4. extra_data.json の externalSpineFilePath(ほかの場所の .spine か原本の JSON)
+    """
+    if input_path.is_file():
+        if input_path.suffix == ".spine":
+            if find_original_jsons(folder):
+                print(f"[警告] このフォルダには原本の JSON がありますが、渡された .spine から書き出します: {input_path}")
+            return input_path
+        if input_path.suffix == ".json" and input_path.name not in NOT_ORIGINAL_JSON_FILENAMES:
+            return input_path
+        if input_path.name != EXTRA_DATA_FILENAME:
+            raise SpineToolError(f"フォルダ・.spine・原本の JSON・{EXTRA_DATA_FILENAME} のどれかを渡してください: {input_path}")
+
+    jsons = find_original_jsons(folder)
+    spine_files = find_spine_files(folder)
+    if jsons:
+        # MEMO: JSON を原本にしているときは、作業用の .spine が同じフォルダにあっても原本を使う
+        #       .spine を原本にしているプロジェクトで JSON が紛れていたときに気付けるように、どちらを使うかを出す
+        if spine_files:
+            print(f"[情報] .spine（{[p.name for p in spine_files]}）もありますが、JSON（{[p.name for p in jsons]}）を原本として書き出します")
+        return find_original_json(folder)
+
+    if len(spine_files) > 1:
+        raise SpineToolError(f".spine が 1 つではありません: {folder}（{[p.name for p in spine_files]}）")
+    if spine_files:
+        return spine_files[0]
+
+    extra_data_path = find_setting_file(folder, EXTRA_DATA_FILENAME)
+    if extra_data_path is not None:
+        external = read_json(extra_data_path).get("externalSpineFilePath")
+        if external is None:
+            raise SpineToolError(f"externalSpineFilePath がありません: {extra_data_path}")
+        if not external:
+            raise SpineToolError(f"externalSpineFilePath が空です: {extra_data_path}")
+        # MEMO: 前の版と同じく、入力のフォルダからの相対パス
+        return (folder / external).resolve()
+
+    raise SpineToolError(f"書き出すもの（原本の JSON か .spine）が見つかりません: {folder}")
+
+
+def create_fileinfo(input_path: Path) -> SimpleNamespace:
+    # ファイルを渡されたときは、そのフォルダを入力にする
+    folder = input_path.parent if input_path.is_file() else input_path
+    source_path = find_source(input_path, folder)
+    if not source_path.is_file():
+        raise SpineToolError(f"書き出す元が見つかりません: {source_path}")
+
+    return SimpleNamespace(
+        folder=folder,
+        source_path=source_path,
+        category_dir_name=folder.parent.name,
+        override_export_setting_file_path=find_setting_file(folder, OVERRIDE_EXPORT_SETTING_FILENAME),
+        extra_data_file_path=find_setting_file(folder, EXTRA_DATA_FILENAME),
+    )
+
+
+def export(spine: Path, info: SimpleNamespace, export_dir: Path, export_setting: Path) -> None:
+    output_path = export_dir / info.category_dir_name / info.folder.name
+    print(f"output_path: {output_path}")
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory() as work_dir:
+        # 今回使う設定(フォルダごとの上書きがあればマージする)
+        setting = read_json(export_setting)
+        if info.override_export_setting_file_path is not None:
+            deep_merge(setting, read_json(info.override_export_setting_file_path))
+        setting_path = Path(work_dir) / "export_setting.json"
+        write_json(setting, setting_path)
+
+        if info.extra_data_file_path is not None:
+            shutil.copy(info.extra_data_file_path, output_path / EXTRA_DATA_FILENAME)
+
+        if info.source_path.suffix == ".spine":
+            # .spine を原本にしているプロジェクト(前の版と同じ書き出し方)
+            spine_file = info.source_path
+            temp_spine = None
         else:
-          print_exception(f"externalSpineFilePath フィールドがありません: {spine_dir_path}")
+            # MEMO: 一時的な .spine は原本と同じフォルダに作る。別のフォルダに作ると、
+            #       書き出した JSON の画像のフォルダ(images)がそこからの相対パスになり、PC ごとに変わる
+            temp_spine = info.source_path.parent / TEMP_SPINE_FILENAME
+            temp_spine.unlink(missing_ok=True)
+            spine_file = temp_spine
+        before = json_mtimes(output_path)
+        try:
+            if temp_spine is not None:
+                import_json_to_spine(spine, info.source_path, temp_spine)
+            run_spine(spine, ["--input", str(spine_file), "--output", str(output_path), "--export", str(setting_path)])
+        finally:
+            if temp_spine is not None:
+                temp_spine.unlink(missing_ok=True)
+
+    # 書き出した JSON にタイムスタンプを足す
+    # MEMO: 書き出したファイルの名前はスケルトンの名前で、.spine のファイル名とは違うことがあるので、書き出しで変わった JSON を探す
+    written = [p for p, mtime in json_mtimes(output_path).items() if before.get(p) != mtime]
+    if len(written) == 1:
+        add_timestamp_to_exported_json(written[0])
     else:
-      print_exception(f"エクスポート対象ファイルが見つかりません: {spine_dir_path}")
-
-  return SimpleNamespace(
-    spine_path = spine_path,
-    spine_dir_path = spine_dir_path,
-    category_dir_name = category_dir_name,
-    override_export_setting_file_path = override_export_setting_file_path,
-    extra_data_file_path = extra_data_file_path
-  )
+        print(f"[警告] 書き出した JSON が 1 つに決まらないので、タイムスタンプを足さなかった: {[p.name for p in written]}")
 
 
-def get_spine_filelist(inputs):
-  ret = []
-
-  for i in range(len(inputs)):
-    # 絶対パスに変換
-    path = os.path.abspath(inputs[i])
-
-    # ディレクトリでなくファイルが渡された場合
-    if os.path.isdir(path) == False:
-      if path.endswith(".spine"):
-        # .spint ファイルは入力として受け付ける
-        path = os.path.dirname(path)
-      elif path.endswith(extra_data_filename):
-        # extra_data.json ファイルは入力として受け付ける
-        path = os.path.dirname(path)
-      else:
-        print_exception(f"無効なファイルが渡されました: {path}")
-
-    info = create_fileinfo(path)
-    print(info)
-
-    ret.append(info)
-
-  return ret
-
+def json_mtimes(folder: Path) -> dict[Path, int]:
+    return {p: p.stat().st_mtime_ns for p in folder.glob("*.json") if p.name not in NOT_ORIGINAL_JSON_FILENAMES}
 
 
 def parse_args():
-  parser = argparse.ArgumentParser(description ='desc')
-
-  parser.add_argument('--spine_path', type=str,
-    help='SpineEditorの実行ファイルパス', required=True)
-  parser.add_argument('--inputs', type=str, nargs='*',
-    help='Spineプロジェクトファイル', required=True)
-
-  parser.add_argument('--export_dir', type=str, default=export_dir,
-    help='出力先ディレクトリ', required=False)
-  parser.add_argument('--spine_export_setting', type=str, default=spine_export_settings_file,
-    help='Spineエクスポート設定ファイル', required=False)
-
-  return parser.parse_args()
+    parser = argparse.ArgumentParser(description="Spine のデータ(原本の JSON か .spine)から Unity 用のデータを書き出す")
+    parser.add_argument("--spine_path", type=str, help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH か、標準のインストール先")
+    parser.add_argument("--inputs", type=str, nargs="+", required=True, help="原本のあるフォルダ、.spine、原本の JSON")
+    parser.add_argument("--export_dir", type=str, default=str(DEFAULT_EXPORT_DIR), help="出力先のフォルダ")
+    parser.add_argument("--spine_export_setting", type=str, default=None,
+                        help="書き出しの設定。既定: bin/spine_export_setting.json があればそれ、無ければ spine/default_spine_export_setting.json")
+    return parser.parse_args()
 
 
-# 例:
-# python3 -u -m spine.spine_actor_export_to_unity --spine_path /Applications/Spine.app/Contents/MacOS/Spine --inputs Player@bundle
-# if __name__ == '__main__':
-def main():
-  args = parse_args()
-  export_dir = args.export_dir
-  spine_export_settings_file = os.path.abspath(args.spine_export_setting)
-
-  # Tkinterのルートウィンドウを非表示で生成
-  root = tk.Tk()
-  # root.withdraw()
-  root.title("プログレスバー")
-
-  # 複数のファイルが渡されたときだけ確認メッセージボックスを表示
-  if len(args.inputs) > 1:
-    if messagebox.askyesno(msgbox_title, "Spineのエクスポート処理を開始します。"):
-      print("Start export...")
+# 例(tools フォルダで):
+# python spine/spine_actor_export_to_unity.py --inputs ../../spine/Player/Player_0001@bundle
+def main() -> int:
+    setup_console()
+    args = parse_args()
+    export_dir = Path(args.export_dir).resolve()
+    if args.spine_export_setting:
+        export_setting = Path(args.spine_export_setting).resolve()
     else:
-      sys.exit(0)
-
-  # time.sleep(1)
-  # sys.exit(0)
-
-  # print(sys.argv[0])
-  # print(os.path.abspath(sys.argv[0]))
-  # print("dirname:")
-  # print(os.path.dirname(os.path.abspath(sys.argv[0])))
-  # print("dirname2:")
-  # print(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
-
-  # カレントディレクトリを設定(tools ディレクトリ)
-  os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
-  current_dir = os.getcwd()
-  print(current_dir)
-
-
-  # フルパスにしておく
-  export_dir = os.path.abspath(export_dir)
-  print(f"export_dir: {export_dir}")
-
-  # 出力ディレクトリを削除(ごみ箱)
-  # if os.path.exists(export_dir):
-  #   send2trash(export_dir)
-
-  # spineファイルのリストを取得
-  spine_files = get_spine_filelist(args.inputs)
-
-  label1 = tk.Label(root, text="処理中...")
-  label1.pack(side="top")
-  # progbar = ttk.Progressbar(root, length=len(spine_files), mode="determinate", maximum=1)
-  progbar = ttk.Progressbar(root, length=400, mode="determinate", maximum=1)
-  progbar.pack()
-  root.lift()
-  root.attributes("-topmost", True)
-
-  # progbar.configure(value=0)
-  # progbar.update()
-
-  # prog_list = list('abcdefghijklmnopqrstuvwxyz')
-  # for i in range(len(prog_list)):
-  #   time.sleep(0.05)
-  #   # プログレスバー表示変更
-  #   progbar.configure(value=(i+1)/len(prog_list))
-  #   progbar.update()
-
-  for i in range(len(spine_files)):
-    info = spine_files[i]
-
-    output_path = os.path.join(export_dir, info.category_dir_name)
-    # e.g. /Spine/Player
-    output_path = os.path.join(output_path, os.path.basename(info.spine_dir_path))
-    # e.g. /Spine/Player/Player_0001@bundle
-    print(f"output_path: {output_path}")
-    os.makedirs(output_path, exist_ok=True)
-    # sys.exit(1)
-
-    # messagebox.showinfo('メッセージ', input_path)
-
-    # プログレスバー表示変更
-    label1.configure(text=f"{info.spine_path}")
-    progbar.configure(value=i/len(spine_files))
-    progbar.update()
-
-    # 今回使用する設定ファイルをコピー
-    shutil.copy(spine_export_settings_file, temp_export_settings_file)
-
-    # オーバーライド設定ファイルがあればマージ
-    if info.override_export_setting_file_path is not None:
-      if os.path.isfile(info.override_export_setting_file_path):
-          merge_json_files(temp_export_settings_file, info.override_export_setting_file_path)
-
-    # エクストラデータファイルが存在する場合コピー
-    if info.extra_data_file_path is not None:
-      shutil.copy(info.extra_data_file_path, os.path.join(output_path, extra_data_filename))
-
+        export_setting = PROJECT_EXPORT_SETTING if PROJECT_EXPORT_SETTING.is_file() else DEFAULT_EXPORT_SETTING
+    print(f"export_dir: {export_dir}")
+    print(f"export_setting: {export_setting}")
 
     try:
-      # See also: https://ja.esotericsoftware.com/spine-command-line-interface
-      result = subprocess.run(
-        # 実行したいコマンド（例: ls -l）
-        # "/Applications/Spine.app/Contents/MacOS/Spine",
-        [
-          args.spine_path,
-          "--update", "4.2.xx",
-          "--input", f"{info.spine_path}",
-          "--output", f"{output_path}",
-          "--export", temp_export_settings_file
-        ],
-        capture_output=True,         # 標準出力・標準エラー出力を取得
-        text=True,                   # 出力を文字列として取得
-        check=True
-      )
-
-      # エクスポートしたjsonにタイムスタンプを追加する
-      add_timestamp_to_exported_json(output_path, info.spine_path)
-
-    except subprocess.CalledProcessError as e:
-      messagebox.showerror(msgbox_title, f"エクスポート失敗: {info.spine_dir_path}\n\n{e.stderr}")
-      sys.exit(1)
-    finally:
-      # 一時設定ファイルを削除
-      if os.path.exists(temp_export_settings_file):
-        os.remove(temp_export_settings_file)
-
-  # root.mainloop()
-
-  messagebox.showinfo(msgbox_title, "Spineのエクスポート処理が終了しました。")
-  sys.exit(0)
+        spine = find_spine_command(args.spine_path)
+        infos = [create_fileinfo(Path(p).resolve()) for p in args.inputs]
+        for info in infos:
+            print(f"--- {info.source_path}")
+            export(spine, info, export_dir, export_setting)
+    except SpineToolError as e:
+        print(f"[エラー] {e}", file=sys.stderr)
+        return 1
+    print("Spineのエクスポート処理が終了しました。")
+    return 0
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    sys.exit(main())
