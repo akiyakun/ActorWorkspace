@@ -204,19 +204,39 @@ namespace ActorWorkspace.Editor.UnitySpine
             // UniTaskのエディタループ初期化より先に呼ばれる可能性があるためdelayCallで遅らせる
             EditorApplication.delayCall += () =>
             {
-                // Play Mode突入時のドメインリロードでは再開しない(終了時のリロードで改めて再開される)
-                if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+                // Play Mode中・突入中は再開せず、Edit Modeに戻ってから再開する
+                // (Play Mode終了時はドメインリロードが起きないため、ここで待たないと次のリロードまで再開されず、
+                //  Spine側のクリップ再生成だけが反映されてイベントがSpine標準形式のまま残る)
+                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    EditorApplication.playModeStateChanged -= ResumeOnEnteredEditMode;
+                    EditorApplication.playModeStateChanged += ResumeOnEnteredEditMode;
+                    return;
+                }
 
-                var pendingList = LoadPendingList();
-
-                // 前回の起動から持ち越した分は、ブランチの切り替えなどでアセットが消えていることがある
-                pendingList.RemoveAll(t => File.Exists(t.Path) == false);
-                SavePendingList(pendingList);
-                if (pendingList.Count == 0) return;
-
-                Debug.Log($"[SpineAssetPostprocessor] 中断されたSpineインポートを再開: {pendingList.Count} 件");
-                ProcessPendingAssetsAsync().Forget();
+                ResumePendingAssetsCore();
             };
+        }
+
+        static void ResumeOnEnteredEditMode(PlayModeStateChange state)
+        {
+            if (state != PlayModeStateChange.EnteredEditMode) return;
+
+            EditorApplication.playModeStateChanged -= ResumeOnEnteredEditMode;
+            ResumePendingAssetsCore();
+        }
+
+        static void ResumePendingAssetsCore()
+        {
+            var pendingList = LoadPendingList();
+
+            // 前回の起動から持ち越した分は、ブランチの切り替えなどでアセットが消えていることがある
+            pendingList.RemoveAll(t => File.Exists(t.Path) == false);
+            SavePendingList(pendingList);
+            if (pendingList.Count == 0) return;
+
+            Debug.Log($"[SpineAssetPostprocessor] 中断されたSpineインポートを再開: {pendingList.Count} 件");
+            ProcessPendingAssetsAsync().Forget();
         }
 
         static List<AssetInfo> LoadPendingList()
