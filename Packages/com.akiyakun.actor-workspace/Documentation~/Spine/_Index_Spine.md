@@ -24,7 +24,7 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
 * 原本のファイル名はスケルトンの名前にします(JSON を `.spine` に取り込むと、ファイル名がスケルトンの名前になる)
 * JSON にして失われるのは、作業するときだけの情報(最後に書き出した先などの設定、書き出さない設定にしたもの)です。ボーンの色・アイコン、メッシュの辺は残ります(Spine 4.2 で確認)
 
-`json_to_spine`・`spine_to_json` は JSON を原本にするプロジェクト用です。ツールは `External~/tools/`(プロジェクトの `tools/` にコピーして使う)にあります。Python 3 と Spine が要ります。`bin/` の `.bat` にフォルダをドラッグ&ドロップするか、`tools/` で `python spine/<スクリプト>.py --inputs <フォルダ>` を実行します。
+`json_to_spine`・`spine_to_json` は JSON を原本にするプロジェクト用です。ツールは `External~/tools/`(プロジェクトの `tools/` にコピーして使う)にあります。Python 3 と Spine が要ります。`bin/` の `.bat` にフォルダをドラッグ&ドロップするか、`tools/` で `python spine/<スクリプト>.py --inputs <フォルダ>` を実行します。ただし `bin/spine_actor_export_to_unity.bat` は、Python の要らない `bin/` の `.exe`(前の版)を呼びます。下の新しい処理を使うときは、`python spine/spine_actor_export_to_unity.py --inputs <フォルダ>` を実行します。
 
 | ツール | 内容 |
 | --- | --- |
@@ -36,7 +36,7 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
 * `spine_actor_export_to_unity` は、フォルダに `.spine` と JSON の両方があると JSON を原本として使い、そのことを表示します。`.spine` を原本にするプロジェクトでは、原本のフォルダに書き出した JSON を置かないでください
 * `override_export_setting.json`・`extra_data.json` は、前の版と同じく下のフォルダにあっても使います(フォルダの直下を優先)
 * 共通の処理は `spine/spine_common.py` にあります
-* `bin/` の `.exe`・`.app` は、`.spine` を入力にしていた前の版をビルドしたものです(作り直していない)
+* `bin/` の `.exe`・`.app` は、`.spine` を入力にしていた前の版をビルドしたものです(作り直していない)。`bin/spine_actor_export_to_unity.bat` もこの `.exe` を呼ぶ前の版のままにしています(デザイナーの PC には Python が入っていないことがあるため)。`.exe` を作り直したら、`.bat` からも新しい処理が使えます
 
 ## インポート
 
