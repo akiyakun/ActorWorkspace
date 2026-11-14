@@ -3,6 +3,7 @@ using afl.EventDirector;
 
 namespace ActorWorkspace.EventCommand
 {
+    [EventCommandIdGroup("AW", order: 100)]
     public enum AWEventCommandId
     {
         _Begin = CoreEventCommandId._AWEventCommandId,
