@@ -10,7 +10,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 		[HideInInspector] _StencilRef("Stencil Reference", Float) = 1.0
 		[Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("Stencil Compare", Float) = 8 // Set to Always as default
 
-		[Toggle(_ZWRITE)] _ZWrite("Z Write", Float) = 1.0
+		[Toggle(_ZWRITE)] _ZWrite("Z Write", Float) = 0.0
         _AddColor("AddColor", Color) = (0,0,0,0)
 	}
 
@@ -191,7 +191,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 			Tags { "LightMode" = "NormalsRendering"}
 
 			Blend SrcAlpha OneMinusSrcAlpha
-			ZWrite On
+			ZWrite[_ZWrite]
 
 			HLSLPROGRAM
 			#pragma prefer_hlslcc gles
@@ -245,7 +245,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton Lit Ex(ZWrite)" {
 			Name "Unlit"
 			Tags { "LightMode" = "UniversalForward" "Queue"="Transparent" "RenderType"="Transparent"}
 
-			ZWrite On
+			ZWrite[_ZWrite]
 			Cull Off
 			Blend One OneMinusSrcAlpha
 
