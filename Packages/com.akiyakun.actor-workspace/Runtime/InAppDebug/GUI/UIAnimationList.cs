@@ -12,51 +12,11 @@ namespace ActorWorkspace.InAppDebug
     {
         [SerializeField] UIListView listView;
 
-        // [SerializeField] GameObject speedControl;
-        // TMP_InputField speedInputField;
-
-        // [SerializeField] GameObject mixControl;
-        // TMP_InputField mixInputField;
-        // Toggle loopToggle;
-
-        // [SerializeField] GameObject trackControl;
-
-        // public event System.Action<UIEntity> OnClickEntity;
-
-        // public event System.Action<float> OnMixValueChanged;
-        // public event System.Action<bool> OnLoopValueChanged;
-        // public event System.Action<int> OnActiveTrackChanged;
-
-        // // public event System.Action<int> OnAnimationChanged;
-
-
-        // public bool IsLoop => loopToggle.isOn;
-
-
         protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
-            //     speedInputField = speedControl.Find("InputField").GetComponent<TMP_InputField>();
-
-            //     mixInputField = mixControl.Find("InputField").GetComponent<TMP_InputField>();
-            //     loopToggle = mixControl.Find("Loop").GetComponent<Toggle>();
-
             // イベント登録
             {
                 listView.OnClick.AddListener(OnClickFromListView);
-
-                //         speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnSpeedSliderValueChanged);
-                //         speedControl.Find("Reset").GetComponent<Button>().onClick.AddListener(OnSpeedReset);
-
-                //         mixControl.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener(OnMixSliderValueChanged);
-                //         mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.AddListener(OnLoopToggleChanged);
-
-                //         trackControl.Find("Track0").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack0ToggleChanged);
-                //         trackControl.Find("Track1").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack1ToggleChanged);
-                //         trackControl.Find("Track2").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack2ToggleChanged);
-                //         trackControl.Find("Track3").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack3ToggleChanged);
-                //         trackControl.Find("Track4").GetComponent<Toggle>().onValueChanged.AddListener(OnTrack4ToggleChanged);
-
-                //         // OnAnimationChanged += InnerOnAnimationChanged;
             }
 
             return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
@@ -72,20 +32,6 @@ namespace ActorWorkspace.InAppDebug
             // イベント解除
             {
                 listView.OnClick.RemoveListener(OnClickFromListView);
-
-                //         speedControl.Find("Slider").GetComponent<Slider>().onValueChanged.RemoveListener(OnSpeedSliderValueChanged);
-                //         speedControl.Find("Reset").GetComponent<Button>().onClick.RemoveListener(OnSpeedReset);
-
-                //         mixControl.Find("Loop").GetComponent<Toggle>().onValueChanged.RemoveListener(OnLoopToggleChanged);
-
-                //         trackControl.Find("Track0").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack0ToggleChanged);
-                //         trackControl.Find("Track1").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack1ToggleChanged);
-                //         trackControl.Find("Track2").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack2ToggleChanged);
-                //         trackControl.Find("Track3").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack3ToggleChanged);
-                //         trackControl.Find("Track4").GetComponent<Toggle>().onValueChanged.RemoveListener(OnTrack4ToggleChanged);
-
-                //         // OnAnimationChanged -= InnerOnAnimationChanged;
-                //     }
             }
         }
 
@@ -98,7 +44,6 @@ namespace ActorWorkspace.InAppDebug
         {
             Debug.Assert(actor != null);
             Debug.Assert(actor.AnimationController != null);
-            // Debug.Assert(actor.AnimationController.AnimationList != null);
 
             listView.Clear();
 
@@ -156,9 +101,7 @@ namespace ActorWorkspace.InAppDebug
         {
             var entity = sender.GetComponent<UIEntity>();
             if (entity == null) return;
-            // OnClickEntity?.Invoke(entity);
             OnClickFromEntity(entity);
         }
-
     }
 }

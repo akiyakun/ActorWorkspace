@@ -32,9 +32,6 @@ namespace ActorWorkspace.InAppDebug
         public event System.Action<int> OnActiveTrackChanged;
         public event System.Action<bool> OnRootMotionValueChanged;
 
-        // public event System.Action<int> OnAnimationChanged;
-
-
         public bool IsLoop => loopToggle.isOn;
 
         protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
@@ -76,8 +73,6 @@ namespace ActorWorkspace.InAppDebug
                 trackControl.GetComponent<Toggle>("Track4").onValueChanged.AddListener(OnTrack4ToggleChanged);
 
                 otherControl.GetComponent<Toggle>("RootMotion").onValueChanged.AddListener(OnRootMotionToggleChanged);
-
-                // OnAnimationChanged += InnerOnAnimationChanged;
             }
 
             return await UniTask.FromResult<int>(GeneralReturnCode.Succeeded);
@@ -106,8 +101,6 @@ namespace ActorWorkspace.InAppDebug
                 trackControl.GetComponent<Toggle>("Track4").onValueChanged.RemoveListener(OnTrack4ToggleChanged);
 
                 otherControl.GetComponent<Toggle>("RootMotion").onValueChanged.RemoveListener(OnRootMotionToggleChanged);
-
-                // OnAnimationChanged -= InnerOnAnimationChanged;
             }
         }
 
@@ -119,8 +112,6 @@ namespace ActorWorkspace.InAppDebug
             OnLoopToggleChanged(IsLoop);
             ResetTrackControl();
         }
-
-        // public void Refresh(bool loop)
 
         // Track のボタン(テストで使う)
         public Toggle GetTrackToggle(int trackIndex) => trackControl.GetComponent<Toggle>($"Track{trackIndex}");
@@ -153,28 +144,12 @@ namespace ActorWorkspace.InAppDebug
         // 負の値は停止あつかい
         public void TrackAnimationChanged(int trackIndex, bool isPlaying)
         {
-            // for (int i = 0; i < 5; i++)
-            {
-                int i = trackIndex;
-                var defaultText = GetTrackText(i, "DefaultText");
-                var playingText = GetTrackText(i, "PlayingText");
+            var defaultText = GetTrackText(trackIndex, "DefaultText");
+            var playingText = GetTrackText(trackIndex, "PlayingText");
 
-                defaultText.gameObject.SetActive(!isPlaying);
-                playingText.text = defaultText.text;
-                playingText.gameObject.SetActive(isPlaying);
-
-                // if (i != trackIndex)
-                // {
-                //     defaultText.gameObject.SetActive(true);
-                //     playingText.gameObject.SetActive(false);
-                // }
-                // else
-                // {
-                //     defaultText.gameObject.SetActive(false);
-                //     playingText.text = defaultText.text;
-                //     playingText.gameObject.SetActive(true);
-                // }
-            }
+            defaultText.gameObject.SetActive(!isPlaying);
+            playingText.text = defaultText.text;
+            playingText.gameObject.SetActive(isPlaying);
         }
 
         public void ChangeTrack(float speed, float mix)
@@ -183,7 +158,6 @@ namespace ActorWorkspace.InAppDebug
             speedInputField.SetTextWithoutNotify(Mathf.RoundToInt(speed * 100.0f).ToString());
             mixControl.GetComponentInChildren<Slider>().value = mix;
         }
-
 
         void OnSpeedSliderValueChanged(float value)
         {
@@ -212,7 +186,6 @@ namespace ActorWorkspace.InAppDebug
 
         void OnMixSliderValueChanged(float value)
         {
-            // Debug.Log($"OnMixSliderValueChanged");
             mixInputField.text = value.ToString("F2");
             OnMixValueChanged?.Invoke(value);
         }
@@ -249,12 +222,10 @@ namespace ActorWorkspace.InAppDebug
             if (value) OnActiveTrackChanged?.Invoke(4);
         }
 
-
         void OnRootMotionToggleChanged(bool value)
         {
             rootMotionToggle.isOn = value;
             OnRootMotionValueChanged?.Invoke(value);
         }
-
     }
 }

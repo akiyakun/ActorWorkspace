@@ -11,7 +11,6 @@ namespace ActorWorkspace.InAppDebug
     {
         public AssetRepositoryCategorize AssetRepositories { get; private set; }
 
-        // public AWActorContextProvider ActorContextProvider { get; private set; }
         public IAWActorFactory ActorFactory { get; private set; }
         public IAWActorManager ActorManager { get; private set; }
 
@@ -28,7 +27,6 @@ namespace ActorWorkspace.InAppDebug
             AssetRepositories = new();
             AssetRepositories.AddCategory(0, new afl.MasterData.Tests.StubAssetRepository());
 
-            // ActorContextProvider = new AWActorContextProvider(AssetRepositories);
             ActorFactory = new Tests.StubAWActorFactory();
             ActorManager = new AWActorManager<IAWActor>(ActorFactory);
         }
@@ -39,15 +37,11 @@ namespace ActorWorkspace.InAppDebug
             AssetRepositories = assetRepositories;
             Debug.Assert(assetRepositories != null);
 
-            // ActorContextProvider = actorContextProvider;
-            // Debug.Assert(actorContextProvider != null);
-
             ActorFactory = actorFactory;
             Debug.Assert(actorFactory != null);
 
             ActorManager = actorManager;
             Debug.Assert(actorManager != null);
-
         }
 
         public string GetCategoryName(int category)
@@ -74,11 +68,8 @@ namespace ActorWorkspace.InAppDebug
                 info.Category = category;
 
                 info.Name = model!.GetName();
-                // Debug.Log($"AssetModel: {info.Name}");
                 if (string.IsNullOrEmpty(info.Name))
                 {
-                    // info.Name = System.IO.Path.GetDirectoryName(info.AssetModel.AssetLocator).Replace(assetRootDirectory, "");
-                    // info.Name = System.IO.Path.GetFileNameWithoutExtension(info.AssetModel.AssetLocator);
                     info.Name = $"{model.Id:0000}: {info.AssetModel.AssetLocator}";
                 }
 

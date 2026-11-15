@@ -14,30 +14,21 @@ namespace ActorWorkspace.InAppDebug
 
         [SerializeField] UIListView listView;
 
-        // SkeletonAnimation skeletonAnimation;
-        // Spine.Animation lastAnimation;
-        IAWActor actor;
         IAWAnimationController animationController;
         IAWAnimation lastAnimation;
 
         protected override void OnAwake()
         {
             ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.ResetUI, actor => ResetUI(actor));
-            // FormBinding.Bus.Subscribe("ResetUI", (IAWActor actor) => ResetUI(actor));
 
             ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.PlayList_Clear, () => ClearPlayList());
             ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.PlayList_Add, animation => AddPlayList(animation));
         }
 
-        // public void ResetUI(IAWActor actor)
         void ResetUI(IAWActor actor)
         {
-            // this.skeletonAnimation = skeletonAnimation;
-            // lastAnimation = null;
-            this.actor = actor;
             animationController = actor.AnimationController;
 
-            // skeletonAnimation.state.Complete += OnAnimationComplete;
             animationController.OnAnimationComplete += OnAnimationComplete;
         }
 
@@ -46,7 +37,6 @@ namespace ActorWorkspace.InAppDebug
             listView.Clear();
             lastAnimation = null;
 
-            // skeletonAnimation.state.SetEmptyAnimation(trackIndex, 0.0f);
             animationController.SetEmptyAnimation(new AWAnimationOption { Track = trackIndex });
         }
 
@@ -60,16 +50,6 @@ namespace ActorWorkspace.InAppDebug
             }
             entity.SetStay();
 
-            // var state = skeletonAnimation.state;
-            // if (listView.ItemCount == 1)
-            // {
-            //     state.SetAnimation(trackIndex, animation, loop: false);
-            // }
-            // else
-            // {
-            //     state.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
-            // }
-
             lastAnimation = animation;
 
             ResetAnimations();
@@ -80,34 +60,19 @@ namespace ActorWorkspace.InAppDebug
             var itemList = listView.ItemList;
             for (int i = 0; i < itemList.Count; i++)
             {
-                // var animation = itemList[i].UserData as Spine.Animation;
                 var animation = itemList[i].UserData as IAWAnimation;
                 if (i == 0)
                 {
-                    // skeletonAnimation.state.SetAnimation(trackIndex, animation, loop: false);
-                    // animationController.SetAnimation(Utility.StringToHashId(animation.Name), loop: false, trackNum: trackIndex);
                     animationController.SetAnimation(Utility.StringToHashId(animation.Name),
                         new AWAnimationOption { Track = trackIndex, Flags = (uint)AWAnimationOptionFlag.Loop });
                 }
                 else
                 {
-                    // skeletonAnimation.state.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
-                    // animationController.AddAnimation(trackIndex, animation, loop: false, delay: 0.0f);
                     Debug.Assert(false);
                 }
             }
         }
 
-        // void OnAnimationComplete(Spine.TrackEntry entry)
-        // {
-        //     if (lastAnimation == null) return;
-
-        //     if (lastAnimation == entry.Animation)
-        //     {
-        //         Debug.Log($"OnAnimationComplete: {entry.Animation.Name}");
-        //         ResetAnimations();
-        //     }
-        // }
         void OnAnimationComplete(IAWAnimation animation)
         {
             if (lastAnimation == null) return;
@@ -118,11 +83,5 @@ namespace ActorWorkspace.InAppDebug
                 ResetAnimations();
             }
         }
-
-        // public void OnClearPlayList()
-        // {
-        //     ClearPlayList();
-        // }
-
     }
 }

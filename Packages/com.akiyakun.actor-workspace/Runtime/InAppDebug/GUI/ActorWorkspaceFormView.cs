@@ -18,12 +18,7 @@ namespace ActorWorkspace.InAppDebug
         public const string AssetRootDirectory = "Assets/AssetBundleData/Actor";
         public const string AnimationListControlPath = "Root/AnimationListControl";
 
-        // [SerializeField] Camera actorCamera;
         public Camera ActorCamera { get; private set; } = null!;
-        // [SerializeField] Camera uiCamera;
-        // public Camera UICamera => uiCamera;
-
-        // public Camera CurrentCamera => navigationCamera;
 
         public event System.Action<IAWActor> OnCreatedActor;
         public event System.Action<IAWActor> OnRemoveActor;
@@ -89,14 +84,6 @@ namespace ActorWorkspace.InAppDebug
         // Single View で表示しているアクター
         public IAWActor WorkingActor => ContextProvider.CurrentWorkingActorContext.Actor;
 
-        // From IAsyncInitializable
-        // public bool IsInitialized { get; protected set; }
-
-        // void Awake()
-        // {
-        //     // openAssetDialog.SetActive(false);
-        // }
-
         // MEMO: 設定のしかた何か違う気がする、Context作ってそれを内部でGetContextしたほうが？
         ActorWorkspaceFormContextProvider injectContextProvider;
         public void SetContextProvider(ActorWorkspaceFormContextProvider contextProvider)
@@ -111,12 +98,9 @@ namespace ActorWorkspace.InAppDebug
             return injectContextProvider;
         }
 
-        // From IAsyncInitializable
-        // public async UniTask<int> InitializeAsync(CancellationToken cancellationToken = default)
         // From UIFormLogic
         protected override async UniTask<int> InnerInitializeAsync(CancellationToken cancellationToken)
         {
-            // ContextProvider = contextProvider;
             Debug.Assert(ContextProvider != null, "先に SetContextProvider() を呼び出してください。");
 
             // VariableTable
@@ -146,13 +130,6 @@ namespace ActorWorkspace.InAppDebug
 
             // アクターカメラの設定
             {
-                // var originCamera = transform.Find("Root/ActorCamera").GetComponent<Camera>();
-                // if (ActorCamera != originCamera)
-                // {
-                //     // 別のカメラが設定されているときオリジナルは非表示にする
-                //     originCamera.gameObject.SetActive(false);
-                // }
-
                 // MEMO: 250810 何か変更して刺激を与えないとカメラ描画を始めてくれない(???)
                 ActorCamera.enabled = false;
                 ActorCamera.enabled = true;
@@ -170,34 +147,13 @@ namespace ActorWorkspace.InAppDebug
                     (entity) => entity.RemoveListener(OnClickActorView));
             }
 
-            // UIカメラの設定
-            // {
-            //     var originCamera = transform.Find("Root/UICamera").GetComponent<Camera>();
-            //     if (UICamera != originCamera)
-            //     {
-            //         // 別のカメラが設定されているときオリジナルは非表示にする
-            //         originCamera.gameObject.SetActive(false);
-            //     }
-
-            //     // var canvas = transform.Find("Root/Canvas").GetComponent<Canvas>();
-            //     // canvas.worldCamera = UICamera;
-            // }
-
             {
                 uiAnimationList = Form.Root.transform.Find("UIAnimationList").GetComponent<UIAnimationList>();
-                // var group = animationListFormLogic.transform.Find("UIListView").GetComponent<UIEntityGroup>();
-                // await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
-                // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-
                 uiAnimationList.OnClickEntity += OnClickEntityFromAnimationList;
             }
 
             {
                 uiSkinControl = Form.Root.transform.Find("UISkinControl").GetComponent<UISkinControl>();
-                // var group = uiSkinControl.gameObject.Find("Root/UIListView").GetComponent<UIEntityGroup>();
-                // await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
-                // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-
                 uiSkinControl.OnSkinsChanged += OnSkinsChanged;
             }
 
@@ -213,17 +169,7 @@ namespace ActorWorkspace.InAppDebug
 
             {
                 uiPlayListControl = Form.Root.transform.Find("UIPlayListControl").GetComponent<UIPlayListControl>();
-
-                // var group = uiPlayListControl.gameObject.Find("Root/UIListView").GetComponent<UIEntityGroup>();
-                // await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
-                // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
             }
-
-            // {
-            //     var group = openAssetDialog.Find("UIListView").GetComponent<UIEntityGroup>();
-            //     await group.InitializeAsync(UIContextProvider.Default, this.destroyCancellationToken);
-            //     if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-            // }
 
             // 一覧表示
             {
@@ -239,26 +185,9 @@ namespace ActorWorkspace.InAppDebug
                 UpdateViewModeUI();
             }
 
-            // var form = gameObject.GetComponent<IUIForm>();
-            // int ret = await form.InitializeAsync(cancellationToken: cancellationToken);
-            // if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-            // if (ret < 0) return ret;
-
-            // #if UNITY_EDITOR
-            //             await InitializeEditorAsync(cancellationToken: cancellationToken);
-            //             if (cancellationToken.IsCancellationRequested) return GeneralReturnCode.Cancel;
-            // #endif
-
-            // Debug.Log("ActorWorkspaceGUI initialized successfully.");
-
-            // IsInitialized = true;
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
 
-        // From IAsyncInitializable
-        // public void Terminate()
-        // {
-        // }
         // From UIFormLogic
         protected override void InnerTerminate()
         {
@@ -679,84 +608,43 @@ namespace ActorWorkspace.InAppDebug
             }
         }
 
-
         // アニメーションリストからアニメーションをクリックしたときの処理
         public void OnClickEntityFromAnimationList(UIEntity sender)
         {
             Debug.Log("UIAnimationList: OnClickEntityFromAnimationList");
 
-            // var animation = sender.UserData as Spine.Animation;
-            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             var animation = sender.UserData as IAWAnimation;
             var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
 
             // Ctrlが押されている場合は再生リストに追加する
             if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
             {
-                // uiPlayListControl.AddPlayList(animation);
                 ContextProvider.EventBus.Publish(ActorWorkspaceFormEvents.PlayList_Add, animation);
                 return;
             }
 
-            // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-
-            // TrackEntry cu = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-            // if (cu != null && cu.Animation == animation)
-            IAWTrack cu = animationController.GetTrack(currentTrackIndex);
-            // if (cu != null && cu.Animation == animation)
-            // {
-            //     // 再生チェックマークを更新
-            //     uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, false);
-
-            //     // 同じアニメーションが選択された場合は停止させる
-            //     // animationController.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
-            //     animationController.SetEmptyAnimation(currentTrackIndex);
-
-            //     // ClearTrack()だけだと一時停止みたいになってしまう
-            //     // skeletonAnimation.AnimationState.ClearTrack(currentTrackIndex);
-            //     uiAnimationControl.TrackAnimationChanged(currentTrackIndex, false);
-            // }
-            // else
+            // 再生チェックマークを更新
+            if (uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, true) == false)
             {
-                // 再生チェックマークを更新
-                if (uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, true) == false)
-                {
-                    // 別のトラックが再生中なので再生ができない
-                    // 停止させる
-                    uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, false);
-                    // animationController.SetEmptyAnimation(currentTrackIndex, stateData.DefaultMix);
-                    animationController.SetEmptyAnimation(currentTrackIndex);
-                    uiAnimationControl.TrackAnimationChanged(currentTrackIndex, false);
-                    return;
-                }
-
-                // if (cu != null && cu.Animation != null)
-                // {
-                //     var stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-                //     stateData.SetMix(cu.Animation, animation, stateData.DefaultMix);
-                // }
-
-                // TrackEntry trackEntry =
-                var opt = new AWAnimationOption();
-                opt.Track = currentTrackIndex;
-                opt.Flags = (uint)AWAnimationOptionFlag.Loop | (uint)AWAnimationOptionFlag.Immediate;
-
-                animationController.UseRootMotion = false;
-
-                // MEMO: 読み込みの後に残ったトリガーがあると、切り替えた直後に Animator がそのステートへ戻ってしまう
-                animationController.AnimationParameter.AllResetTrigger();
-
-                var track = animationController.SetAnimation(Utility.StringToHashId(animation.Name), opt);
-                // MixDurationを0にしないとDefaultMixが適応されない?
-                // trackEntry.MixDuration = 3.0f;
-
-                // skeletonAnimation.AnimationState.AddAnimation(
-                //     currentTrackIndex, animation: animation, loop: uiAnimationControl.IsLoop, delay: 0.0f);
-
-                uiAnimationControl.TrackAnimationChanged(currentTrackIndex, true);
-
+                // 別のトラックが再生中なので再生ができない
+                // 停止させる
+                uiAnimationList.SetPlayingCheckmark(sender, currentTrackIndex, false);
+                animationController.SetEmptyAnimation(currentTrackIndex);
+                uiAnimationControl.TrackAnimationChanged(currentTrackIndex, false);
+                return;
             }
 
+            var opt = new AWAnimationOption();
+            opt.Track = currentTrackIndex;
+            opt.Flags = (uint)AWAnimationOptionFlag.Loop | (uint)AWAnimationOptionFlag.Immediate;
+
+            animationController.UseRootMotion = false;
+
+            // MEMO: 読み込みの後に残ったトリガーがあると、切り替えた直後に Animator がそのステートへ戻ってしまう
+            animationController.AnimationParameter.AllResetTrigger();
+
+            animationController.SetAnimation(Utility.StringToHashId(animation.Name), opt);
+            uiAnimationControl.TrackAnimationChanged(currentTrackIndex, true);
         }
 
         public void OnSkinChanged(int index)
@@ -785,23 +673,16 @@ namespace ActorWorkspace.InAppDebug
         {
             trackInfoList[currentTrackIndex].Mix = value;
             if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
-            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
             if (track == null) return;
             // TrackごとにMixを設定するようなことはできない
-            // AnimationStateData stateData = skeletonAnimation.skeletonDataAsset.GetAnimationStateData();
-            // stateData.DefaultMix = value;
             track.MixDuration = value;
             trackInfoList[currentTrackIndex].Mix = value;
-            // Debug.Log($"OnMixValueChanged: stateData.DefaultMix={stateData.DefaultMix}, value={value}");
         }
 
         public void OnLoopValueChanged(bool value)
         {
             if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
-            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
-            // if (trackEntry == null) return;
             var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
             var track = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetTrack(currentTrackIndex);
             if (track != null && track.Animation != null)
@@ -813,7 +694,6 @@ namespace ActorWorkspace.InAppDebug
         // index: UIの0-4のボタンのインデックス(IAWTrack.MaxTrack 以上のボタンは押せない)
         public void OnActiveTrackChanged(int index)
         {
-            // Debug.Log($"OnActiveTrackChanged: index={index}");
             if (ContextProvider.CurrentWorkingActorContext.IsValid == false) return;
             // アニメーションコントローラーのトラックは IAWTrack.MaxTrack 個まで
             if (index < 0 || IAWTrack.MaxTrack <= index) return;
@@ -826,8 +706,6 @@ namespace ActorWorkspace.InAppDebug
 
             var uiListView = uiAnimationList.gameObject.GetComponent<UIListView>("UIListView");
 
-            // var skeletonAnimation = ContextProvider.CurrentWorkingActorContext.GameObject.GetComponent<SkeletonAnimation>();
-            // TrackEntry trackEntry = skeletonAnimation.AnimationState.GetCurrent(currentTrackIndex);
             Debug.Assert(ContextProvider != null);
             Debug.Assert(ContextProvider.CurrentWorkingActorContext != null);
             Debug.Assert(ContextProvider.CurrentWorkingActorContext.Actor != null);
@@ -839,8 +717,6 @@ namespace ActorWorkspace.InAppDebug
                 return;
             }
 
-            // SkeletonData skeletonData = skeletonAnimation.Skeleton.Data;
-            // for (int i = 0; i < skeletonData.Animations.Count; i++)
             var animationList = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController.GetAnimationList();
             for (int i = 0; i < animationList.Count; i++)
             {
@@ -864,57 +740,5 @@ namespace ActorWorkspace.InAppDebug
             var animationController = ContextProvider.CurrentWorkingActorContext.Actor.AnimationController;
             animationController.UseRootMotion = value;
         }
-
-
-
-#if UNITY_EDITOR
-        [Space(10)]
-        [Header("Editor Debug Only")]
-
-        [SerializeField] string 実行時に読み込むアセットフォルダーのパス;
-        string ForceLoadAssetAtRunning
-        {
-            get => 実行時に読み込むアセットフォルダーのパス;
-            set => 実行時に読み込むアセットフォルダーのパス = value;
-        }
-
-        async UniTask InitializeEditorAsync(CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(ForceLoadAssetAtRunning)) return;
-
-            // var path = AssetDatabase.GetAssetPath(ForceLoadAssetAtRunning);
-            var path = Utility.GetDirectoryPathNormalization(ForceLoadAssetAtRunning);
-            Debug.Log($"ForceLoadAssetAtRunning: {path}");
-
-            // if (string.IsNullOrEmpty(ForceLoadAssetAtRunning) == false)
-            /* とりあえず何か読み込みしたいときのコード
-            {
-                int category = 0;
-                IAssetRepository assetRepository = ContextProvider.AssetRepositories.Get(category);
-
-                var list = assetRepository.ToList();
-                for (int i = 0; i < list.Count; ++i)
-                {
-                    var model = list[i] as AssetModel;
-                    // var path = Utility.GetDirectoryPath(model.GetName()).Replace(ActorWorkspaceGUIContextProvider.AssetRootDirectory, "");
-                    // var path = Utility.GetDirectoryPath(model.GetName()).Replace(ActorWorkspaceGUIContextProvider.AssetRootDirectory, "");
-                    // if (path == ForceLoadAssetAtRunning)
-
-                    // string modelFullPath = Utility.GetDirectoryPath(Utility.PathCombine(ActorWorkspaceFormLogic.AssetRootDirectory, model.GetName()));
-                    string modelFullPath = model.AssetLocator;
-                    // Utility.GetDirectoryPath(Utility.PathCombine(ActorWorkspaceFormLogic.AssetRootDirectory, model.GetName()));
-                    Debug.Log($"modelFullPath: {modelFullPath}");
-                    // if (path == modelFullPath)
-                    {
-                        await LoadActorAsync(model.GetId(), category, cancellationToken: cancellationToken);
-                        return;
-                    }
-                }
-            }
-            //*/
-
-            await UniTask.CompletedTask;
-        }
-#endif
     }
 }
