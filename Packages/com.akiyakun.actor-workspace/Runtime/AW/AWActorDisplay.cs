@@ -30,6 +30,9 @@ namespace ActorWorkspace
 
         protected IAWActor Actor { get; private set; } = null!;
 
+        // 反転を打ち消す子(3D の当たり判定など)。スケールを変えたら Apply() を呼ぶ
+        AWKeepPositiveScale[] keepPositiveScales = System.Array.Empty<AWKeepPositiveScale>();
+
         // Actorの初期化処理の最後に呼ばれます
         public virtual async UniTask<int> InitializeAsync(IAWActor actor, CancellationToken cancellationToken)
         {
@@ -37,11 +40,15 @@ namespace ActorWorkspace
 
             Debug.Assert(main != null, $"Main is not assigned. ActorId={Actor.ActorId}, name={Actor.GameObject.name}");
 
+            // MEMO: ここより後に足した子(初期化のあとで作った当たり判定など)は対象にならない
+            keepPositiveScales = GetComponentsInChildren<AWKeepPositiveScale>(includeInactive: true);
+
             if (ForceUnitScale == true)
             {
                 Debug.Assert(transform.localScale == Vector3.one, "ForceUnitScale is true. Scale is forced to (1,1,1).");
                 transform.localScale = Vector3.one;
             }
+            ApplyKeepPositiveScales();
 
             return await UniTask.FromResult(GeneralReturnCode.Succeeded);
         }
@@ -71,6 +78,7 @@ namespace ActorWorkspace
             if (ForceUnitScale == true)
             {
                 transform.localScale = Vector3.one;
+                ApplyKeepPositiveScales();
             }
         }
 
@@ -118,7 +126,20 @@ namespace ActorWorkspace
                     break;
             }
 
+            // MEMO: 向きが変わらないときも毎フレーム呼ばれることがあるので、変わったときだけ子を直す
+            if (scale == transform.localScale) return;
+
             transform.localScale = scale;
+            ApplyKeepPositiveScales();
+        }
+
+        void ApplyKeepPositiveScales()
+        {
+            for (int i = 0; i < keepPositiveScales.Length; ++i)
+            {
+                // MEMO: 初期化のあとで子を Destroy したときのために null を確かめる
+                if (keepPositiveScales[i] != null) keepPositiveScales[i].Apply();
+            }
         }
 
     }

@@ -69,6 +69,9 @@ Box1[Bone]
 
 2D版と区別するためにBoneSlotFollowerを継承しただけのクラス。
 
+注意: `ActorDisplay` で左右を反転すると、作った `BoxCollider` の `lossyScale` がマイナスになります。トリガーでなく、kinematic でない `Rigidbody` に付いていると、物理の更新で警告が出ます（[ActorDisplay](../ActorDisplay.md) の `AWKeepPositiveScale`）。
+`BoneSlotFollower` はボーンのスケール（いつもプラス）を毎回書き込むので、今は `AWKeepPositiveScale` では打ち消せません。2D版（`BoxCollider2D`）では警告は出ません。
+
 # Spineデータ側の設定
 
 ツリービュー上で分かりやすく整理する目的で名前の頭に番号を付けます
