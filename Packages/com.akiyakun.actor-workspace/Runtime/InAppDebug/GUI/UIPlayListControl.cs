@@ -20,24 +20,32 @@ namespace ActorWorkspace.InAppDebug
         protected override void OnAwake()
         {
             ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.ResetUI, actor => ResetUI(actor));
-
-            ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.PlayList_Clear, () => ClearPlayList());
             ContextProvider.EventBus.Subscribe(ActorWorkspaceFormEvents.PlayList_Add, animation => AddPlayList(animation));
         }
 
-        void ResetUI(IAWActor actor)
+        protected override void InnerTerminate()
         {
-            animationController = actor.AnimationController;
-
-            animationController.OnAnimationComplete += OnAnimationComplete;
+            UnbindAnimationController();
         }
 
-        void ClearPlayList()
+        // アクターを読み直したとき
+        void ResetUI(IAWActor actor)
         {
+            UnbindAnimationController();
+
+            // 前のアクターのアニメーションなので、再生リストを空にする
             listView.Clear();
             lastAnimation = null;
 
-            animationController.SetEmptyAnimation(new AWAnimationOption { Track = trackIndex });
+            animationController = actor.AnimationController;
+            animationController.OnAnimationComplete += OnAnimationComplete;
+        }
+
+        void UnbindAnimationController()
+        {
+            if (animationController == null) return;
+            animationController.OnAnimationComplete -= OnAnimationComplete;
+            animationController = null;
         }
 
         void AddPlayList(IAWAnimation animation)
