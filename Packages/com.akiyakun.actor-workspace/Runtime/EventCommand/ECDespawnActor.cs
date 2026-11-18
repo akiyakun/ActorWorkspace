@@ -38,10 +38,11 @@ namespace ActorWorkspace.EventCommand
         public override void Start(IEventContext? context, EventCommandParam param)
         {
             // D.Log($"[ECDespawnActor] Start. param={param}");
-            SetState(EventCommandState.Completed);
 
             // クラスター値を取得
+            // MEMO: context が無いと例外になるので、Completed にするのは取得のあと
             int cluster = GetResponseOrParam1(context, ref param);
+            SetState(EventCommandState.Completed);
             // 動作モードを取得
             int mode = param.Param2.Int;
 
