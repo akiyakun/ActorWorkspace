@@ -35,7 +35,7 @@ namespace ActorWorkspace.EventCommand
             this.actorManager = actorManager;
         }
 
-        public override void Start(IEventContext context, EventCommandParam param)
+        public override void Start(IEventContext? context, EventCommandParam param)
         {
             // D.Log($"[ECDespawnActor] Start. param={param}");
             SetState(EventCommandState.Completed);

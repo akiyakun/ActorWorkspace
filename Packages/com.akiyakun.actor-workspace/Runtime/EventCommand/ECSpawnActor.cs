@@ -37,7 +37,7 @@ namespace ActorWorkspace.EventCommand
             ActorManager = actorManager;
         }
 
-        public override void Start(IEventContext context, EventCommandParam param)
+        public override void Start(IEventContext? context, EventCommandParam param)
         {
             SetState(EventCommandState.Running);
 

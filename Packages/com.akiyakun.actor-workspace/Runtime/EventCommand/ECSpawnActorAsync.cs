@@ -30,7 +30,7 @@ namespace ActorWorkspace.EventCommand
         // int Param2: Category
         // int Param3: Cluster
         // UserData: ECSpawnActor.SpawnOption
-        public override void Start(IEventContext context, EventCommandParam param)
+        public override void Start(IEventContext? context, EventCommandParam param)
         {
             SetState(EventCommandState.Running);
 
