@@ -62,7 +62,7 @@ def save_original(spine: Path, spine_file: Path) -> None:
 def main() -> int:
     setup_console()
     parser = argparse.ArgumentParser(description=".spine から原本の JSON を作る")
-    parser.add_argument("--spine_path", help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH か、標準のインストール先")
+    parser.add_argument("--spine_path", help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH、Unity プロジェクトの .env の SPINE_PATH、標準のインストール先の順に探す")
     parser.add_argument("--inputs", nargs="+", required=True, help=".spine か、.spine のあるフォルダ")
     args = parser.parse_args()
 

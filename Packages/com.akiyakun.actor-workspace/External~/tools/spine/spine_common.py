@@ -14,6 +14,7 @@ import json
 import os
 import subprocess
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 # 使う Spine エディタのバージョン(spine-unity 4.2 に合わせる)
@@ -41,7 +42,14 @@ ORIGINAL_EXPORT_SETTING = {
 TEMP_SPINE_FILENAME = "_export_temp.spine"
 
 # tools フォルダ(このファイルの 1 つ上)
-TOOLS_DIR = Path(__file__).resolve().parent.parent
+# MEMO: PyInstaller の --onefile で作った exe では __file__ が展開先の一時フォルダになるので、exe の場所(tools/bin)から求める
+if getattr(sys, "frozen", False):
+    TOOLS_DIR = Path(sys.executable).resolve().parent.parent
+else:
+    TOOLS_DIR = Path(__file__).resolve().parent.parent
+
+# PC ごとの設定(Spine の場所など)を書くファイル。Unity プロジェクトのフォルダ(tools の 1 つ上)に置き、Git には入れない
+ENV_FILE = TOOLS_DIR.parent / ".env"
 
 
 class SpineToolError(Exception):
@@ -55,27 +63,66 @@ def setup_console() -> None:
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
-def find_spine_command(specified: str | None) -> Path:
-    candidates = []
+def read_env_file(path: Path) -> dict[str, str]:
+    """.env の「名前=値」を読む。無ければ空。
+
+    # で始まる行はコメント。値を " か ' で囲んだときは外す(中のエスケープは解釈しない)。
+    """
+    values = {}
+    if not path.is_file():
+        return values
+    # MEMO: メモ帳などで保存すると BOM が付くことがあるので utf-8-sig で読む
+    try:
+        with open(path, encoding="utf-8-sig") as f:
+            lines = f.readlines()
+    except UnicodeDecodeError as e:
+        raise SpineToolError(f"{path} を UTF-8 で読めません。UTF-8 で保存し直してください: {e}") from e
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export "):].lstrip()
+        name, sep, value = line.partition("=")
+        if not sep:
+            continue
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        values[name.strip()] = value
+    return values
+
+
+def _spine_command_candidates(specified: str | None) -> Iterator[Path]:
+    """Spine の実行ファイルの候補を、優先順(引数 > 環境変数 > .env > 標準のインストール先)に返す。"""
     if specified:
-        candidates.append(Path(specified))
+        yield Path(specified)
     if os.environ.get("SPINE_PATH"):
-        candidates.append(Path(os.environ["SPINE_PATH"]))
+        yield Path(os.environ["SPINE_PATH"])
+    # MEMO: 前の候補で見つかったときは .env を読まない(.env が壊れていても、引数や環境変数の指定で動くように)
+    env_file_spine_path = read_env_file(ENV_FILE).get("SPINE_PATH")
+    if env_file_spine_path:
+        yield Path(env_file_spine_path)
     if sys.platform == "win32":
         # MEMO: Spine.exe はコンソールに出力しないので、Spine.com を使う
-        candidates.append(Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "Spine" / "Spine.com")
+        yield Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "Spine" / "Spine.com"
     elif sys.platform == "darwin":
-        candidates.append(Path("/Applications/Spine.app/Contents/MacOS/Spine"))
+        yield Path("/Applications/Spine.app/Contents/MacOS/Spine")
     else:
-        candidates.append(Path("/usr/local/bin/spine"))
+        yield Path("/usr/local/bin/spine")
 
-    for candidate in candidates:
+
+def find_spine_command(specified: str | None) -> Path:
+    candidates = []
+    for candidate in _spine_command_candidates(specified):
+        candidates.append(candidate)
         # Windows で Spine.exe を指定されたときは、同じ場所の Spine.com を使う
         if candidate.suffix.lower() == ".exe" and candidate.with_suffix(".com").is_file():
             candidate = candidate.with_suffix(".com")
         if candidate.is_file():
             return candidate
-    raise SpineToolError(f"Spine が見つかりません。--spine_path か環境変数 SPINE_PATH で指定してください。探した場所: {[str(c) for c in candidates]}")
+    raise SpineToolError(f"Spine が見つかりません。{ENV_FILE} に SPINE_PATH=<Spine の実行ファイル> と書くか、"
+                         f"--spine_path か環境変数 SPINE_PATH で指定してください。探した場所: {[str(c) for c in candidates]}")
 
 
 def run_spine(spine: Path, args: list[str]) -> str:

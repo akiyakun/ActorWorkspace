@@ -186,7 +186,7 @@ def json_mtimes(folder: Path) -> dict[Path, int]:
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Spine のデータ(原本の JSON か .spine)から Unity 用のデータを書き出す")
-    parser.add_argument("--spine_path", type=str, help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH か、標準のインストール先")
+    parser.add_argument("--spine_path", type=str, help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH、Unity プロジェクトの .env の SPINE_PATH、標準のインストール先の順に探す")
     parser.add_argument("--inputs", type=str, nargs="+", required=True, help="原本のあるフォルダ、.spine、原本の JSON")
     parser.add_argument("--export_dir", type=str, default=str(DEFAULT_EXPORT_DIR), help="出力先のフォルダ")
     parser.add_argument("--spine_export_setting", type=str, default=None,

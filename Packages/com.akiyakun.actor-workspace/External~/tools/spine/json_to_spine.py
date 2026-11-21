@@ -20,7 +20,7 @@ from spine_common import (NOT_ORIGINAL_JSON_FILENAMES, SpineToolError, find_orig
 def main() -> int:
     setup_console()
     parser = argparse.ArgumentParser(description="原本の JSON から作業用の .spine を作る")
-    parser.add_argument("--spine_path", help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH か、標準のインストール先")
+    parser.add_argument("--spine_path", help="Spine の実行ファイル。既定: 環境変数 SPINE_PATH、Unity プロジェクトの .env の SPINE_PATH、標準のインストール先の順に探す")
     parser.add_argument("--inputs", nargs="+", required=True, help="原本の JSON か、原本のあるフォルダ")
     args = parser.parse_args()
 

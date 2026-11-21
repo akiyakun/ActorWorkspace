@@ -36,6 +36,7 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
 * `spine_actor_export_to_unity` は、フォルダに `.spine` と JSON の両方があると JSON を原本として使い、そのことを表示します。`.spine` を原本にするプロジェクトでは、原本のフォルダに書き出した JSON を置かないでください
 * `override_export_setting.json`・`extra_data.json` は、前の版と同じく下のフォルダにあっても使います(フォルダの直下を優先)
 * 共通の処理は `spine/spine_common.py` にあります
+* Spine の場所は、`--spine_path`、環境変数 `SPINE_PATH`、Unity プロジェクトのフォルダ(`tools/` の 1 つ上)の `.env` に書いた `SPINE_PATH`、標準のインストール先の順に探します。`.env` は PC ごとのファイルなので Git に入れません(afl の `.gitignore` で無視)。`bin/spine_actor_export_to_unity.bat` も、環境変数が無ければ `.env` を読んで `.exe` に渡します。`.bat` は `=` の前後の空白、値の後ろのコメント、日本語のパスを読めないので、`.env` は `SPINE_PATH=<Spine の実行ファイル>` の形で書きます
 * `bin/` の `.exe`・`.app` は、`.spine` を入力にしていた前の版をビルドしたものです(作り直していない)。`bin/spine_actor_export_to_unity.bat` もこの `.exe` を呼ぶ前の版のままにしています(デザイナーの PC には Python が入っていないことがあるため)。`.exe` を作り直したら、`.bat` からも新しい処理が使えます
 
 ## インポート
