@@ -37,7 +37,22 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
 * `override_export_setting.json`・`extra_data.json` は、前の版と同じく下のフォルダにあっても使います(フォルダの直下を優先)
 * 共通の処理は `spine/spine_common.py` にあります
 * Spine の場所は、`--spine_path`、環境変数 `SPINE_PATH`、Unity プロジェクトのフォルダ(`tools/` の 1 つ上)の `.env` に書いた `SPINE_PATH`、標準のインストール先の順に探します。`.env` は PC ごとのファイルなので Git に入れません(afl の `.gitignore` で無視)。`bin/spine_actor_export_to_unity.bat` も、環境変数が無ければ `.env` を読んで `.exe` に渡します。`.bat` は `=` の前後の空白、値の後ろのコメント、日本語のパスを読めないので、`.env` は `SPINE_PATH=<Spine の実行ファイル>` の形で書きます
+* 書き出し先のフォルダの名前の `=` から `@` の前まではコメントです(afl の `AutoAddressing` がアドレスから除く。例: `Enemy_5020=ダイエイユー@bundle` のアドレスは `Enemy_5020@bundle`)。`spine_actor_export_to_unity` は、コメントを除いた名前が同じで名前が違うフォルダが書き出し先にあれば、元データのフォルダの名前に変えて(`.meta` も一緒に)から上書きします。元データのフォルダにコメントを足した・変えた・消したときも、同じアセット(GUID)を上書きできます。コメントを除いた名前が同じフォルダが書き出し先に 2 つ以上あるときはエラーにします
+* `spine_actor_export_to_unity` は、Unity が開いているときは書き出しの間 Unity の取り込み・保存を止めます(afl の ExternalEditLock。`tools/lib/unity_external_edit_lock.py` を使う)。Unity が止まったことを確かめられないときは、フォルダの名前を変えずにエラーにします(Unity のメニューの一括書き出しを使うか、Unity で名前を変えてから書き出す)
 * `bin/` の `.exe`・`.app` は、`.spine` を入力にしていた前の版をビルドしたものです(作り直していない)。`bin/spine_actor_export_to_unity.bat` もこの `.exe` を呼ぶ前の版のままにしています(デザイナーの PC には Python が入っていないことがあるため)。`.exe` を作り直したら、`.bat` からも新しい処理が使えます
+
+### 一括書き出し(Unity のメニュー)
+
+`App/Develop/ActorWorkspace/Spine/Export All Spine To Unity` で、すべての Spine を Unity 用に書き出して取り込みます(`Editor/Integration/UnitySpine/SpineBulkExporter.cs`)。Python 3 と Spine が要ります。
+
+* 対象は、UnitySpineSettings の `Export Source Directory`(既定は `../spine`。Unity プロジェクトのフォルダからの相対パス)の下の `<カテゴリ>/<名前>@bundle` のフォルダです。名前が `@bundle` で終わらないフォルダ(カットインなど UI の Spine)は書き出しません
+* 書き出し先は `Export Destination Directory`(既定は `Assets/AssetBundleData/Actor`)の下の `<カテゴリ>/<フォルダの名前>` です。`ImportTargetDirectories` に入っている場所にしてください(入っていないと取り込みの処理が動かず、エラーで止まります)
+* 1 件ずつ、`tools/spine/spine_actor_export_to_unity.py` で書き出し、取り込み(`SpineAssetPostprocessor` とプロジェクト側の `ImportCallback` を含む)が終わるのを待ってから次へ進みます
+* 書き出す前に、書き出し先のフォルダの名前を元データのフォルダの名前に合わせます(上のコメントの決まり)。Unity の中で `AssetDatabase.MoveAsset` で変えるので、GUID は変わりません
+* 書き出しの間は、afl の ExternalEditLock で取り込み・保存・ドメインリロードを止めます
+* 次のどれかがあると、その件で止めます。書き出しのスクリプトが失敗した、その件の間にエラーログが出た、書き出し先に SkeletonDataAsset・SpineExtraData が無い、SpineExtraData の `IsImportError` が立っている。どれが原因かと、スクリプトの出力を Console に出します
+* キャンセルは書き出しの間のプログレスバーから。今の件が終わってから止めます
+* 実行中にスクリプトを変えないでください。ドメインリロードが起きると、そこで黙って止まります
 
 ## インポート
 

@@ -22,6 +22,21 @@ namespace ActorWorkspace.UnitySpine
         #endregion
 
 
+        #region Export Settings
+        // 一括書き出し(SpineBulkExporter)で使う
+        [Header("Export Settings")]
+
+        // Spine の元データのフォルダ(Unity プロジェクトのフォルダからの相対パス)
+        // この下の <カテゴリ>/<名前>@bundle のフォルダを書き出す
+        [SerializeField] string exportSourceDirectory = "../spine";
+        public string ExportSourceDirectory => exportSourceDirectory;
+
+        // 書き出し先のフォルダ(Unity プロジェクトのフォルダからの相対パス)。この下の <カテゴリ>/<名前>@bundle に書き出す
+        [SerializeField] string exportDestinationDirectory = "Assets/AssetBundleData/Actor";
+        public string ExportDestinationDirectory => exportDestinationDirectory;
+        #endregion
+
+
         #region Folders
         [Header("Folders")]
 

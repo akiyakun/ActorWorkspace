@@ -10,6 +10,11 @@
   override_export_setting.json    (任意)書き出しの設定のうち、このフォルダだけ変えるもの
   extra_data.json                 (任意)書き出し先にコピーする。externalSpineFilePath でほかの場所の原本を使える
 出力: <export_dir>/<カテゴリ(入力の親フォルダの名前)>/<入力のフォルダの名前>/
+  フォルダの名前の = から @ の前まではコメント(afl の AutoAddressing がアドレスから除く)。
+  コメントを除いた名前が同じフォルダが出力先にあれば、入力のフォルダの名前に変えてから上書きする
+  (例: Enemy_5020@bundle → Enemy_5020=ダイエイユー@bundle。Unity のアセットの GUID を変えないため)
+  Unity が開いているときは、書き出しの間 Unity の取り込み・保存を止める(afl の ExternalEditLock)。
+  Unity が止まったことを確かめられないときは、フォルダの名前を変えずにエラーにする
 
 使い方(tools フォルダで):
   python spine/spine_actor_export_to_unity.py --inputs <フォルダ・.spine・原本の JSON> ...
@@ -27,7 +32,8 @@ from types import SimpleNamespace
 
 from spine_common import (EXTRA_DATA_FILENAME, NOT_ORIGINAL_JSON_FILENAMES, OVERRIDE_EXPORT_SETTING_FILENAME,
                           TEMP_SPINE_FILENAME, TOOLS_DIR, SpineToolError, find_original_json, find_original_jsons,
-                          find_spine_command, import_json_to_spine, read_json, run_spine, setup_console, write_json)
+                          find_spine_command, import_json_to_spine, read_json, run_spine, setup_console,
+                          unity_external_edit_lock, write_json)
 
 DEFAULT_EXPORT_DIR = TOOLS_DIR.parent / "Assets" / "AssetBundleData" / "Actor"
 # 書き出しの設定。プロジェクト用の設定(bin/spine_export_setting.json)があればそれを使う
@@ -136,8 +142,64 @@ def create_fileinfo(input_path: Path) -> SimpleNamespace:
     )
 
 
-def export(spine: Path, info: SimpleNamespace, export_dir: Path, export_setting: Path) -> None:
-    output_path = export_dir / info.category_dir_name / info.folder.name
+def remove_folder_comment(name: str) -> str:
+    """フォルダの名前から、= から @ の前までのコメントを除く(afl の AutoAddressing の RemoveCommentPath と同じく最後の = から)。
+
+    例: Enemy_5020=ダイエイユー@bundle → Enemy_5020@bundle
+    MEMO: SpineBulkExporter.cs の RemoveFolderComment と同じ決まり
+    """
+    at_index = name.rfind("@")
+    head, tail = (name[:at_index], name[at_index:]) if at_index >= 0 else (name, "")
+    equal_index = head.rfind("=")
+    if equal_index >= 0:
+        head = head[:equal_index]
+    return head + tail
+
+
+def prepare_output_folder(category_dir: Path, folder_name: str, can_rename: bool) -> Path:
+    """出力先のフォルダを決める。
+
+    コメントを除いた名前が同じで、名前が違うフォルダが出力先にあれば、入力のフォルダの名前に変える(.meta も一緒に)。
+    入力のフォルダにコメントを足した・変えた・消したときも、Unity の同じアセットを上書きするため(GUID を変えない)。
+    can_rename: 名前を変えてよいか(Unity が開いていて、取り込み・保存を止めたことを確かめられないときは False)
+    """
+    output_path = category_dir / folder_name
+    if not category_dir.is_dir():
+        return output_path
+
+    key = remove_folder_comment(folder_name)
+    others = sorted(p for p in category_dir.iterdir()
+                    if p.is_dir() and p.name != folder_name and remove_folder_comment(p.name) == key)
+    if not others:
+        return output_path
+    if output_path.exists() or len(others) > 1:
+        names = sorted([p.name for p in others] + ([folder_name] if output_path.exists() else []))
+        raise SpineToolError(f"コメント(= から @ の前まで)を除いた名前が同じフォルダが、出力先に複数あります。"
+                             f"使うものを 1 つ残して、ほかを Unity で消してください: {category_dir}（{names}）")
+
+    old_path = others[0]
+    if not can_rename:
+        raise SpineToolError(f"出力先のフォルダの名前を {old_path.name} → {folder_name} に変える必要がありますが、"
+                             f"Unity が開いていて取り込みを止められなかったので、変えませんでした。"
+                             f"Unity のメニュー App/Develop/ActorWorkspace/Spine/Export All Spine To Unity で書き出すか、"
+                             f"Unity で名前を変えてから書き出してください")
+    old_meta = old_path.with_name(old_path.name + ".meta")
+    new_meta = output_path.with_name(output_path.name + ".meta")
+    if new_meta.exists():
+        raise SpineToolError(f"名前を変えた先の .meta がもうあります: {new_meta}")
+    print(f"[情報] 出力先のフォルダの名前を変えます: {old_path.name} → {folder_name}")
+    try:
+        old_path.rename(output_path)
+        if old_meta.is_file():
+            old_meta.rename(new_meta)
+    except OSError as e:
+        raise SpineToolError(f"出力先のフォルダの名前を変えられませんでした(ほかのアプリがファイルを開いているかもしれません。"
+                             f"フォルダと .meta の名前がそろっているか確かめてください): {old_path.name} → {folder_name}: {e}") from e
+    return output_path
+
+
+def export(spine: Path, info: SimpleNamespace, export_dir: Path, export_setting: Path, can_rename: bool) -> None:
+    output_path = prepare_output_folder(export_dir / info.category_dir_name, info.folder.name, can_rename)
     print(f"output_path: {output_path}")
     output_path.mkdir(parents=True, exist_ok=True)
 
@@ -210,9 +272,13 @@ def main() -> int:
     try:
         spine = find_spine_command(args.spine_path)
         infos = [create_fileinfo(Path(p).resolve()) for p in args.inputs]
-        for info in infos:
-            print(f"--- {info.source_path}")
-            export(spine, info, export_dir, export_setting)
+        # 書き出しの間、Unity の取り込み・保存を止める(Unity が書き出しの途中のファイルを取り込んだり、
+        # 名前を変えたフォルダに保存しようとして落ちたりしないように)
+        with unity_external_edit_lock(TOOLS_DIR.parent, "spine_actor_export_to_unity") as lock:
+            can_rename = not lock.is_unity_running or lock.is_acknowledged
+            for info in infos:
+                print(f"--- {info.source_path}")
+                export(spine, info, export_dir, export_setting, can_rename)
     except SpineToolError as e:
         print(f"[エラー] {e}", file=sys.stderr)
         return 1

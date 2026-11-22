@@ -51,6 +51,21 @@ else:
 # PC ごとの設定(Spine の場所など)を書くファイル。Unity プロジェクトのフォルダ(tools の 1 つ上)に置き、Git には入れない
 ENV_FILE = TOOLS_DIR.parent / ".env"
 
+# Unity に作業中であることを知らせるロック(afl の tools/lib/unity_external_edit_lock.py。afl が tools にコピーする)
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
+try:
+    from lib.unity_external_edit_lock import unity_external_edit_lock  # noqa: E402,F401
+except ImportError:
+    # afl の tools が無いときは、ロックせずに進む(Unity が止まったか分からないので、フォルダの名前は変えない)
+    import contextlib
+    from types import SimpleNamespace
+
+    @contextlib.contextmanager
+    def unity_external_edit_lock(unity_project_dir: Path, tool_name: str) -> Iterator[SimpleNamespace]:
+        print("[警告] afl の tools/lib/unity_external_edit_lock.py が無いので、Unity の取り込みを止めずに書き出します")
+        yield SimpleNamespace(is_unity_running=True, is_acknowledged=False, lock_path=None)
+
 
 class SpineToolError(Exception):
     pass

@@ -104,6 +104,10 @@ namespace ActorWorkspace.Editor.UnitySpine
         // static List<string>? extraJsonList;
         static int reImportGard;
 
+        // 取り込みの処理中か(処理待ちが残っているか、処理している途中)
+        // 一括書き出し(SpineBulkExporter)が、取り込みが終わるのを待つのに使う
+        public static bool IsProcessing => reImportGard != 0 || File.Exists(PendingListFilePath);
+
 
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
