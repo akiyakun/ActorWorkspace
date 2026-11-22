@@ -38,6 +38,13 @@ namespace ActorWorkspace.UnitySpine
         public bool followParentWorldScale = false;
         #endregion
 
+        // 親が左右反転(負のスケール)していても、ワールドのスケールを正に保つ
+        // MEMO: BoxCollider(3D)は負のスケールに対応しておらず、警告が出る。箱は左右対称なので、反転しなくても形は変わらない
+        [NonSerialized] public bool keepPositiveWorldScale = false;
+        // スロットの絵を出さない(判定の箱の目印の画像など)。SpineFolderSlotVisibility.IsVisible のときは出す
+        // MEMO: アタッチメントを外すとフォロワーが非アクティブになる(下の OnSkeletonUpdated)ので、色のアルファで消す
+        [NonSerialized] public bool hideSlot = false;
+
         // public event System.Action<IAWFollower, bool>? OnActiveChange;
         public event System.Action<IAWFollower>? OnActivating;
 
@@ -127,7 +134,19 @@ namespace ActorWorkspace.UnitySpine
             {
                 localScale.Scale(new Vector3(bone.ScaleX, bone.ScaleY, 1.0f));
             }
+            if (keepPositiveWorldScale && transform.parent != null)
+            {
+                var parentScale = transform.parent.lossyScale;
+                if ((parentScale.x < 0.0f) != (localScale.x < 0.0f)) localScale.x = -localScale.x;
+                if ((parentScale.y < 0.0f) != (localScale.y < 0.0f)) localScale.y = -localScale.y;
+            }
             transform.localScale = localScale;
+
+            // MEMO: アニメーションを当てたあと(UpdateComplete)、メッシュを作る前に消す
+            if (hideSlot && slot != null)
+            {
+                slot.A = SpineFolderSlotVisibility.IsVisible ? slot.Data.A : 0.0f;
+            }
 
             if (slot != null)
             {

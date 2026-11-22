@@ -411,6 +411,7 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
 
             ProcessFolders(skeletonDataAsset, spineExtraData);
+            ValidateFolderBoxes(skeletonDataAsset, assetInfo.Path);
 
             // extra_data.json の当たり判定の追加情報(HurtBox の部位・攻撃の対応表)
             // FIXME: 使っていないのでコメントアウトした(SpineHitAreaImporter)。AttackData の形が決まったら戻す
@@ -643,6 +644,53 @@ namespace ActorWorkspace.Editor.UnitySpine
                 }
 
             }// foreach folderSetting
+        }
+
+        // 判定の箱の目印の画像を、ボーンの真ん中からずらしてよい量(Unity の単位。SkeletonData のスケール 0.01 で 0.5 ピクセル)
+        const float FolderBoxOffsetTolerance = 0.005f;
+
+        // 3D の判定の箱(BoundingBox3DFollower)の目印の画像が、ボーンの真ん中にあるか確かめる。ずれていればエラーログを出す
+        // MEMO: 3D の判定の箱は、左右反転してもワールドのスケールを正に保つ(BoneSlotFollower.keepPositiveWorldScale)。
+        //       画像をボーンから左右にずらしたり回したりすると、反転したときに判定がずれる(左右逆にならない)。上下のずれは問題ない
+        // MEMO: ゲームでは使えるので、IsImportError にはしない
+        // See also: Documentation~/Spine/Folder機能.md の BoundingBox3DFollower
+        public static int ValidateFolderBoxes(SkeletonDataAsset sda, string path)
+        {
+            var skeletonData = sda.GetSkeletonData(true);
+            if (skeletonData == null) return 0;
+
+            var context = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            int errorCount = 0;
+            foreach (var folderSetting in UnitySpineSettings.Instance.FolderSettings)
+            {
+                if (folderSetting.FollowerType != UnitySpineSettings.FollowerType.BoundingBox3DFollower
+                    && folderSetting.FollowerType != UnitySpineSettings.FollowerType.BoundingBox3DFollowerIsTrigger)
+                {
+                    continue;
+                }
+
+                foreach (var boneData in SpineUtilityEditor.GetBonesUnderBone(skeletonData, folderSetting.FolderName, depth: 1))
+                {
+                    // MEMO: 箱はボーンと同じ名前のスロットの画像(BoneSlotFollower)
+                    var slotData = skeletonData.FindSlot(boneData.Name);
+                    if (slotData == null) continue;
+
+                    foreach (var skin in skeletonData.Skins)
+                    {
+                        foreach (var entry in skin.Attachments)
+                        {
+                            if (entry.SlotIndex != slotData.Index || entry.Attachment is RegionAttachment region == false) continue;
+                            if (Mathf.Abs(region.X) <= FolderBoxOffsetTolerance && Mathf.Abs(region.Rotation) <= FolderBoxOffsetTolerance) continue;
+
+                            ++errorCount;
+                            Debug.LogError($"[SpineAssetPostprocessor] 判定の箱の画像がボーンの真ん中にありません(左右反転すると判定がずれます)。"
+                                + $"画像は動かさず・回さず、ボーンのほうを動かしてください: folder={folderSetting.FolderName} slot={slotData.Name} "
+                                + $"skin={skin.Name} attachment={entry.Name} x={region.X} rotation={region.Rotation} path={path}", context);
+                        }
+                    }
+                }
+            }
+            return errorCount;
         }
     }
 }

@@ -134,6 +134,7 @@ namespace ActorWorkspace.UnitySpine
             follower.followXYPosition = true;
             follower.followLocalScale = false;
             follower.followParentWorldScale = true;
+            follower.hideSlot = true;
             newObject.transform.localScale = v;
 
 // #if __INAPPDEBUG__
@@ -170,9 +171,18 @@ namespace ActorWorkspace.UnitySpine
             var collider = newObject.AddComponent<BoxCollider>();
             collider.isTrigger = isTrigger;
             collider.size = v;
+            // ボーンと同じ名前のスロットに四角い画像(判定の箱の目印)があれば、その大きさ・位置に合わせる(ボーンのスケールは follower が掛ける)
+            // MEMO: 無いときは今までどおり 32 ピクセル(SkeletonData のスケール 0.01)の箱
+            if (skeletonRenderer.Skeleton.FindSlot(nodeInfo.Name)?.Attachment is Spine.RegionAttachment region)
+            {
+                // MEMO: 画像を反転(スケールがマイナス)していても、箱の大きさはプラスにする(BoxCollider はマイナスの大きさに対応していない)
+                collider.size = new Vector3(Mathf.Abs(region.Width * region.ScaleX), Mathf.Abs(region.Height * region.ScaleY), v.z);
+                collider.center = new Vector3(region.X, region.Y, 0.0f);
+            }
 
             // var follower = newObject.AddComponent<BoneFollower>();
             var follower = newObject.AddComponent<BoneSlotFollower>();
+            follower.FolderName = folderSetting.FolderName;
             follower.skeletonRenderer = skeletonRenderer;
 
             // // slotName を先に設定してから初期化する
@@ -181,7 +191,9 @@ namespace ActorWorkspace.UnitySpine
             follower.followXYPosition = true;
             follower.followLocalScale = false;
             follower.followParentWorldScale = true;
-            newObject.transform.localScale = v;
+            follower.keepPositiveWorldScale = true;
+            follower.hideSlot = true;
+            newObject.transform.localScale = Vector3.one;
 
             follower.Initialize();
 

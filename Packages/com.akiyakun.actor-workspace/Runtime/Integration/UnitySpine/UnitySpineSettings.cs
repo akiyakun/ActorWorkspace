@@ -52,6 +52,11 @@ namespace ActorWorkspace.UnitySpine
         [SerializeField] string hitBoxFolder = "5_HitBoxFolder";
         public string HitBoxFolder => hitBoxFolder;
 
+        // 判定の箱(BoundingBox 系のフォロワー)のスロットの絵を出すか。ふだんは出さない
+        // 実行中は SpineFolderSlotVisibility.IsVisible で切り替える(デバッグで当たり判定を見るときなど)
+        [SerializeField] bool showFolderSlots = false;
+        public bool ShowFolderSlots => showFolderSlots;
+
 
         public enum FollowerType
         {
