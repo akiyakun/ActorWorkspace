@@ -257,9 +257,27 @@ namespace ActorWorkspace
         protected virtual void OnRemoveElement(IAWActor element)
         {
             D.Log(CoreLogMask.Lifecycle, $"AWActorManager.OnRemoveElement(): {element.GetType().Name}");
-            element.GameObject.SetActive(false);
-            element.GameObject.transform.SetParent(gameObject.transform);
+
+            // アプリの終了中は、Dispose() より先に GameObject が壊されていることがある
+            // (DontDestroyOnLoad のこのマネージャーの GameObject も、シーンと一緒に壊れたアクターも)。
+            // 壊れているものには触らず、ファクトリに返すだけにする
+            // MEMO: アクターが MonoBehaviour で壊れていると、GameObject を読むだけで例外になるので先に見る
+            if (IsDestroyed(element) == false)
+            {
+                var actorObject = element.GameObject;
+                if (actorObject != null)
+                {
+                    actorObject.SetActive(false);
+                    if (gameObject != null) actorObject.transform.SetParent(gameObject.transform);
+                }
+            }
             actorFactory.Release(element);
+        }
+
+        // Unity 側で破棄済みか(IAWActor の実装は MonoBehaviour が多いので、Unity の null 判定をする)
+        static bool IsDestroyed(IAWActor actor)
+        {
+            return actor is Object unityObject && unityObject == null;
         }
 
 
