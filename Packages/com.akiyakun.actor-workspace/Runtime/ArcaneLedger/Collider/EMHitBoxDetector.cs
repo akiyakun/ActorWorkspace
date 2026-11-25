@@ -14,7 +14,8 @@ namespace ActorWorkspace.ArcaneLedger
     // - 当たる相手(TargetLayers)の HurtBox: 相手のルート(Rigidbody2D のある GameObject)の ICollisionDetector に ShurikenAtPosition で知らせる
     //   (ShurikenCollisionEventDispatcher と同じ形。ALHurtBoxBehaviour の DetectMode=Main が受け取る)。貫通しない弾は粒を消す
     // - 地形(TerrainLayers): 粒を消す。PassThroughEffectors なら PlatformEffector2D の付いたもの(すり抜け床)は抜ける
-    // 粒を消したところ・相手に当たったところで、Sub Emitters の HitSubEmitterIndex 番(種類は Manual)を出す
+    // 粒を消したところ・相手に当たったところで、HitEffects の ParticleSystem を出す(Sub Emitters に Manual で入っていればサブエミッターとして、無ければ直接)。
+    // HitEffects が空なら Sub Emitters の最初の Manual を出す
     //
     // MEMO: ParticleSystem の Collision モジュールは、トリガーのコライダー(HurtBox)に当たらない。そのため自前で調べる
     //       点ではなく線で調べるので、速い弾でも HurtBox を飛び越えない
@@ -43,8 +44,10 @@ namespace ActorWorkspace.ArcaneLedger
         [SerializeField] float capsuleLength = 0.6f;
 
         [Header("演出")]
-        [Tooltip("当たったところで出すサブエミッターの番号(種類は Manual にする)。-1 なら出さない")]
-        [SerializeField] int hitSubEmitterIndex = 0;
+        [Tooltip("当たったところで出す ParticleSystem(火花・煙など。いくつでも入れられる)。弾の子のパーティクルをドラッグして入れる。\n" +
+                 "弾の Sub Emitters に種類 Manual で入っていればサブエミッターとして出し、入っていなければ当たったところに直接出す。\n" +
+                 "空なら、弾の Sub Emitters の最初の Manual を出す(無ければ何も出さない)")]
+        [SerializeField] ParticleSystem[] hitEffects = System.Array.Empty<ParticleSystem>();
 
         public override UpdateFlags UpdateFlags => UpdateFlags.LateUpdate;
 
@@ -90,6 +93,7 @@ namespace ActorWorkspace.ArcaneLedger
                 Debug.LogWarning($"EMHitBoxDetector: 弾の ParticleSystem の Simulation Space を World にしてください。\"{gameObject.GetHierarchyPath()}\"");
             }
 #endif
+            ResolveHitEffects();
             return true;
         }
 
@@ -267,18 +271,203 @@ namespace ActorWorkspace.ArcaneLedger
             particle.remainingLifetime = 0.0f;
         }
 
+        // 当たったところで HitEffects(空なら Sub Emitters の最初の Manual)を出す
         void EmitHitEffect(ref ParticleSystem.Particle particle, Vector2 position)
         {
-            if (hitSubEmitterIndex < 0) return;
-            var subEmitters = Shuriken.subEmitters;
-            if (subEmitters.enabled == false || hitSubEmitterIndex >= subEmitters.subEmittersCount) return;
+            if (hitSubEmitterIndices.Count == 0 && directHitEffects.Count == 0) return;
 
-            // 当たったところから出す(粒の位置は元に戻す)
-            var original = particle.position;
-            particle.position = new Vector3(position.x, position.y, original.z);
-            Shuriken.TriggerSubEmitter(hitSubEmitterIndex, ref particle);
-            if (pierce) particle.position = original;
+            // サブエミッター: 当たったところから出す(粒の位置は元に戻す)
+            if (hitSubEmitterIndices.Count > 0)
+            {
+                var original = particle.position;
+                particle.position = new Vector3(position.x, position.y, original.z);
+                foreach (int index in hitSubEmitterIndices)
+                {
+                    Shuriken.TriggerSubEmitter(index, ref particle);
+                }
+                if (pierce) particle.position = original;
+            }
+
+            // サブエミッターでないもの: 当たったところに直接出す(向き・形は、その ParticleSystem の Transform と Shape のまま)
+            if (directHitEffects.Count > 0)
+            {
+                var emitParams = new ParticleSystem.EmitParams
+                {
+                    position = new Vector3(position.x, position.y, particle.position.z),
+                    applyShapeToPosition = true,
+                };
+                foreach (var effect in directHitEffects)
+                {
+                    if (effect == null) continue;
+                    effect.Emit(emitParams, GetBurstCount(effect));
+                }
+            }
         }
+
+        // HitEffects を、サブエミッターとして出すもの(番号)と、直接出すものに分ける(初期化のときに 1 回)
+        readonly List<int> hitSubEmitterIndices = new();
+        readonly List<ParticleSystem> directHitEffects = new();
+
+        void ResolveHitEffects()
+        {
+            hitSubEmitterIndices.Clear();
+            directHitEffects.Clear();
+            var subEmitters = Shuriken.subEmitters;
+            int subCount = subEmitters.enabled ? subEmitters.subEmittersCount : 0;
+            var effectRoot = Effect != null ? Effect.GameObject.transform : transform.root;
+
+            bool hasAny = false;
+            foreach (var effect in hitEffects)
+            {
+                if (effect == null) continue;
+                hasAny = true;
+                var kind = ClassifyHitEffect(effect, Shuriken, effectRoot, subEmitters, subCount, out int index);
+                switch (kind)
+                {
+                    case HitEffectKind.SubEmitter:
+                        if (hitSubEmitterIndices.Contains(index) == false) hitSubEmitterIndices.Add(index);
+                        break;
+                    case HitEffectKind.Direct:
+                        if (directHitEffects.Contains(effect)) break;
+                        directHitEffects.Add(effect);
+                        DisableEmission(effect);
+                        break;
+                    default:
+#if UNITY_EDITOR
+                        // MEMO: 編集中は何度も初期化されるので、警告はゲーム中だけ(編集中は Inspector の案内で知らせる)
+                        if (Application.isPlaying) Debug.LogWarning($"EMHitBoxDetector: Hit Effects の {effect.name} は{GetSkipReason(kind)}ので、出しません。\"{gameObject.GetHierarchyPath()}\"");
+#endif
+                        break;
+                }
+            }
+            if (hasAny) return;
+
+            // 空なら、Sub Emitters の最初の Manual
+            for (int i = 0; i < subCount; i++)
+            {
+                if (subEmitters.GetSubEmitterType(i) == ParticleSystemSubEmitterType.Manual)
+                {
+                    hitSubEmitterIndices.Add(i);
+                    return;
+                }
+            }
+        }
+
+        // 直接出す ParticleSystem が、エフェクトを再生したときに自分の Emission で(撃った位置に)出ないようにする。Emit() は Emission がオフでも出せる
+        // MEMO: ゲーム中のシーンにあるものだけ(Prefab のアセットや Prefab モードの値を書き換えないように。そのため Prefab モードのプレビューでは撃った位置にも出る)
+        void DisableEmission(ParticleSystem effect)
+        {
+            if (Application.isPlaying == false || effect.gameObject.scene.IsValid() == false) return;
+#if UNITY_EDITOR
+            if (UnityEditor.SceneManagement.EditorSceneManager.IsPreviewScene(effect.gameObject.scene)) return;
+#endif
+            var emission = effect.emission;
+            emission.enabled = false;
+#if UNITY_EDITOR
+            if (effect.main.simulationSpace != ParticleSystemSimulationSpace.World)
+            {
+                Debug.LogWarning($"EMHitBoxDetector: 当たったところに直接出す {effect.name} の Simulation Space を World にしてください(Local だと出す位置がずれる)。\"{gameObject.GetHierarchyPath()}\"");
+            }
+#endif
+        }
+
+        // HitEffects の 1 つをどう扱うか
+        enum HitEffectKind
+        {
+            // 弾自身(Emission をオフにすると弾が出なくなるので、出さない)
+            Self,
+            // エフェクトの外のもの(ほかのエフェクトやシーンのものを書き換えないよう、出さない)
+            Outside,
+            // Sub Emitters に Manual 以外の種類で入っている(Birth・Death などでも出るので、ここでも出すと 2 回出る。出さない)
+            OtherSubEmitter,
+            // Sub Emitters に Manual で入っている: サブエミッターとして出す
+            SubEmitter,
+            // Sub Emitters に入っていない: 当たったところに直接出す
+            Direct,
+        }
+
+        // index は SubEmitter のときの Sub Emitters の番号(ほかは -1)
+        static HitEffectKind ClassifyHitEffect(ParticleSystem effect, ParticleSystem self, Transform effectRoot,
+            ParticleSystem.SubEmittersModule subEmitters, int subCount, out int index)
+        {
+            index = -1;
+            if (effect == self) return HitEffectKind.Self;
+            if (effect.transform.IsChildOf(effectRoot) == false) return HitEffectKind.Outside;
+            int manualIndex = -1;
+            for (int i = 0; i < subCount; i++)
+            {
+                if (subEmitters.GetSubEmitterSystem(i) != effect) continue;
+                if (subEmitters.GetSubEmitterType(i) != ParticleSystemSubEmitterType.Manual) return HitEffectKind.OtherSubEmitter;
+                if (manualIndex < 0) manualIndex = i;
+            }
+            if (manualIndex < 0) return HitEffectKind.Direct;
+            index = manualIndex;
+            return HitEffectKind.SubEmitter;
+        }
+
+#if UNITY_EDITOR
+        static string GetSkipReason(HitEffectKind kind) => kind switch
+        {
+            HitEffectKind.Self => "弾の ParticleSystem 自身な",
+            HitEffectKind.Outside => "このエフェクトの中のものではない",
+            HitEffectKind.OtherSubEmitter => "弾の Sub Emitters に Manual 以外の種類で入っている(2 回出てしまう)",
+            _ => "",
+        };
+#endif
+
+        // 直接出すときの粒の数(Emission の Burst の数の合計。Burst の Probability も見る。Burst が無ければ 1)
+        // MEMO: Count が Curve のときは時刻 0 の値。Cycles(繰り返し)は見ない(1 回分だけ出す)
+        // MEMO: UnityEngine.Random の状態を変えないよう、自前の乱数を使う(ゲーム側で Random.InitState を使っていても、乱数の並びがずれないように)
+        static readonly System.Random burstRandom = new();
+
+        static int GetBurstCount(ParticleSystem effect)
+        {
+            var emission = effect.emission;
+            int burstCount = emission.burstCount;
+            if (burstCount == 0) return 1;
+            int total = 0;
+            for (int i = 0; i < burstCount; i++)
+            {
+                var burst = emission.GetBurst(i);
+                if (burst.probability < 1.0f && (float)burstRandom.NextDouble() > burst.probability) continue;
+                total += Mathf.RoundToInt(burst.count.Evaluate(0.0f, (float)burstRandom.NextDouble()));
+            }
+            return total;
+        }
+
+#if UNITY_EDITOR
+        // Inspector の案内用: HitEffects のうち、当たったところに直接出すもの(direct)、そのうち Simulation Space が World でないもの(local)、
+        // 出さないもの(skipped。ParticleSystem と理由)
+        public void GetHitEffectInfo(List<ParticleSystem> direct, List<ParticleSystem> local, List<(ParticleSystem effect, string reason)> skipped)
+        {
+            direct.Clear();
+            local.Clear();
+            skipped.Clear();
+            var ps = GetComponent<ParticleSystem>();
+            if (ps == null) return;
+            var subEmitters = ps.subEmitters;
+            int subCount = subEmitters.enabled ? subEmitters.subEmittersCount : 0;
+            var effectRoot = GetComponentInParent<IEffect>() is Component root ? root.transform : transform.root;
+            foreach (var effect in hitEffects)
+            {
+                if (effect == null) continue;
+                var kind = ClassifyHitEffect(effect, ps, effectRoot, subEmitters, subCount, out _);
+                switch (kind)
+                {
+                    case HitEffectKind.SubEmitter:
+                        break;
+                    case HitEffectKind.Direct:
+                        if (direct.Contains(effect)) break;
+                        direct.Add(effect);
+                        if (effect.main.simulationSpace != ParticleSystemSimulationSpace.World) local.Add(effect);
+                        break;
+                    default:
+                        if (skipped.Exists(item => item.effect == effect) == false) skipped.Add((effect, GetSkipReason(kind)));
+                        break;
+                }
+            }
+        }
+#endif
 
         // 粒と相手の組を覚える。もう覚えていたら false
         bool AddHistory(uint seed, int targetId)
