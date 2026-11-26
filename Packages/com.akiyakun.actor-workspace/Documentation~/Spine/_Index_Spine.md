@@ -43,9 +43,12 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
 * 自動化で使うとき(Unity のメニューの一括書き出し、AI エージェントなど)は `--no_dialog` を付けます。ダイアログを出さずに(tkinter を使わずに)、コンソールだけで動きます。tkinter が使えない(ディスプレイが無いなど)ときも、コンソールだけで続けます。どちらでも、エラーは `[エラー]` で始まる行を標準エラー出力に出し、終了コード 1 で終わります(最初のエラーで止まる)
 * `bin/` の `.exe` は、`spine/spine_actor_export_to_unity.py` を PyInstaller でビルドしたものです(デザイナーの PC には Python が入っていないことがあるため)。ビルドは、プロジェクトの `tools/` で `spine/spine_actor_export_to_unity_build.bat` を実行します(PyInstaller が要る。`tools/lib/` の `unity_external_edit_lock.py` も一緒に入れるため、afl の `tools/lib/` があるプロジェクトの `tools/` でビルドする)。`bin/` に入った `.exe` を `External~/tools/bin/` にコピーします
 * Mac の `bin/spine_actor_export_to_unity` も、同じ py を PyInstaller でビルドしたものです(Apple Silicon(arm64)用。Intel の Mac では動きません)。ビルドは、プロジェクトの `tools/` で `spine/spine_actor_export_to_unity_build.command` を実行します(`.exe` と同じく、afl の `tools/lib/` があるプロジェクトでビルドする)。`bin/` に入った実行ファイルを `External~/tools/bin/` にコピーします
-  * ビルドに使う Python の tkinter が動くことを先に確かめてください(`python3 -c "import tkinter; tkinter.Tk()"` で窓が出れば動く)。tkinter が動かない Python でビルドすると、ダイアログの出ない実行ファイルになります(コンソールだけで動くので、気付きにくい)。Homebrew の Python には tkinter が入っていません(`python-tk` を別に入れる)。pyenv の Python は、Homebrew の `tcl-tk` が上がると tkinter が読めなくなることがあります。macOS に最初から入っている Python の Tk(8.5)は古く、表示が崩れます。Tk を中に持っている Python(python-build-standalone など)を作業用のフォルダに置いて、その venv でビルドすると、Homebrew に左右されません
+  * ビルドに使う Python の tkinter が動くことを先に確かめてください(`python3 -c "import tkinter; tkinter.Tk()"` で窓が出れば動く。`.command` も、ビルドの前に `python3` の tkinter(Tk 8.6 以上)と PyInstaller を確かめ、だめならビルドしません)。tkinter が動かない Python でビルドすると、ダイアログの出ない実行ファイルになります(コンソールだけで動くので、気付きにくい)。Homebrew の Python には tkinter が入っていません(`python-tk` を別に入れる)。pyenv の Python は、Homebrew の `tcl-tk` が上がると tkinter が読めなくなることがあります。macOS に最初から入っている Python の Tk(8.5)は古く、表示が崩れます。Tk を中に持っている Python(python-build-standalone など)を作業用のフォルダに置いて、その venv でビルドすると、Homebrew に左右されません
   * 実行ファイルには Python と Tk が入るので、使う人の Mac に Python は要りません
-* Mac の `bin/spine_actor_export_to_unity.app` は、Automator で作ったアプリです。フォルダをドラッグ&ドロップすると、`bin/spine_actor_export_to_unity` に渡します(`bin/spine_export_setting.json` があれば `--spine_export_setting` も)。Spine の場所は渡さず、実行ファイルが上の順に探します。中のシェルスクリプト(`Contents/document.wflow`)を書き換えたら、`codesign --force --sign - <.app>/Contents/document.wflow` と `codesign --force --sign - <.app>` で署名し直してください
+* Mac の `bin/spine_actor_export_to_unity.app` は、Automator で作ったアプリです。フォルダをドラッグ&ドロップすると、`bin/spine_actor_export_to_unity` に渡します。Spine の場所と書き出しの設定は渡さず、実行ファイルが上の決まりで選びます
+  * `tools/` の場所は、アプリ自身の場所(アプリがある `bin/` の 1 つ上)から決めます。どの Finder の窓からドラッグ&ドロップしてもかまいません
+  * 書き出しが終わったら(取りやめたとき・失敗したときも)、実行ファイルの出力(コンソールに出るもの)をダイアログで見せます。Mac ではコンソールが見えないためです
+  * 中のスクリプト(`Contents/document.wflow`)を書き換えたら、`codesign --force --sign - <.app>/Contents/document.wflow` と `codesign --force --sign - <.app>` で署名し直してください
 
 ### 一括書き出し(Unity のメニュー)
 

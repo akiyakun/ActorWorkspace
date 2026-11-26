@@ -7,6 +7,7 @@ tkinter だけで作る(Windows と Mac の両方で動くように)。tk の操
 from __future__ import annotations
 
 import queue
+import sys
 import threading
 import tkinter as tk
 from collections.abc import Callable
@@ -83,10 +84,17 @@ class ExportDialog:
 
         progress_queue: queue.Queue[tuple[int, int, str]] = queue.Queue()
         errors: list[BaseException] = []
+        stop_requested = threading.Event()
+
+        def report_progress(index: int, total: int, name: str) -> None:
+            # 中断したら、次の件に進まない(work は 1 件ごとに、始める前にこれを呼ぶ)
+            if stop_requested.is_set():
+                raise KeyboardInterrupt
+            progress_queue.put((index, total, name))
 
         def worker() -> None:
             try:
-                work(lambda index, total, name: progress_queue.put((index, total, name)))
+                work(report_progress)
             except BaseException as e:  # noqa: BLE001 メインスレッドで投げ直す
                 errors.append(e)
 
@@ -117,9 +125,23 @@ class ExportDialog:
         thread = threading.Thread(target=worker)
         thread.start()
         self._root.after(POLL_INTERVAL_MS, poll)
-        self._root.mainloop()
+        try:
+            self._root.mainloop()
+        except KeyboardInterrupt as e:
+            # MEMO: Ctrl+C は、コールバックの外で受けると mainloop から直に投げられる
+            callback_errors.append(e)
         if callback_errors:
-            print("中断しました。書き出しの途中のものが終わるのを待ってから終わります")
+            # MEMO: コンソールの Ctrl+C は Spine にも届くので、書き出しの途中の件も止まる。
+            #       次の件に進まないようにして、今の件の後始末(Unity のロックを外すなど)が終わるのを待つ
+            print("中断しました。今の件の後始末が終わるのを待ってから終わります")
+            stop_requested.set()
+            file_label.configure(text="中断しています...")
+            # 待っている間も窓が固まらないように、tk のイベントを回す
+            while thread.is_alive():
+                self._root.update()
+                thread.join(POLL_INTERVAL_MS / 1000)
+            if errors and not isinstance(errors[0], KeyboardInterrupt):
+                print(f"[エラー] 中断したので、書き出しの途中の件は失敗しました: {errors[0]}", file=sys.stderr)
             raise callback_errors[0]
         thread.join()
         if errors:

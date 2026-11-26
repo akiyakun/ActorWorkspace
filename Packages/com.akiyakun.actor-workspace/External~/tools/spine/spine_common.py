@@ -74,8 +74,10 @@ class SpineToolError(Exception):
 def setup_console() -> None:
     # MEMO: Windows のコンソールの文字コード(cp932)のままだと、Spine の出力の日本語のパスで落ちることがある
     if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        # MEMO: line_buffering は、パイプにつないだとき(Mac の .app、Unity の一括書き出し)に標準出力と標準エラー出力の順番をそろえるため
+        #       (標準出力だけがためてから書き出されると、[エラー] が前の出力より先に出る)
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
 
 
 def read_env_file(path: Path) -> dict[str, str]:
@@ -165,8 +167,15 @@ def find_original_json(folder: Path) -> Path:
 
 
 def read_json(path: Path) -> dict:
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    # MEMO: 壊れた設定ファイルなどで止まったときに、どのファイルか分かるように(JSONDecodeError・UnicodeDecodeError は ValueError)
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (ValueError, OSError) as e:
+        raise SpineToolError(f"JSON を読めません: {path}: {e}") from e
+    if not isinstance(data, dict):
+        raise SpineToolError(f"JSON の一番外側が {{ }} ではありません: {path}")
+    return data
 
 
 def write_json(data: dict, path: Path) -> None:

@@ -51,7 +51,21 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>on run {input, parameters}	set results to {}		-- カレントパスを取得してresultsに追加	tell application "Finder"		set currentPath to insertion location as text		set currentPath to POSIX path of currentPath		set end of results to currentPath	end tell		-- 入力パスをPOSIXパスに変換してresultsに追加	repeat with i in input		set p to POSIX path of i as text		set end of results to p	end repeat		--display dialog results as text	return resultsend run</string>
+					<string>on run {input, parameters}
+	set results to {}
+	
+	-- このアプリの場所を results に追加する(シェルスクリプトで tools フォルダを求める)
+	-- MEMO: Finder の前面の窓(insertion location)を使うと、別の窓から D&amp;D したときに違う場所になる
+	set end of results to POSIX path of (path to me)
+	
+	-- 入力パスを POSIX パスに変換して results に追加する
+	repeat with i in input
+		set p to POSIX path of i as text
+		set end of results to p
+	end repeat
+	
+	return results
+end run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -161,31 +175,35 @@ end run</string>
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string># AppleScriptから実行時のディレクトリパスと元の引数リストが渡される
-#echo "$@"
+					<string># AppleScript から、このアプリの場所と、ドラッグ&amp;ドロップされたものの一覧が渡される
 
-# Automatorでは$HOMEが$0に入ってくる
-#echo "$0"
+# MEMO: ここで出力したものは、次のアクションでダイアログに出す。失敗しても終了コードは 0 にする
+#       (0 以外を返すと、Automator のエラーの知らせだけが出て、出力のダイアログが出ない)
 
-# AppleScriptから$1に実行時のディレクトリパスが渡される
-# このときFinderでbinフォルダを開いている状態(タイトルにbinと表示されている状態)で実行する必要があります。
-# ダメな例として、toolsフォルダを開いた状態でbinフォルダを折りたたみで開いている状態ではtoolsがカレントになってしまいます。
-#echo "$1"
-# binフォルダにカレントディレクトを変更
-cd "$1"
-cd ..
-#pwd
-
-# 引数を1個捨てる(AppleScriptで追加した分)
+# tools フォルダ(このアプリがある bin の 1 つ上)をカレントにする
+if ! cd "$(dirname "$1")/.."; then
+	echo "[エラー] アプリのある場所に移れません: $1"
+	exit 0
+fi
+# アプリの場所を引数から外す
 shift 1
-#echo "$@"
+
+if [ ! -x "./bin/spine_actor_export_to_unity" ]; then
+	echo "[エラー] このアプリと同じフォルダに spine_actor_export_to_unity がありません: $(pwd)/bin"
+	echo "(ダウンロードしたアプリで、場所が /private/var/folders/... になっているときは、xattr -dr com.apple.quarantine &lt;アプリ&gt; で quarantine を外してください)"
+	exit 0
+fi
+if [ $# -eq 0 ]; then
+	echo "書き出すフォルダを、このアプリにドラッグ&amp;ドロップしてください。"
+	exit 0
+fi
 
 # エクスポーター実行
-if [ -f "./bin/spine_export_setting.json" ]; then
-	./bin/spine_actor_export_to_unity --inputs "$@" --spine_export_setting "./bin/spine_export_setting.json"
-else
-	./bin/spine_actor_export_to_unity --inputs "$@"
-fi
+# 出力(標準エラー出力も)は、次のアクションでダイアログに出す(Mac ではコンソールが見えないため)
+# MEMO: 書き出しの設定(bin/spine_export_setting.json があればそれ)は、実行ファイルが選ぶ
+# MEMO: 失敗したときは実行ファイルがエラーのダイアログを出すので、終了コードは Automator に返さない
+./bin/spine_actor_export_to_unity --inputs "$@" 2&gt;&amp;1
+exit 0
 </string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
@@ -347,7 +365,24 @@ fi
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>on run {input, parameters}	display dialog input as textend run</string>
+					<string>on run {input, parameters}
+	-- 前のアクションの出力(1 行ずつのリスト)を、改行でつないでダイアログに出す
+	if class of input is not list then set input to paragraphs of (input as text)
+	set lineCount to count of input
+	-- MEMO: 長いとダイアログが画面に収まらないので、最後の maxLines 行だけ出す
+	set maxLines to 40
+	set header to ""
+	if lineCount &gt; maxLines then
+		set header to "(最初の " &amp; (lineCount - maxLines) &amp; " 行は省きました)" &amp; linefeed
+		set input to items (lineCount - maxLines + 1) thru lineCount of input
+	end if
+	set oldDelimiters to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to linefeed
+	set message to header &amp; (input as text)
+	set AppleScript's text item delimiters to oldDelimiters
+	display dialog message buttons {"OK"} default button "OK" with title "spine_actor_export_to_unity"
+	return input
+end run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>

@@ -210,15 +210,17 @@ def prepare_output_folder(category_dir: Path, folder_name: str, can_rename: bool
 
 
 def export(spine: Path, info: SimpleNamespace, export_dir: Path, export_setting: Path, can_rename: bool) -> None:
+    # 今回使う設定(フォルダごとの上書きがあればマージする)
+    # MEMO: 設定が読めないときに、書き出し先のフォルダの名前を変えたり作ったりしないように、先に読む
+    setting = read_json(export_setting)
+    if info.override_export_setting_file_path is not None:
+        deep_merge(setting, read_json(info.override_export_setting_file_path))
+
     output_path = prepare_output_folder(export_dir / info.category_dir_name, info.folder.name, can_rename)
     print(f"output_path: {output_path}")
     output_path.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as work_dir:
-        # 今回使う設定(フォルダごとの上書きがあればマージする)
-        setting = read_json(export_setting)
-        if info.override_export_setting_file_path is not None:
-            deep_merge(setting, read_json(info.override_export_setting_file_path))
         setting_path = Path(work_dir) / "export_setting.json"
         write_json(setting, setting_path)
 
@@ -281,6 +283,8 @@ def create_dialog() -> ExportDialog | None:
 
 def export_all(args: argparse.Namespace, export_dir: Path, export_setting: Path,
                progress: ProgressCallback | None = None) -> None:
+    # 書き出しの設定が読めるかを、書き出し先に手を付ける前に確かめる
+    read_json(export_setting)
     spine = find_spine_command(args.spine_path)
     infos = [create_fileinfo(Path(p).resolve()) for p in args.inputs]
     # 書き出しの間、Unity の取り込み・保存を止める(Unity が書き出しの途中のファイルを取り込んだり、
