@@ -80,7 +80,7 @@ Box1[Bone]
 
 * アタッチメントを外すと、`BoneSlotFollower` がフォロワーを非アクティブにする（判定が消える）ので、アタッチメントは付けたまま、色で消しています
 * デバッグで当たり判定を見たいときは、`UnitySpineSettings` の `Show Folder Slots` を ON にするか、実行中に `SpineFolderSlotVisibility.IsVisible = true` にします（次の更新から反映。`Reset()` で設定の値に戻す）。出すときのアルファはセットアップの値(`SlotData`)です
-* ゲーム中に当たり判定(HurtBox・HitBox)を色分けで描く機能はゲーム側で作ります。その色は `UnitySpineSettings` の `Collision Box Visualizer` で決めます(下の「Collision Box Visualizer」)
+* ゲーム中に当たり判定(HurtBox・HitBox)を色分けで描くのは `ALCollisionBoxVisualizer`(ArcaneLedger。[ALCollisionBoxVisualizer](../ArcaneLedger/ALCollisionBoxVisualizer.md))です。色は `UnitySpineSettings` の `Collision Box Visualizer` に置き、ゲーム側が読んで渡します(下の「Collision Box Visualizer」)
 
 # Spineデータ側の設定
 
@@ -99,7 +99,7 @@ UnitySpineSettings の `Folder Settings`リストに設定を追加します。
 
 ## Collision Box Visualizer
 
-ゲーム中に当たり判定(HurtBox・HitBox)を描くときの色です。AW は色の設定だけを持ち、描くのはゲーム側です(onihime では OniHimeEditorWindow の「当たり判定の表示」)。
+ゲーム中に当たり判定(HurtBox・HitBox)を描くときの色です。AW のこの設定は色を持つだけで、描くのは `ALCollisionBoxVisualizer` です。`ALCollisionBoxVisualizer` は設定ファイルを読まないので、ゲーム側がこの値を読んで渡します(`HurtBoxColor = settings.GetHurtBoxColor` など)。
 
 | 項目 | 内容 |
 | --- | --- |

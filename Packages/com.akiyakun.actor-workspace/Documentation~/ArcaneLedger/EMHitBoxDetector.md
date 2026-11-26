@@ -75,7 +75,7 @@
 
 ## 粒ごとの当たりの形を取る（GetParticleShapes）
 
-ゲーム中に当たり判定を描くとき（ゲーム側のデバッグ表示など）のために、今の粒ごとの当たりの形を返します。Gizmo もこれで描きます。
+ゲーム中に当たり判定を描くとき（[ALCollisionBoxVisualizer](ALCollisionBoxVisualizer.md) など）のために、今の粒ごとの当たりの形を返します。Gizmo もこれで描きます。
 
 * `GetParticleShapes(List<ShapeInstance> results)`：今の粒ごとの当たりの形（ワールドの XY）を `results` に足し、足した数を返す（`results` は消さない）。粒が無ければ何も足さない
   * 形は Gizmo と同じく、その時点の粒の位置での形（当たりを調べる形は、そのフレームに進んだ分だけ短いことがある）
