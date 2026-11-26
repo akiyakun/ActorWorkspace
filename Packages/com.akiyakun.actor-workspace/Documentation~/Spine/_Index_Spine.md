@@ -36,7 +36,7 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
 * `spine_actor_export_to_unity` は、フォルダに `.spine` と JSON の両方があると JSON を原本として使い、そのことを表示します。`.spine` を原本にするプロジェクトでは、原本のフォルダに書き出した JSON を置かないでください
 * `override_export_setting.json`・`extra_data.json` は、前の版と同じく下のフォルダにあっても使います(フォルダの直下を優先)
 * 共通の処理は `spine/spine_common.py` にあります
-* Spine の場所は、`--spine_path`、環境変数 `SPINE_PATH`、Unity プロジェクトのフォルダ(`tools/` の 1 つ上)の `.env` に書いた `SPINE_PATH`、標準のインストール先の順に探します。`.env` は PC ごとのファイルなので Git に入れません(afl の `.gitignore` で無視)。`bin/spine_actor_export_to_unity.bat` も、環境変数が無ければ `.env` を読んで `.exe` に渡します。`.bat` は `=` の前後の空白、値の後ろのコメント、日本語のパスを読めないので、`.env` は `SPINE_PATH=<Spine の実行ファイル>` の形で書きます
+* Spine の場所は、`--spine_path`、環境変数 `SPINE_PATH`、Unity プロジェクトのフォルダ(`tools/` の 1 つ上)の `.env` に書いた `SPINE_PATH`、標準のインストール先の順に探します。`.env` は PC ごとのファイルなので Git に入れません(afl の `.gitignore` で無視)。`bin/spine_actor_export_to_unity.bat` と Mac の `.app` は Spine の場所を渡さず、`.exe`・実行ファイルがこの順に探します。`.env` は `SPINE_PATH=<Spine の実行ファイル>` の形で書きます(値の後ろにコメントは書けません)
 * 書き出し先のフォルダの名前の `=` から `@` の前まではコメントです(afl の `AutoAddressing` がアドレスから除く。例: `Enemy_5020=ダイエイユー@bundle` のアドレスは `Enemy_5020@bundle`)。`spine_actor_export_to_unity` は、コメントを除いた名前が同じで名前が違うフォルダが書き出し先にあれば、元データのフォルダの名前に変えて(`.meta` も一緒に)から上書きします。元データのフォルダにコメントを足した・変えた・消したときも、同じアセット(GUID)を上書きできます。コメントを除いた名前が同じフォルダが書き出し先に 2 つ以上あるときはエラーにします
 * `spine_actor_export_to_unity` は、Unity が開いているときは書き出しの間 Unity の取り込み・保存を止めます(afl の ExternalEditLock。`tools/lib/unity_external_edit_lock.py` を使う)。Unity が止まったことを確かめられないときは、フォルダの名前を変えずにエラーにします(Unity のメニューの一括書き出しを使うか、Unity で名前を変えてから書き出す)
 * `spine_actor_export_to_unity` は、人が使うとき(`.bat` にドラッグ&ドロップしたときなど)はダイアログを出します。入力が 2 つ以上なら開始の確認、書き出しの間は最前面に進み具合の窓、終わったら終了の知らせ、失敗したらエラーの内容です。開始の確認と進み具合の窓には、書き出しの間 Unity を操作しないように赤い字で注意を出します。ダイアログは `spine/export_dialog.py`(tkinter だけで作る)。書き出しは別のスレッドで走らせるので、書き出しの間も窓は固まりません
@@ -47,7 +47,7 @@ Spine のデータの原本は、`.spine` か、Spine から書き出した JSON
   * 実行ファイルには Python と Tk が入るので、使う人の Mac に Python は要りません
 * Mac の `bin/spine_actor_export_to_unity.app` は、Automator で作ったアプリです。フォルダをドラッグ&ドロップすると、`bin/spine_actor_export_to_unity` に渡します。Spine の場所と書き出しの設定は渡さず、実行ファイルが上の決まりで選びます
   * `tools/` の場所は、アプリ自身の場所(アプリがある `bin/` の 1 つ上)から決めます。どの Finder の窓からドラッグ&ドロップしてもかまいません
-  * 書き出しが終わったら(取りやめたとき・失敗したときも)、実行ファイルの出力(コンソールに出るもの)をダイアログで見せます。Mac ではコンソールが見えないためです
+  * 終わったとき・失敗したときは、実行ファイルのダイアログで知らせます(実行ファイルの出力は見えません)。実行ファイルが見つからないとき・何もドラッグ&ドロップされなかったときは、アプリが知らせます
   * 中のスクリプト(`Contents/document.wflow`)を書き換えたら、`codesign --force --sign - <.app>/Contents/document.wflow` と `codesign --force --sign - <.app>` で署名し直してください
 
 ### 一括書き出し(Unity のメニュー)
