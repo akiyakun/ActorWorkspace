@@ -18,22 +18,33 @@
 
 使い方(tools フォルダで):
   python spine/spine_actor_export_to_unity.py --inputs <フォルダ・.spine・原本の JSON> ...
+
+人が使うとき(bin/spine_actor_export_to_unity.bat にドラッグ&ドロップしたときなど)は、ダイアログを出す
+(入力が 2 つ以上なら開始の確認、書き出しの間の進み具合、終了・エラーの知らせ。export_dialog.py)。
+自動化で使うときは --no_dialog を付けると、ダイアログを出さずにコンソールだけで動く。
+tkinter が使えない(ディスプレイが無いなど)ときも、コンソールだけで続ける。
+エラーは [エラー] で始まる行を標準エラー出力に出し、終了コード 1 で終わる(最初のエラーで止まる)。
 """
 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import shutil
 import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
+from typing import TYPE_CHECKING
 
 from spine_common import (EXTRA_DATA_FILENAME, NOT_ORIGINAL_JSON_FILENAMES, OVERRIDE_EXPORT_SETTING_FILENAME,
                           TEMP_SPINE_FILENAME, TOOLS_DIR, SpineToolError, find_original_json, find_original_jsons,
                           find_spine_command, import_json_to_spine, read_json, run_spine, setup_console,
                           unity_external_edit_lock, write_json)
+
+if TYPE_CHECKING:
+    from export_dialog import ExportDialog, ProgressCallback
 
 DEFAULT_EXPORT_DIR = TOOLS_DIR.parent / "Assets" / "AssetBundleData" / "Actor"
 # 書き出しの設定。プロジェクト用の設定(bin/spine_export_setting.json)があればそれを使う
@@ -253,7 +264,34 @@ def parse_args():
     parser.add_argument("--export_dir", type=str, default=str(DEFAULT_EXPORT_DIR), help="出力先のフォルダ")
     parser.add_argument("--spine_export_setting", type=str, default=None,
                         help="書き出しの設定。既定: bin/spine_export_setting.json があればそれ、無ければ spine/default_spine_export_setting.json")
+    parser.add_argument("--no_dialog", action="store_true",
+                        help="ダイアログを出さずに、コンソールだけで動く(自動化で使うとき)")
     return parser.parse_args()
+
+
+def create_dialog() -> ExportDialog | None:
+    """ダイアログを作る。tkinter が使えないときは None(コンソールだけで続ける)。"""
+    try:
+        from export_dialog import ExportDialog
+        return ExportDialog()
+    except Exception as e:  # noqa: BLE001 tkinter が無い(ImportError)・ディスプレイが無い(TclError)など
+        print(f"[警告] ダイアログを出せないので、コンソールだけで続けます: {e}")
+        return None
+
+
+def export_all(args: argparse.Namespace, export_dir: Path, export_setting: Path,
+               progress: ProgressCallback | None = None) -> None:
+    spine = find_spine_command(args.spine_path)
+    infos = [create_fileinfo(Path(p).resolve()) for p in args.inputs]
+    # 書き出しの間、Unity の取り込み・保存を止める(Unity が書き出しの途中のファイルを取り込んだり、
+    # 名前を変えたフォルダに保存しようとして落ちたりしないように)
+    with unity_external_edit_lock(TOOLS_DIR.parent, "spine_actor_export_to_unity") as lock:
+        can_rename = not lock.is_unity_running or lock.is_acknowledged
+        for i, info in enumerate(infos):
+            print(f"--- {info.source_path}")
+            if progress is not None:
+                progress(i, len(infos), str(info.source_path))
+            export(spine, info, export_dir, export_setting, can_rename)
 
 
 # 例(tools フォルダで):
@@ -269,21 +307,35 @@ def main() -> int:
     print(f"export_dir: {export_dir}")
     print(f"export_setting: {export_setting}")
 
+    dialog = None if args.no_dialog else create_dialog()
     try:
-        spine = find_spine_command(args.spine_path)
-        infos = [create_fileinfo(Path(p).resolve()) for p in args.inputs]
-        # 書き出しの間、Unity の取り込み・保存を止める(Unity が書き出しの途中のファイルを取り込んだり、
-        # 名前を変えたフォルダに保存しようとして落ちたりしないように)
-        with unity_external_edit_lock(TOOLS_DIR.parent, "spine_actor_export_to_unity") as lock:
-            can_rename = not lock.is_unity_running or lock.is_acknowledged
-            for info in infos:
-                print(f"--- {info.source_path}")
-                export(spine, info, export_dir, export_setting, can_rename)
+        # 前の版と同じく、入力が 2 つ以上のときだけ開始を確かめる
+        if dialog is not None and len(args.inputs) > 1 and not dialog.confirm_start(len(args.inputs)):
+            print("取りやめました。")
+            return 0
+        if dialog is not None:
+            dialog.run(lambda progress: export_all(args, export_dir, export_setting, progress))
+        else:
+            export_all(args, export_dir, export_setting)
+        print("Spineのエクスポート処理が終了しました。")
+        if dialog is not None:
+            dialog.show_done()
+        return 0
     except SpineToolError as e:
         print(f"[エラー] {e}", file=sys.stderr)
+        if dialog is not None:
+            dialog.show_error(str(e))
         return 1
-    print("Spineのエクスポート処理が終了しました。")
-    return 0
+    except Exception as e:
+        # 思わぬエラーも、ダイアログで知らせてから今までどおり投げる(コンソールにトレースバックが出る)
+        if dialog is not None:
+            # MEMO: ダイアログを出せなくても、元のエラーを投げる
+            with contextlib.suppress(Exception):
+                dialog.show_error(f"{type(e).__name__}: {e}")
+        raise
+    finally:
+        if dialog is not None:
+            dialog.close()
 
 
 if __name__ == "__main__":
