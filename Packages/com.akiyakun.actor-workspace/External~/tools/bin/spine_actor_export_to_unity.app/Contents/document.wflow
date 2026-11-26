@@ -182,9 +182,9 @@ shift 1
 
 # エクスポーター実行
 if [ -f "./bin/spine_export_setting.json" ]; then
-	./bin/spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@" --spine_export_setting "./bin/spine_export_setting.json"
+	./bin/spine_actor_export_to_unity --inputs "$@" --spine_export_setting "./bin/spine_export_setting.json"
 else
-	./bin/spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@"
+	./bin/spine_actor_export_to_unity --inputs "$@"
 fi
 </string>
 					<key>CheckedForUserDefaultShell</key>
