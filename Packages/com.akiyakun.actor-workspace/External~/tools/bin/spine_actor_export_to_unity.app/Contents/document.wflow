@@ -51,7 +51,21 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>on run {input, parameters}	set results to {}		-- カレントパスを取得してresultsに追加	tell application "Finder"		set currentPath to insertion location as text		set currentPath to POSIX path of currentPath		set end of results to currentPath	end tell		-- 入力パスをPOSIXパスに変換してresultsに追加	repeat with i in input		set p to POSIX path of i as text		set end of results to p	end repeat		--display dialog results as text	return resultsend run</string>
+					<string>on run {input, parameters}
+	set results to {}
+	
+	-- このアプリの場所を results に追加する(シェルスクリプトで tools フォルダを求める)
+	-- MEMO: Finder の前面の窓(insertion location)を使うと、別の窓から D&amp;D したときに違う場所になる
+	set end of results to POSIX path of (path to me)
+	
+	-- 入力パスを POSIX パスに変換して results に追加する
+	repeat with i in input
+		set p to POSIX path of i as text
+		set end of results to p
+	end repeat
+	
+	return results
+end run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -161,31 +175,43 @@ end run</string>
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string># AppleScriptから実行時のディレクトリパスと元の引数リストが渡される
-#echo "$@"
+					<string># AppleScript から、このアプリの場所と、ドラッグ&amp;ドロップされたものの一覧が渡される
 
-# Automatorでは$HOMEが$0に入ってくる
-#echo "$0"
+# 知らせを出す(このスクリプトの出力は、どこにも出ないため)
+# 使い方: alert &lt;メッセージ&gt; [critical|informational]
+alert() {
+	osascript -e 'on run argv' -e 'if item 2 of argv is "critical" then' -e 'display alert "spine_actor_export_to_unity" message (item 1 of argv) as critical' -e 'else' -e 'display alert "spine_actor_export_to_unity" message (item 1 of argv)' -e 'end if' -e 'end run' "$1" "${2:-critical}" &gt; /dev/null
+}
 
-# AppleScriptから$1に実行時のディレクトリパスが渡される
-# このときFinderでbinフォルダを開いている状態(タイトルにbinと表示されている状態)で実行する必要があります。
-# ダメな例として、toolsフォルダを開いた状態でbinフォルダを折りたたみで開いている状態ではtoolsがカレントになってしまいます。
-#echo "$1"
-# binフォルダにカレントディレクトを変更
-cd "$1"
-cd ..
-#pwd
-
-# 引数を1個捨てる(AppleScriptで追加した分)
+# tools フォルダ(このアプリがある bin の 1 つ上)をカレントにする
+if ! cd "$(dirname "$1")/.."; then
+	alert "アプリのある場所に移れません: $1"
+	exit 0
+fi
+# アプリの場所を引数から外す
 shift 1
-#echo "$@"
+
+if [ ! -x "./bin/spine_actor_export_to_unity" ]; then
+	alert "このアプリと同じフォルダに spine_actor_export_to_unity がありません: $(pwd)/bin
+(ダウンロードしたアプリで、場所が /private/var/folders/... になっているときは、xattr -dr com.apple.quarantine &lt;アプリ&gt; で quarantine を外してください)"
+	exit 0
+fi
+if [ $# -eq 0 ]; then
+	alert "書き出すフォルダを、このアプリにドラッグ&amp;ドロップしてください。" informational
+	exit 0
+fi
 
 # エクスポーター実行
-if [ -f "./bin/spine_export_setting.json" ]; then
-	./bin/spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@" --spine_export_setting "./bin/spine_export_setting.json"
-else
-	./bin/spine_actor_export_to_unity --spine_path "/Applications/Spine.app/Contents/MacOS/Spine" --inputs "$@"
+# MEMO: Spine の場所と書き出しの設定(bin/spine_export_setting.json があればそれ)は、実行ファイルが選ぶ
+# MEMO: 終わったとき・失敗したとき(終了コード 1)は、実行ファイルがダイアログで知らせるので、終了コードは Automator に返さない
+#       (0 以外を返すと、Automator のエラーの知らせが重なる)
+./bin/spine_actor_export_to_unity --inputs "$@"
+exit_code=$?
+# 実行ファイルがダイアログを出す前に止まったとき(起動できない、強制終了されたなど)は、ここで知らせる
+if [ $exit_code -ne 0 ] &amp;&amp; [ $exit_code -ne 1 ]; then
+	alert "spine_actor_export_to_unity が途中で止まりました(終了コード $exit_code)。"
 fi
+exit 0
 </string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
@@ -306,118 +332,9 @@ fi
 			<key>isViewVisible</key>
 			<integer>1</integer>
 		</dict>
-		<dict>
-			<key>action</key>
-			<dict>
-				<key>AMAccepts</key>
-				<dict>
-					<key>Container</key>
-					<string>List</string>
-					<key>Optional</key>
-					<true/>
-					<key>Types</key>
-					<array>
-						<string>com.apple.applescript.object</string>
-					</array>
-				</dict>
-				<key>AMActionVersion</key>
-				<string>1.0.2</string>
-				<key>AMApplication</key>
-				<array>
-					<string>Automator</string>
-				</array>
-				<key>AMParameterProperties</key>
-				<dict>
-					<key>source</key>
-					<dict/>
-				</dict>
-				<key>AMProvides</key>
-				<dict>
-					<key>Container</key>
-					<string>List</string>
-					<key>Types</key>
-					<array>
-						<string>com.apple.applescript.object</string>
-					</array>
-				</dict>
-				<key>ActionBundlePath</key>
-				<string>/System/Library/Automator/Run AppleScript.action</string>
-				<key>ActionName</key>
-				<string>AppleScriptを実行</string>
-				<key>ActionParameters</key>
-				<dict>
-					<key>source</key>
-					<string>on run {input, parameters}	display dialog input as textend run</string>
-				</dict>
-				<key>BundleIdentifier</key>
-				<string>com.apple.Automator.RunScript</string>
-				<key>CFBundleVersion</key>
-				<string>1.0.2</string>
-				<key>CanShowSelectedItemsWhenRun</key>
-				<false/>
-				<key>CanShowWhenRun</key>
-				<true/>
-				<key>Category</key>
-				<array>
-					<string>AMCategoryUtilities</string>
-				</array>
-				<key>Class Name</key>
-				<string>RunScriptAction</string>
-				<key>InputUUID</key>
-				<string>496760E4-B329-47B3-9ED6-58D44D172467</string>
-				<key>Keywords</key>
-				<array>
-					<string>実行</string>
-				</array>
-				<key>OutputUUID</key>
-				<string>BB154DD0-A68A-4804-B527-1AD39DB88791</string>
-				<key>UUID</key>
-				<string>2D0826BC-9102-4283-A065-8ECB5992A5B5</string>
-				<key>UnlocalizedApplications</key>
-				<array>
-					<string>Automator</string>
-				</array>
-				<key>arguments</key>
-				<dict>
-					<key>0</key>
-					<dict>
-						<key>default value</key>
-						<string>on run {input, parameters}
-	
-	(* Your script goes here *)
-	
-	return input
-end run</string>
-						<key>name</key>
-						<string>source</string>
-						<key>required</key>
-						<string>0</string>
-						<key>type</key>
-						<string>0</string>
-						<key>uuid</key>
-						<string>0</string>
-					</dict>
-				</dict>
-				<key>isViewVisible</key>
-				<integer>1</integer>
-				<key>location</key>
-				<string>608.500000:1048.000000</string>
-				<key>nibPath</key>
-				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
-			</dict>
-			<key>isViewVisible</key>
-			<integer>1</integer>
-		</dict>
 	</array>
 	<key>connectors</key>
 	<dict>
-		<key>DCECCB6F-2D4B-4FD4-B66D-834B4A39F728</key>
-		<dict>
-			<key>from</key>
-			<string>BF32A70C-E83B-4883-91ED-20B764E7D472 - BF32A70C-E83B-4883-91ED-20B764E7D472</string>
-			<key>to</key>
-			<string>2D0826BC-9102-4283-A065-8ECB5992A5B5 - 2D0826BC-9102-4283-A065-8ECB5992A5B5</string>
-		</dict>
 		<key>E9742E06-2ECF-4D93-827F-451FAD2036F7</key>
 		<dict>
 			<key>from</key>

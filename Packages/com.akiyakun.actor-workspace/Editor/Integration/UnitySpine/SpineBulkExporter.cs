@@ -276,10 +276,11 @@ namespace ActorWorkspace.Editor.UnitySpine
             }
 
             // MEMO: Spine の場所は、スクリプトが環境変数 SPINE_PATH・Unity プロジェクトの .env・標準のインストール先から探す
+            // MEMO: --no_dialog で、スクリプトのダイアログ(進み具合・終了の知らせ)を出さない(出すと OK を押すまで次へ進まない)
             var startInfo = new System.Diagnostics.ProcessStartInfo()
             {
                 FileName = PythonCommand,
-                Arguments = $"\"{scriptPath}\" --inputs \"{inputFolder}\" --export_dir \"{exportDirectory}\"",
+                Arguments = $"\"{scriptPath}\" --inputs \"{inputFolder}\" --export_dir \"{exportDirectory}\" --no_dialog",
                 WorkingDirectory = toolsDirectory,
                 UseShellExecute = false,
                 CreateNoWindow = true,
