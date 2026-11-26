@@ -94,6 +94,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
                     var extraInfo = follower.GameObject.GetComponent<ALCollisionExtraData>() ?? follower.GameObject.AddComponent<ALCollisionExtraData>();
                     extraInfo.Actor = Actor;
                     extraInfo.ALProcessor = ledger.Processor;
+                    extraInfo.BoxKind = ALCollisionBoxKind.HurtBox;
 
                     // 部位・倍率・優先度
                     // if (hitAreaInfo != null && hitAreaInfo.TryGetHurtBoxInfo(follower.GameObject.name, out var info))

@@ -66,11 +66,35 @@ namespace ActorWorkspace.ArcaneLedger
             Capsule,
         }
 
+        // 粒 1 つ分の当たりの形(ワールドの XY)。GetParticleShapes・CalculateShape が返す
+        // IsCircle なら Center が中心の円。そうでなければ、Direction の向きに伸びたカプセル(Center が真ん中。Length は丸みを含む全体の長さ)
+        public readonly struct ShapeInstance
+        {
+            public Vector2 Center { get; }
+            // 進む向き(長さ 1)
+            public Vector2 Direction { get; }
+            // 進む向きの長さ(丸みを含む全体)。円のときは Radius × 2
+            public float Length { get; }
+            public float Radius { get; }
+
+            public bool IsCircle => Length <= Radius * 2.0f + 1e-5f;
+
+            public ShapeInstance(Vector2 center, Vector2 direction, float length, float radius)
+            {
+                Center = center;
+                Direction = direction;
+                Length = length;
+                Radius = radius;
+            }
+        }
+
         protected ParticleSystem Shuriken { get; private set; } = null!;
         // 同じ GameObject の当たりの情報(陣営を見る。無ければ陣営は見ない)
         protected IALCollisionExtraData? Source { get; private set; }
 
         ParticleSystem.Particle[] particles = System.Array.Empty<ParticleSystem.Particle>();
+        // GetParticleShapes で使う(当たりを調べる particles とは分ける)
+        ParticleSystem.Particle[] shapeParticles = System.Array.Empty<ParticleSystem.Particle>();
         readonly RaycastHit2D[] hits = new RaycastHit2D[32];
         static readonly IComparer<RaycastHit2D> DistanceComparer = Comparer<RaycastHit2D>.Create((a, b) => a.distance.CompareTo(b.distance));
 
@@ -215,9 +239,11 @@ namespace ActorWorkspace.ArcaneLedger
             return Physics2D.CircleCast(origin, radius, direction, filter, hits, distance);
         }
 
+        Vector2 GetShapeSize(float traveled, out float backOffset) => GetShapeSize(shape, radius, capsuleLength, traveled, out backOffset);
+
         // 当たりの形の大きさ(x: 進む向きの長さ、y: 太さ)と、形の中心が粒の位置からどれだけ後ろにあるか(backOffset)
         // traveled: 粒が出た位置から進んだ距離。Capsule は、出た位置より後ろへ伸ばさない(出たばかりの粒は短い)
-        Vector2 GetShapeSize(float traveled, out float backOffset)
+        static Vector2 GetShapeSize(HitShape shape, float radius, float capsuleLength, float traveled, out float backOffset)
         {
             float width = radius * 2.0f;
             if (shape != HitShape.Capsule)
@@ -229,6 +255,59 @@ namespace ActorWorkspace.ArcaneLedger
             // 前の端の丸みの中心を粒の位置にそろえる
             backOffset = length * 0.5f - radius;
             return new Vector2(length, width);
+        }
+
+        // 粒の位置での当たりの形(Gizmo・当たり判定の可視化で描く形。当たりを調べる形は、そのフレームに進んだ分だけ短いことがある)
+        // position: 粒の位置、direction: 進む向き(長さ 1)、traveled: 出た位置から進んだ距離
+        public static ShapeInstance CalculateShape(HitShape shape, float radius, float capsuleLength, Vector2 position, Vector2 direction, float traveled)
+        {
+            var size = GetShapeSize(shape, radius, capsuleLength, traveled, out float backOffset);
+            return new ShapeInstance(position - direction * backOffset, direction, size.x, radius);
+        }
+
+        // 今の粒ごとの当たりの形を results に足す(results は消さない)。足した数を返す
+        // MEMO: 編集中(Setup の前)も呼べる。Simulation Space が World でないときは、その空間からワールドに直す
+        // MEMO: 進む向きは粒の速さの向き。止まっている粒は撃つ向き(Transform の +Z)
+        public int GetParticleShapes(List<ShapeInstance> results)
+        {
+            var ps = Shuriken != null ? Shuriken : GetComponent<ParticleSystem>();
+            if (ps == null) return 0;
+            int count = ps.particleCount;
+            if (count == 0) return 0;
+            if (shapeParticles.Length < count) shapeParticles = new ParticleSystem.Particle[Mathf.Max(count, ps.main.maxParticles)];
+            count = ps.GetParticles(shapeParticles, count);
+
+            // 粒の位置・速さの空間(World 以外は、その Transform の空間)
+            var main = ps.main;
+            Transform? space = main.simulationSpace switch
+            {
+                ParticleSystemSimulationSpace.World => null,
+                ParticleSystemSimulationSpace.Custom => main.customSimulationSpace != null ? main.customSimulationSpace : transform,
+                _ => transform,
+            };
+            int added = 0;
+            for (int i = 0; i < count; i++)
+            {
+                var particle = shapeParticles[i];
+                if (particle.remainingLifetime <= 0.0f) continue;
+                Vector3 position = space == null ? particle.position : space.TransformPoint(particle.position);
+                Vector3 velocity = space == null ? particle.totalVelocity : space.TransformVector(particle.totalVelocity);
+                Vector2 velocity2D = new Vector2(velocity.x, velocity.y);
+                float speed = velocity2D.magnitude;
+                Vector2 direction = speed > 1e-3f ? velocity2D / speed : GetFireDirection();
+                float age = Mathf.Max(particle.startLifetime - particle.remainingLifetime, 0.0f);
+                results.Add(CalculateShape(shape, radius, capsuleLength, position, direction, speed * age));
+                added++;
+            }
+            return added;
+        }
+
+        // 撃つ向き(Shape を使わない ParticleSystem は、Transform の +Z へ粒を出す)
+        Vector2 GetFireDirection()
+        {
+            var forward = transform.forward;
+            var direction = new Vector2(forward.x, forward.y);
+            return direction.sqrMagnitude > 1e-6f ? direction.normalized : Vector2.right;
         }
 
         // 粒を消す地形か(既定: トリガーでない。PassThroughEffectors なら PlatformEffector2D の付いたものは抜ける)
@@ -315,7 +394,7 @@ namespace ActorWorkspace.ArcaneLedger
         [SerializeField] bool drawGizmos = true;
 
 #if UNITY_EDITOR
-        ParticleSystem.Particle[] gizmoParticles = System.Array.Empty<ParticleSystem.Particle>();
+        readonly List<ShapeInstance> gizmoShapes = new();
         const int GizmoCircleSegments = 24;
 
         void OnDrawGizmos()
@@ -333,41 +412,21 @@ namespace ActorWorkspace.ArcaneLedger
             var oldColor = Gizmos.color;
             Gizmos.color = pierce ? new Color(1.0f, 0.4f, 1.0f, 0.9f) : new Color(0.3f, 1.0f, 0.4f, 0.9f);
 
-            int count = ps.particleCount;
-            if (count > 0)
+            // MEMO: 形は XY 平面に描く(Z は弾の ParticleSystem の位置)
+            float z = transform.position.z;
+            gizmoShapes.Clear();
+            if (GetParticleShapes(gizmoShapes) > 0)
             {
-                if (gizmoParticles.Length < count) gizmoParticles = new ParticleSystem.Particle[Mathf.Max(count, ps.main.maxParticles)];
-                count = ps.GetParticles(gizmoParticles, count);
-                // 粒の位置・速さの空間(World 以外は、その Transform の空間)
-                var main = ps.main;
-                Transform? space = main.simulationSpace switch
-                {
-                    ParticleSystemSimulationSpace.World => null,
-                    ParticleSystemSimulationSpace.Custom => main.customSimulationSpace != null ? main.customSimulationSpace : transform,
-                    _ => transform,
-                };
-                for (int i = 0; i < count; i++)
-                {
-                    var particle = gizmoParticles[i];
-                    if (particle.remainingLifetime <= 0.0f) continue;
-                    Vector3 position = space == null ? particle.position : space.TransformPoint(particle.position);
-                    Vector3 velocity = space == null ? particle.totalVelocity : space.TransformVector(particle.totalVelocity);
-                    Vector2 velocity2D = new Vector2(velocity.x, velocity.y);
-                    float speed = velocity2D.magnitude;
-                    Vector2 direction = speed > 1e-3f ? velocity2D / speed : GetFireDirection();
-                    float age = Mathf.Max(particle.startLifetime - particle.remainingLifetime, 0.0f);
-                    var size = GetShapeSize(speed * age, out float backOffset);
-                    DrawShapeGizmo(position - (Vector3)(direction * backOffset), direction, size);
-                }
+                foreach (var instance in gizmoShapes) DrawShapeGizmo(instance, z);
             }
             else
             {
                 // 粒が無いとき: 発射位置に形(前の端を発射位置にそろえる)と、撃つ向きの矢印
                 Vector2 direction = GetFireDirection();
                 Vector3 position = transform.position;
-                var size = GetShapeSize(float.MaxValue, out float backOffset);
-                DrawShapeGizmo(position - (Vector3)(direction * backOffset), direction, size);
-                float length = size.x * 2.0f;
+                var instance = CalculateShape(shape, radius, capsuleLength, position, direction, float.MaxValue);
+                DrawShapeGizmo(instance, z);
+                float length = instance.Length * 2.0f;
                 Vector3 tip = position + (Vector3)(direction * length);
                 Gizmos.DrawLine(position, tip);
                 Vector3 side = new Vector3(-direction.y, direction.x, 0.0f) * (length * 0.15f);
@@ -379,33 +438,28 @@ namespace ActorWorkspace.ArcaneLedger
             Gizmos.color = oldColor;
         }
 
-        // 撃つ向き(Shape を使わない ParticleSystem は、Transform の +Z へ粒を出す)
-        Vector2 GetFireDirection()
+        // 当たりの形を描く(Capsule は Direction の向きに伸ばす)
+        static void DrawShapeGizmo(ShapeInstance instance, float z)
         {
-            var forward = transform.forward;
-            var direction = new Vector2(forward.x, forward.y);
-            return direction.sqrMagnitude > 1e-6f ? direction.normalized : Vector2.right;
-        }
-
-        // 当たりの形を描く(size は GetShapeSize の値。Capsule は direction の向きに伸ばす)
-        void DrawShapeGizmo(Vector3 center, Vector2 direction, Vector2 size)
-        {
-            float halfLength = size.x * 0.5f - radius;
-            if (shape == HitShape.Circle || halfLength <= 0.0f)
+            Vector3 center = new Vector3(instance.Center.x, instance.Center.y, z);
+            float shapeRadius = instance.Radius;
+            if (instance.IsCircle)
             {
-                DrawArcGizmo(center, radius, 0.0f, 360.0f);
+                DrawArcGizmo(center, shapeRadius, 0.0f, 360.0f);
                 return;
             }
 
+            Vector2 direction = instance.Direction;
+            float halfLength = instance.Length * 0.5f - shapeRadius;
             Vector3 axis = new Vector3(direction.x, direction.y, 0.0f);
             Vector3 normal = new Vector3(-direction.y, direction.x, 0.0f);
             Vector3 front = center + axis * halfLength;
             Vector3 back = center - axis * halfLength;
-            Gizmos.DrawLine(back + normal * radius, front + normal * radius);
-            Gizmos.DrawLine(back - normal * radius, front - normal * radius);
+            Gizmos.DrawLine(back + normal * shapeRadius, front + normal * shapeRadius);
+            Gizmos.DrawLine(back - normal * shapeRadius, front - normal * shapeRadius);
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            DrawArcGizmo(front, radius, angle - 90.0f, angle + 90.0f);
-            DrawArcGizmo(back, radius, angle + 90.0f, angle + 270.0f);
+            DrawArcGizmo(front, shapeRadius, angle - 90.0f, angle + 90.0f);
+            DrawArcGizmo(back, shapeRadius, angle + 90.0f, angle + 270.0f);
         }
 
         // XY 平面の円弧を描く(角度は度。+X が 0 度で反時計回り)

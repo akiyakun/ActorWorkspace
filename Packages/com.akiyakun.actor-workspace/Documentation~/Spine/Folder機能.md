@@ -80,6 +80,7 @@ Box1[Bone]
 
 * アタッチメントを外すと、`BoneSlotFollower` がフォロワーを非アクティブにする（判定が消える）ので、アタッチメントは付けたまま、色で消しています
 * デバッグで当たり判定を見たいときは、`UnitySpineSettings` の `Show Folder Slots` を ON にするか、実行中に `SpineFolderSlotVisibility.IsVisible = true` にします（次の更新から反映。`Reset()` で設定の値に戻す）。出すときのアルファはセットアップの値(`SlotData`)です
+* ゲーム中に当たり判定(HurtBox・HitBox)を色分けで描く機能はゲーム側で作ります。その色は `UnitySpineSettings` の `Collision Box Visualizer` で決めます(下の「Collision Box Visualizer」)
 
 # Spineデータ側の設定
 
@@ -95,6 +96,23 @@ Box1[Bone]
 
 UnitySpineSettings の `Folder Settings`リストに設定を追加します。
 現在のプロジェクトに対して、対象のFolder名(ボーン名)に対してどういう処理を行うのかセットする感じです。
+
+## Collision Box Visualizer
+
+ゲーム中に当たり判定(HurtBox・HitBox)を描くときの色です。AW は色の設定だけを持ち、描くのはゲーム側です(onihime では OniHimeEditorWindow の「当たり判定の表示」)。
+
+| 項目 | 内容 |
+| --- | --- |
+| Hurt Box Colors | HurtBox(やられ判定)の色。レイヤーごと(`Layers` に入っているレイヤーのコライダーをその色にする。リストの上から見て、最初に入っているもの) |
+| Hurt Box Default Color | HurtBox の色(どのレイヤーの設定にも入らないとき) |
+| Hit Box Colors | HitBox(攻撃判定)の色。レイヤーごと |
+| Hit Box Default Color | HitBox の色(どのレイヤーの設定にも入らないとき) |
+| Effect Hit Box Color | エフェクト(パーティクルの弾など)の HitBox の色 |
+| Hit Box Fill Alpha | HitBox の塗りの不透明度(色のアルファに掛ける)。HurtBox は塗らずに枠線だけ描く想定 |
+| Collision Box Line Width | 枠線の太さ(画面のピクセル) |
+
+* 色はコードからは `GetHurtBoxColor(layer)`・`GetHitBoxColor(layer)` で取る
+* HurtBox か HitBox かは、`ALCollisionExtraData.BoxKind` で見分けられる(`ALHurtBoxBehaviour`・`ALHitBoxBehaviour` が Awake で `HurtBox`・`HitBox` を入れる。ほかで付けたものは `Unknown`)
 
 ## Folder Settings リスト
 

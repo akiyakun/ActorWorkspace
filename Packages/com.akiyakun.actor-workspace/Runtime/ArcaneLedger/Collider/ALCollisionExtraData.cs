@@ -6,6 +6,17 @@ using ActorWorkspace;
 
 namespace ActorWorkspace.ArcaneLedger
 {
+    // ALCollisionExtraData が付いている箱の種類(当たり判定の可視化などで、HurtBox と HitBox を見分ける)
+    public enum ALCollisionBoxKind
+    {
+        // 分からない(ALHurtBoxBehaviour・ALHitBoxBehaviour 以外が付けたもの)
+        Unknown,
+        // やられ判定(ALHurtBoxBehaviour が付けたもの)
+        HurtBox,
+        // 攻撃判定(ALHitBoxBehaviour が付けたもの)
+        HitBox,
+    }
+
     // コライダーがアタッチされたオブジェクトから必要な情報を保持・取得するためのコンポーネント
     // ALHitBoxBehaviour・ALHurtBoxBehaviour が HitBox・HurtBox のアタッチメントに付ける
     //
@@ -13,6 +24,9 @@ namespace ActorWorkspace.ArcaneLedger
     [DisallowMultipleComponent]
     public class ALCollisionExtraData : MonoBehaviour, IALCollisionExtraData
     {
+        // 箱の種類。ALHurtBoxBehaviour・ALHitBoxBehaviour が Awake で入れる(シリアライズしない)
+        public ALCollisionBoxKind BoxKind { get; set; }
+
         [Header("通常コンポーネント版のIALCollisionExtraData実装")]
 
         #region IALCollisionExtraData

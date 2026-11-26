@@ -56,6 +56,7 @@ namespace ActorWorkspace.ArcaneLedger.ActorBehaviour
 
                     var extraInfo = follower.GameObject.GetComponent<ALCollisionExtraData>() ?? follower.GameObject.AddComponent<ALCollisionExtraData>();
                     extraInfo.Actor = Actor;
+                    extraInfo.BoxKind = ALCollisionBoxKind.HitBox;
                     if (Actor.ActorBehaviourController.Get<ArcaneLedgerBehaviour>() is ArcaneLedgerBehaviour behaviour)
                     {
                         extraInfo.ALProcessor = behaviour.Processor;

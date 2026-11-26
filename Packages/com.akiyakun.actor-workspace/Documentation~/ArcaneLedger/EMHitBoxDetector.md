@@ -3,7 +3,7 @@
 パーティクル（Shuriken）の粒を弾にして、2D の HurtBox に当てるための EffectModifier です。
 `Runtime/ArcaneLedger/Collider/EMHitBoxDetector.cs`
 
-* 最終更新：2026-11-25（当たりの形に Capsule を足した。Scene ビューに当たりの形を描く Gizmo を足した。粒の進む向き・速さを velocity から totalVelocity（Velocity over Lifetime・Force などを含む）にした。Circle の掃引にも効く）。2026-11-20（作った）
+* 最終更新：2026-11-25（粒ごとの当たりの形を返す `GetParticleShapes`・`CalculateShape` を足した。Gizmo もこれで描く。当たりの形に Capsule を足した。Scene ビューに当たりの形を描く Gizmo を足した。粒の進む向き・速さを velocity から totalVelocity（Velocity over Lifetime・Force などを含む）にした。Circle の掃引にも効く）。2026-11-20（作った）
 
 ## なぜ Collision モジュールを使わないか
 
@@ -64,6 +64,19 @@
 * ゲーム中は、Hierarchy で選んでいる GameObject（とその下）の弾だけ描く（弾がたくさん出ると見づらく、重くなるため）
 * Scene ビューの Gizmos がオンになっている必要がある
 * ゲームの中で `Radius` などを書き換える作り（撃つ側の値で上書きするなど）のときは、Prefab モードでは Prefab の値で描く
+
+## 粒ごとの当たりの形を取る（GetParticleShapes）
+
+ゲーム中に当たり判定を描くとき（ゲーム側のデバッグ表示など）のために、今の粒ごとの当たりの形を返します。Gizmo もこれで描きます。
+
+* `GetParticleShapes(List<ShapeInstance> results)`：今の粒ごとの当たりの形（ワールドの XY）を `results` に足し、足した数を返す（`results` は消さない）。粒が無ければ何も足さない
+  * 形は Gizmo と同じく、その時点の粒の位置での形（当たりを調べる形は、そのフレームに進んだ分だけ短いことがある）
+  * Simulation Space が World でないときは、その空間（Local は弾の Transform、Custom は Custom Simulation Space）からワールドに直す
+  * 進む向きは粒の速さ（`totalVelocity`）の向き。止まっている粒は撃つ向き（Transform の +Z）
+  * 編集中（Setup の前）も呼べる。当たりを調べる処理とは別の配列で粒を読むので、当たりには影響しない
+* `CalculateShape(shape, radius, capsuleLength, position, direction, traveled)`（static）：粒 1 つ分の形を計算する。`traveled` は粒が出た位置から進んだ距離（Capsule は、出た位置より後ろへ伸ばさない）
+* `ShapeInstance`：`Center`（形の真ん中）、`Direction`（進む向き。長さ 1）、`Length`（進む向きの長さ。丸みを含む全体）、`Radius`。`IsCircle` なら `Center` が中心の円、そうでなければ `Direction` の向きに伸びたカプセル
+* EditMode テスト：`Tests/Editor/EMHitBoxDetectorTests.cs`
 
 ## 注意
 
