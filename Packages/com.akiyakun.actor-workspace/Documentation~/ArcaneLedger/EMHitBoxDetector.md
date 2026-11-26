@@ -3,7 +3,7 @@
 パーティクル（Shuriken）の粒を弾にして、2D の HurtBox に当てるための EffectModifier です。
 `Runtime/ArcaneLedger/Collider/EMHitBoxDetector.cs`
 
-* 最終更新：2026-11-25（粒ごとの当たりの形を返す `GetParticleShapes`・`CalculateShape` を足した。Gizmo もこれで描く。当たりの形に Capsule を足した。Scene ビューに当たりの形を描く Gizmo を足した。粒の進む向き・速さを velocity から totalVelocity（Velocity over Lifetime・Force などを含む）にした。Circle の掃引にも効く）。2026-11-20（作った）
+* 最終更新：2026-11-26（粒ごとの当たりの形を返す `GetParticleShapes`・`CalculateShape` を足した。Gizmo もこれで描く）。2026-11-25（当たったところに出す演出を、番号(HitSubEmitterIndex)ではなく ParticleSystem の欄(Hit Effects。いくつでも)で指定するようにした。出さないもの（弾自身・エフェクトの外・Manual 以外のサブエミッター）を決めた）。2026-11-25（当たりの形に Capsule を足した。Scene ビューに当たりの形を描く Gizmo を足した。粒の進む向き・速さを velocity から totalVelocity（Velocity over Lifetime・Force などを含む）にした。Circle の掃引にも効く）。2026-11-20（作った）
 
 ## なぜ Collision モジュールを使わないか
 
@@ -30,7 +30,15 @@
     * `CapsuleLength` が `Radius` × 2 より短いときは円と同じ大きさ。撃つ側が `Radius` だけを大きくすると、カプセルが円になることがある
 * 点ではなく線で調べるので、速い弾でも HurtBox を飛び越えない
 * 出たばかりの粒は、出た位置より後ろを調べない
-* 粒を消したところ・相手に当たったところで、Sub Emitters の `HitSubEmitterIndex` 番（種類は **Manual**）を出す。射程（粒の寿命）で消えたときは出ない
+* 粒を消したところ・相手に当たったところで、`HitEffects`（ParticleSystem の配列。いくつでも）を出す。射程（粒の寿命）で消えたときは出ない
+  * 弾の Sub Emitters に種類 **Manual** で入っているものは、サブエミッターとして出す（`TriggerSubEmitter`。向き・形は弾の ParticleSystem の向きが基準）
+  * 入っていないものは、当たったところに直接出す（`Emit`。数は Emission の Burst の合計（Probability も見る。Count が Curve なら時刻 0 の値。Cycles は見ない）、向き・形はそのパーティクルの Transform と Shape のまま）。ゲーム中は、そのパーティクルの Emission をオフにする（エフェクトを再生したときに、撃った位置で出ないように。Prefab のアセットや Prefab モードのものは書き換えない）。Simulation Space は World にする（Local だと警告）
+  * 空なら、弾の Sub Emitters の最初の Manual を出す（無ければ何も出さない）
+  * 同じものを 2 回入れても 1 回だけ出す。空の要素は飛ばす
+  * 次のものは出さない（ゲーム中は警告）: 弾の ParticleSystem 自身、このエフェクトの外のもの（ほかのエフェクトやシーンのもの）、弾の Sub Emitters に Manual 以外の種類（Birth・Death など）で入っているもの（そちらでも出るので 2 回出てしまう）
+  * Prefab モードのプレビューでは、直接出すものも自分の Emission で撃った位置に出る（Emission をオフにするのはゲーム中だけ）
+  * 当たったときに何も出したくないときは、`HitEffects` を空にして、弾の Sub Emitters に Manual のものを入れない
+  * Inspector に、直接出すものの名前と、Simulation Space が World でないもの、出さないもの（とその理由）を案内（HelpBox）で出す
 * 当たる相手の判定（`TryGetTarget`。virtual）の既定は、次のすべてを満たすもの
   * `IALCollisionExtraData` の付いたトリガー（HurtBox）
   * 相手のルートに `ICollisionDetector` と `IAWActor` があり、台帳（`ArcaneLedgerBehaviour`）がある
