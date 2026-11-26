@@ -603,9 +603,11 @@ namespace ActorWorkspace.ArcaneLedger
 
             // MEMO: 形は XY 平面に描く(Z は弾の ParticleSystem の位置)
             float z = transform.position.z;
-            gizmoShapes.Clear();
-            if (GetParticleShapes(gizmoShapes) > 0)
+            if (ps.particleCount > 0)
             {
+                // MEMO: 寿命の尽きた粒だけのときは何も描かない(粒が無いときの形と矢印は出さない)
+                gizmoShapes.Clear();
+                GetParticleShapes(gizmoShapes);
                 foreach (var instance in gizmoShapes) DrawShapeGizmo(instance, z);
             }
             else

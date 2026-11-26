@@ -18,17 +18,20 @@
   * `EMCollisionExtraData`：同じ GameObject の Collider2D をエフェクトの HitBox として描く
   * `EMHitBoxDetector`：粒ごとの当たりの形（`GetParticleShapes`）をエフェクトの HitBox として描く
 * 見た目：HurtBox は枠線だけ、HitBox（エフェクトも）は半透明の塗り（`HitBoxFillAlpha`）と枠線
-* 形は Collider2D の Box・Circle・Capsule・Polygon（それ以外は bounds の四角）と、粒の円・カプセル
+* 形は Collider2D の Box・Circle・Capsule・Polygon・Composite（Edge は折れ線。それ以外は bounds の四角）と、粒の円・カプセル
 
 ## 使い方
 
 ```csharp
 // 作る(Play 中だけ。__INAPPDEBUG__ が無いときは null)
 var visualizer = CollisionBoxVisualizer.Show<ALCollisionBoxVisualizer>();
-visualizer.HurtBoxColor = layer => ...;   // レイヤーから色を決める(null なら DefaultColor)
-visualizer.HitBoxColor = layer => ...;
-visualizer.EffectHitBoxColor = Color.magenta;
-visualizer.VisibleKinds = ALCollisionBoxVisualizer.Kinds.HurtBox | ALCollisionBoxVisualizer.Kinds.HitBox;
+if (visualizer != null)
+{
+    visualizer.HurtBoxColor = layer => ...;   // レイヤーから色を決める(null なら DefaultColor)
+    visualizer.HitBoxColor = layer => ...;
+    visualizer.EffectHitBoxColor = Color.magenta;
+    visualizer.VisibleKinds = ALCollisionBoxVisualizer.Kinds.HurtBox | ALCollisionBoxVisualizer.Kinds.HitBox;
+}
 
 // 消す
 CollisionBoxVisualizer.Hide<ALCollisionBoxVisualizer>();
@@ -37,7 +40,8 @@ CollisionBoxVisualizer.Hide<ALCollisionBoxVisualizer>();
 * 色・描く種類・塗りの不透明度・枠線の太さ（`LineWidthPixels`）・描く順（`SortingLayerID`・`SortingOrder`）は外から入れる。このクラスは設定ファイルを読まない
   * 色の設定は `UnitySpineSettings` の `Collision Box Visualizer` にある（[Spine/Folder機能.md](../Spine/Folder機能.md)）。ゲーム側が読んで渡す（`HurtBoxColor = settings.GetHurtBoxColor` など）
 * ゲーム側で決めることがあれば派生クラスを作る。例：`ALCollisionExtraData` を継承した GameObject の弾を、`ClassifyUnknown` でエフェクトの HitBox にする。`Collect` を override して、集める前に設定を読み直す
-* `__INAPPDEBUG__` のときだけ動く（afl の `CollisionBoxVisualizer` に合わせる）
+* `__INAPPDEBUG__` のときだけ動く（afl の `CollisionBoxVisualizer` に合わせる）。SRP（URP など）のときだけ描かれる
+* 描く対象は `RefreshInterval` 秒ごとに `FindObjectsByType` で集め直す（そのときに配列を作る）。毎フレームの処理では GC のアロケーションをしない
 
 ## 注意
 
