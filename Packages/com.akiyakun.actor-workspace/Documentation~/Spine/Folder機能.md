@@ -74,6 +74,14 @@ Box1[Bone]
 * **注意：箱の画像はボーンの真ん中に置き、回さないでください。** 位置や向きはボーンのほうで動かします。ワールドのスケールをプラスに保つので、画像をボーンから左右にずらしたり回したりすると、左右反転したときに判定の位置が左右逆になりません（上下のずれは問題ありません）
   * 取り込みのとき、`SpineAssetPostprocessor.ValidateFolderBoxes` が、3D版のフォルダの箱の画像（どのスキンのものも）がボーンの真ん中にあるか確かめ、ずれていればエラーログを出します（0.5 ピクセルまでは許す。ゲームでは使えるので、取り込みエラーにはしない）。一括書き出し（`SpineBulkExporter`）では、そのアクターで止まります
 
+## フォローオブジェクトの下でエフェクトを出すとき（SpineFollowerUtility）
+
+Spine の `BoneFollower`・`PointFollower` は `LateUpdate` で骨の位置に動きます。Spine のイベントや Mecanim のアニメーションイベントは `LateUpdate` より前に来るので、その中でフォローオブジェクトの下にエフェクトを出すと、フォローオブジェクトはまだ前のフレームの骨の位置にいます。World 空間の粒は `LateUpdate` より前（パーティクルの計算の始まり）の位置で出るので、1 フレーム前の骨の位置に出てしまいます。
+
+* 出す直前に `SpineFollowerUtility.UpdateFollower(フォローオブジェクト)` を呼ぶと、今の骨の位置にすぐ動きます（`LateUpdate()` を呼ぶ。本来の `LateUpdate` でもう一度動くが、同じ位置になる）
+* 骨のワールドの位置が今のフレームのものになってから呼びます（Spine の `Update` のあと）
+* `BoneSlotFollower`（と BoundingBox の Follower）は `UpdateComplete` で動くので、呼ばなくても今の位置にいます（呼んでも何もしません）
+
 ## 判定の箱の目印の画像
 
 判定の箱（`BoundingBox2DFollower`・`BoundingBox3DFollower`）のスロットの画像は、ゲームでは出しません。`BoneSlotFollower` の `hideSlot` で、毎回の更新でスロットの色のアルファを 0 にします。
