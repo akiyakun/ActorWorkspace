@@ -277,10 +277,17 @@ def place_exported_files(src_dir: Path, output_path: Path) -> None:
     """一時フォルダに書き出したファイルを、出力先に置く(上書きする)。
 
     出力先にある、今回書き出さなかったファイル(.meta や Unity で作ったもの)はそのまま残す。
-    MEMO: JSON は最後に置く(途中で失敗したときに、JSON だけが新しくなって古いアトラス・画像と食い違わないように)
+    MEMO: 画像 → アトラス → スケルトンの JSON の順に置く(途中で失敗したときに、アトラスや JSON だけが新しくなって、
+          古い画像・アトラスと食い違わないように。アトラスは画像を、JSON はアトラスを参照する)
     """
-    files = sorted((p for p in src_dir.rglob("*") if p.is_file()),
-                   key=lambda p: (p.suffix == ".json" and p.name not in NOT_ORIGINAL_JSON_FILENAMES, str(p)))
+    def order(p: Path) -> tuple[int, str]:
+        if p.suffix == ".json" and p.name not in NOT_ORIGINAL_JSON_FILENAMES:
+            return 2, str(p)
+        if p.name.endswith((".atlas", ".atlas.txt")):
+            return 1, str(p)
+        return 0, str(p)
+
+    files = sorted((p for p in src_dir.rglob("*") if p.is_file()), key=order)
     for src in files:
         dst = output_path / src.relative_to(src_dir)
         copy_file_with_retry(src, dst)
@@ -300,7 +307,8 @@ def copy_file_with_retry(src: Path, dst: Path) -> None:
             if not is_busy:
                 raise SpineToolError(f"{dst} に書けません: {e}") from e
             if i == PLACE_RETRY_COUNT - 1:
-                raise SpineToolError(f"{dst} を書き換えられません（Unity などほかのアプリが開いているかもしれません）: {e}") from e
+                raise SpineToolError(f"{dst} を書き換えられません（Unity などほかのアプリが開いているかもしれません。"
+                                   f"閉じてからやり直してください）: {e}") from e
             time.sleep(PLACE_RETRY_INTERVAL_SECONDS)
 
 
