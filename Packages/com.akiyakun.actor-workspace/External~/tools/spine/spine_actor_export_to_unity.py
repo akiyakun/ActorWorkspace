@@ -15,6 +15,8 @@
   (例: Enemy_5020@bundle → Enemy_5020=ダイエイユー@bundle。Unity のアセットの GUID を変えないため)
   Unity が開いているときは、書き出しの間 Unity の取り込み・保存を止める(afl の ExternalEditLock)。
   Unity が止まったことを確かめられないときは、フォルダの名前を変えずにエラーにする
+  Spine は一時フォルダに書き出し、JSON にタイムスタンプを入れてから出力先にコピーする(出力先のファイルは 1 回だけ書く)。
+  出力先にある、今回書き出さなかったファイル(.meta や Unity で作ったもの)は消さない
 
 使い方(tools フォルダで):
   python spine/spine_actor_export_to_unity.py --inputs <フォルダ・.spine・原本の JSON> ...
@@ -30,9 +32,11 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import errno
 import shutil
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -50,6 +54,9 @@ DEFAULT_EXPORT_DIR = TOOLS_DIR.parent / "Assets" / "AssetBundleData" / "Actor"
 # 書き出しの設定。プロジェクト用の設定(bin/spine_export_setting.json)があればそれを使う
 PROJECT_EXPORT_SETTING = TOOLS_DIR / "bin" / "spine_export_setting.json"
 DEFAULT_EXPORT_SETTING = TOOLS_DIR / "spine" / "default_spine_export_setting.json"
+# 書き出したファイルを出力先に置けないときに、やり直す回数と間隔(合計で約 5 秒待つ)
+PLACE_RETRY_COUNT = 11
+PLACE_RETRY_INTERVAL_SECONDS = 0.5
 
 
 # by AI
@@ -220,12 +227,20 @@ def export(spine: Path, info: SimpleNamespace, export_dir: Path, export_setting:
     print(f"output_path: {output_path}")
     output_path.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory() as work_dir:
+    # MEMO: 一時フォルダを消せなくても(ウイルス対策ソフトが画像を開いているなど)、書き出しは終わっているのでエラーにしない
+    #       (TemporaryDirectory の ignore_cleanup_errors は Python 3.10 から。Mac の python3 は 3.9 のことがある)
+    work_dir = tempfile.mkdtemp()
+    try:
         setting_path = Path(work_dir) / "export_setting.json"
         write_json(setting, setting_path)
+        # MEMO: Spine は一時フォルダに書き出し、タイムスタンプを入れてから出力先に置く。
+        #       出力先のファイルを書いた直後に書き直すと、Unity を開いているときに書き直せないことがある
+        #       (書いたばかりのファイルを Unity がメモリに割り当てて開いているらしく、上書きが Errno 22 で失敗する)
+        spine_output = Path(work_dir) / "output"
+        spine_output.mkdir()
 
         if info.extra_data_file_path is not None:
-            shutil.copy(info.extra_data_file_path, output_path / EXTRA_DATA_FILENAME)
+            shutil.copy(info.extra_data_file_path, spine_output / EXTRA_DATA_FILENAME)
 
         if info.source_path.suffix == ".spine":
             # .spine を原本にしているプロジェクト(前の版と同じ書き出し方)
@@ -237,26 +252,56 @@ def export(spine: Path, info: SimpleNamespace, export_dir: Path, export_setting:
             temp_spine = info.source_path.parent / TEMP_SPINE_FILENAME
             temp_spine.unlink(missing_ok=True)
             spine_file = temp_spine
-        before = json_mtimes(output_path)
         try:
             if temp_spine is not None:
                 import_json_to_spine(spine, info.source_path, temp_spine)
-            run_spine(spine, ["--input", str(spine_file), "--output", str(output_path), "--export", str(setting_path)])
+            run_spine(spine, ["--input", str(spine_file), "--output", str(spine_output), "--export", str(setting_path)])
         finally:
             if temp_spine is not None:
                 temp_spine.unlink(missing_ok=True)
 
-    # 書き出した JSON にタイムスタンプを足す
-    # MEMO: 書き出したファイルの名前はスケルトンの名前で、.spine のファイル名とは違うことがあるので、書き出しで変わった JSON を探す
-    written = [p for p, mtime in json_mtimes(output_path).items() if before.get(p) != mtime]
-    if len(written) == 1:
-        add_timestamp_to_exported_json(written[0])
-    else:
-        print(f"[警告] 書き出した JSON が 1 つに決まらないので、タイムスタンプを足さなかった: {[p.name for p in written]}")
+        # 書き出した JSON にタイムスタンプを足す
+        # MEMO: 書き出したファイルの名前はスケルトンの名前で、.spine のファイル名とは違うことがあるので、書き出した JSON を探す
+        written = sorted(p for p in spine_output.glob("*.json") if p.name not in NOT_ORIGINAL_JSON_FILENAMES)
+        if len(written) == 1:
+            add_timestamp_to_exported_json(written[0])
+        else:
+            print(f"[警告] 書き出した JSON が 1 つに決まらないので、タイムスタンプを足さなかった: {[p.name for p in written]}")
+
+        place_exported_files(spine_output, output_path)
+    finally:
+        shutil.rmtree(work_dir, ignore_errors=True)
 
 
-def json_mtimes(folder: Path) -> dict[Path, int]:
-    return {p: p.stat().st_mtime_ns for p in folder.glob("*.json") if p.name not in NOT_ORIGINAL_JSON_FILENAMES}
+def place_exported_files(src_dir: Path, output_path: Path) -> None:
+    """一時フォルダに書き出したファイルを、出力先に置く(上書きする)。
+
+    出力先にある、今回書き出さなかったファイル(.meta や Unity で作ったもの)はそのまま残す。
+    MEMO: JSON は最後に置く(途中で失敗したときに、JSON だけが新しくなって古いアトラス・画像と食い違わないように)
+    """
+    files = sorted((p for p in src_dir.rglob("*") if p.is_file()),
+                   key=lambda p: (p.suffix == ".json" and p.name not in NOT_ORIGINAL_JSON_FILENAMES, str(p)))
+    for src in files:
+        dst = output_path / src.relative_to(src_dir)
+        copy_file_with_retry(src, dst)
+        print(f"Placed: {dst}")
+
+
+def copy_file_with_retry(src: Path, dst: Path) -> None:
+    """ファイルをコピーする。ほかのアプリが開いていて書けないときは、少し待ってやり直す。"""
+    for i in range(PLACE_RETRY_COUNT):
+        try:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
+            return
+        except OSError as e:
+            # MEMO: ほかのアプリが開いているときは、PermissionError か Errno 22(メモリに割り当てて開いているとき)になる
+            is_busy = isinstance(e, PermissionError) or e.errno == errno.EINVAL
+            if not is_busy:
+                raise SpineToolError(f"{dst} に書けません: {e}") from e
+            if i == PLACE_RETRY_COUNT - 1:
+                raise SpineToolError(f"{dst} を書き換えられません（Unity などほかのアプリが開いているかもしれません）: {e}") from e
+            time.sleep(PLACE_RETRY_INTERVAL_SECONDS)
 
 
 def parse_args():
@@ -325,10 +370,12 @@ def main() -> int:
         if dialog is not None:
             dialog.show_done()
         return 0
-    except SpineToolError as e:
-        print(f"[エラー] {e}", file=sys.stderr)
+    except (SpineToolError, OSError) as e:
+        # MEMO: ファイルの操作の失敗(ほかのアプリが開いている、消せないなど)も、トレースバックを出さずに知らせる
+        message = str(e) if isinstance(e, SpineToolError) else f"ファイルを操作できませんでした: {e}"
+        print(f"[エラー] {message}", file=sys.stderr)
         if dialog is not None:
-            dialog.show_error(str(e))
+            dialog.show_error(message)
         return 1
     except Exception as e:
         # 思わぬエラーも、ダイアログで知らせてから今までどおり投げる(コンソールにトレースバックが出る)
